@@ -408,6 +408,104 @@ footer{background:var(--verde-noturno);color:rgba(246,241,231,.7);padding:64px 0
 .lot-choice .lvagas{font-size:12px;color:rgba(27,23,18,.6);white-space:nowrap;margin-left:12px;}
 .lot-choice .lvagas.low{color:#b8562f;font-weight:600;}
 
+/* VIP toggle inside booking step 1 */
+.vip-toggle-box{
+  margin-top:18px;border:1.5px dashed var(--dourado);border-radius:6px;padding:14px 16px;
+  display:flex;align-items:flex-start;gap:12px;background:rgba(201,162,90,.06);
+}
+.vip-toggle-box input[type="checkbox"]{margin-top:3px;accent-color:var(--dourado);width:16px;height:16px;flex-shrink:0;}
+.vip-toggle-box .vtb-text{font-size:12.5px;line-height:1.5;color:var(--carvao);}
+.vip-toggle-box .vtb-text b{color:var(--vinho);}
+.vip-toggle-box .vtb-email{margin-top:10px;display:none;}
+.vip-toggle-box.active .vtb-email{display:block;}
+.vip-toggle-box .vtb-email input{
+  width:100%;padding:9px 12px;border:1.5px solid rgba(27,23,18,.18);border-radius:5px;font-family:var(--sans);font-size:13px;
+}
+
+/* VIP card — "bilhete premiado": ticket dourado com friso duplo e recorte
+   perfurado separando o texto dos benefícios do talão de ação. */
+.vip-card{
+  margin-bottom:36px;border-radius:14px;padding:34px 34px 30px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0f0d0a 0%,#221a10 55%,#0f0d0a 100%);
+  border:1.5px solid var(--dourado);
+  box-shadow:0 0 0 5px rgba(198,161,91,.08), 0 18px 46px rgba(0,0,0,.35);
+  color:var(--marfim);
+}
+.vip-card::before{
+  content:"";position:absolute;inset:6px;pointer-events:none;border:1px solid rgba(198,161,91,.35);border-radius:9px;
+}
+.vip-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 88% 10%,rgba(201,162,90,.22),transparent 55%);
+}
+.vip-card .vip-ribbon{
+  position:absolute;top:18px;right:-38px;transform:rotate(40deg);background:var(--dourado);color:#1b1712;
+  font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:5px 46px;z-index:2;
+}
+.vip-card .vip-tag{
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--dourado);border:1px solid rgba(201,162,90,.5);border-radius:20px;padding:5px 14px;margin-bottom:16px;position:relative;z-index:1;
+}
+.vip-card h3{font-family:var(--sans);font-size:26px;margin:0 0 8px;color:var(--marfim);position:relative;z-index:1;}
+.vip-card p.vip-desc{font-size:14px;color:rgba(250,246,238,.72);margin:0 0 20px;max-width:560px;position:relative;z-index:1;}
+.vip-card .vip-benefits{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-wrap:wrap;gap:10px 26px;position:relative;z-index:1;}
+.vip-card .vip-benefits li{font-size:13px;color:rgba(250,246,238,.9);display:flex;align-items:center;gap:8px;}
+.vip-card .vip-benefits li svg{color:var(--dourado);flex-shrink:0;}
+.vip-card .vip-stub{
+  position:relative;margin-top:8px;padding-top:26px;
+  border-top:1.5px dashed rgba(201,162,90,.5);
+}
+.vip-card .vip-stub::before,.vip-card .vip-stub::after{
+  content:"";position:absolute;top:-11px;width:22px;height:22px;border-radius:50%;background:var(--verde-noturno);
+}
+.vip-card .vip-stub::before{left:-34px;}
+.vip-card .vip-stub::after{right:-34px;}
+.vip-card .vip-tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;position:relative;z-index:1;}
+.vip-ticket{
+  border:1px solid rgba(201,162,90,.4);border-radius:8px;padding:18px 16px;background:rgba(198,161,91,.05);
+  display:flex;flex-direction:column;gap:10px;transition:all .25s ease;
+}
+.vip-ticket:hover{border-color:var(--dourado);background:rgba(198,161,91,.1);transform:translateY(-2px);}
+.vip-ticket .vt-name{font-family:var(--sans);font-size:15px;color:var(--marfim);}
+.vip-ticket .vt-prices{display:flex;align-items:baseline;gap:8px;}
+.vip-ticket .vt-old{font-size:12.5px;color:rgba(250,246,238,.4);text-decoration:line-through;}
+.vip-ticket .vt-new{font-size:19px;font-weight:700;color:var(--dourado);}
+.vip-ticket .vt-tag{font-size:10.5px;color:rgba(250,246,238,.5);text-transform:uppercase;letter-spacing:.06em;}
+.vip-ticket .vip-btn{width:100%;margin-top:2px;}
+.vip-card .vip-form{display:flex;flex-wrap:wrap;gap:10px;position:relative;z-index:1;}
+.vip-card .vip-form input{
+  flex:1 1 200px;padding:12px 14px;border-radius:5px;border:1.5px solid rgba(250,246,238,.25);
+  background:rgba(255,255,255,.06);color:var(--marfim);font-family:var(--sans);font-size:13.5px;
+}
+.vip-card .vip-form input::placeholder{color:rgba(250,246,238,.45);}
+.vip-card .vip-form input:focus{outline:none;border-color:var(--dourado);}
+.vip-card .vip-btn{
+  background:var(--dourado);color:#1b1712;border:none;border-radius:5px;padding:12px 22px;font-weight:700;
+  font-size:13.5px;cursor:pointer;transition:all .2s ease;white-space:nowrap;
+}
+.vip-card .vip-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.vip-card .vip-count{font-size:12px;color:rgba(250,246,238,.55);margin-top:10px;position:relative;z-index:1;}
+.vip-card .vip-countdown{
+  display:flex;gap:14px;margin:0 0 24px;position:relative;z-index:1;
+}
+.vip-card .vip-countdown .cd-box{text-align:center;}
+.vip-card .vip-countdown .cd-num{font-size:26px;font-weight:700;color:var(--dourado);line-height:1;font-family:var(--sans);}
+.vip-card .vip-countdown .cd-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:rgba(250,246,238,.55);margin-top:4px;}
+.vip-verify{margin-top:14px;position:relative;z-index:1;}
+.vip-verify input{
+  width:100%;max-width:340px;padding:10px 13px;border-radius:5px;border:1.5px solid rgba(250,246,238,.25);
+  background:rgba(255,255,255,.06);color:var(--marfim);font-family:var(--sans);font-size:13px;
+}
+.vip-verify input::placeholder{color:rgba(250,246,238,.45);}
+.vip-verify input:focus{outline:none;border-color:var(--dourado);}
+.vip-verify .vv-msg{font-size:12px;margin-top:6px;min-height:16px;}
+.vip-verify .vv-msg.ok{color:#8fbf7a;}
+.vip-verify .vv-msg.err{color:#e08a6b;}
+@media (max-width:760px){
+  .vip-card .vip-tickets{grid-template-columns:1fr;}
+  .vip-card .vip-ribbon{display:none;}
+}
+
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .cal-nav button{background:none;border:1px solid rgba(27,23,18,.15);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
 .cal-nav button:hover{border-color:var(--vinho);color:var(--vinho);}
@@ -535,6 +633,16 @@ footer{background:var(--verde-noturno);color:rgba(246,241,231,.7);padding:64px 0
 .admin-panel{background:#fff;border-radius:8px;border:1px solid rgba(27,23,18,.06);box-shadow:0 4px 16px rgba(27,23,18,.04);margin-bottom:30px;overflow:hidden;}
 .admin-panel .ap-head{padding:22px 24px;border-bottom:1px solid rgba(27,23,18,.07);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
 .admin-panel .ap-head h3{font-size:18px;}
+.vip-switch-wrap{display:flex;align-items:center;gap:10px;font-size:12.5px;color:rgba(27,23,18,.6);}
+.vip-switch{position:relative;display:inline-block;width:40px;height:22px;}
+.vip-switch input{opacity:0;width:0;height:0;}
+.vip-switch-track{position:absolute;inset:0;background:rgba(27,23,18,.2);border-radius:22px;cursor:pointer;transition:all .2s ease;}
+.vip-switch-track::before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:all .2s ease;}
+.vip-switch input:checked + .vip-switch-track{background:var(--dourado);}
+.vip-switch input:checked + .vip-switch-track::before{transform:translateX(18px);}
+.vip-signup-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(27,23,18,.06);font-size:13px;}
+.vip-signup-row:last-child{border-bottom:none;}
+.vip-signup-row .vsr-email{color:rgba(27,23,18,.6);}
 .tabs{display:flex;gap:6px;background:var(--marfim-escuro);padding:4px;border-radius:999px;}
 .tab-btn{padding:8px 16px;border-radius:999px;border:none;background:none;font-size:13px;color:rgba(27,23,18,.6);font-weight:600;}
 .tab-btn.active{background:var(--verde-noturno);color:var(--marfim);}
@@ -798,6 +906,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
       <h2>Nossos pacotes</h2>
       <p>Escolha o formato ideal para o momento da sua família. Todos incluem direcionamento durante a sessão e tratamento profissional das imagens.</p>
     </div>
+    <div id="vip-card-slot"></div>
     <div class="pack-grid" id="pack-grid"></div>
   </div>
 </section>
@@ -903,6 +1012,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
 
       <!-- STEP 1: PACOTE -->
       <div class="step-panel" data-panel="1">
+        <div id="vip-step1-note"></div>
         <div id="pkg-choices"></div>
         <div id="lot-choices"></div>
         <div class="book-footer" style="justify-content:flex-end;">
@@ -1099,6 +1209,26 @@ table.appt-table{width:100%;border-collapse:collapse;}
 
     <div class="admin-panel">
       <div class="ap-head">
+        <h3>Lista VIP</h3>
+        <label class="vip-switch-wrap">
+          <span id="vip-switch-lbl">Card VIP desligado</span>
+          <label class="vip-switch"><input type="checkbox" id="vip-enable-toggle"><span class="vip-switch-track"></span></label>
+        </label>
+      </div>
+      <div style="padding:22px 24px;">
+        <p style="font-size:13px;color:rgba(27,23,18,.6);margin:0 0 16px;max-width:640px;">
+          Ligue para o card VIP aparecer no site com o formulário de cadastro (limite de 20 e-mails). Quando quiser liberar os benefícios (acesso antecipado, qualquer data no valor do 1º lote e fotos reveladas), clique em "Lançar acesso VIP" — a contagem de 24h começa na hora.
+        </p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+          <button class="btn-outline" id="vip-launch-btn" style="padding:10px 18px;font-size:12.5px;">Lançar acesso VIP (24h)</button>
+          <span id="vip-launch-status" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+        </div>
+        <div id="vip-signups-list" style="margin-top:18px;"></div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
         <h3>Pedidos</h3>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
           <input class="search-input" id="admin-search" placeholder="Buscar nome, telefone ou e-mail">
@@ -1161,7 +1291,7 @@ const CONFIG = {
   // Cole aqui a URL do seu Web App do Google Apps Script (Implantar > Nova implantação > App da Web)
   // para os agendamentos passarem a ser salvos numa planilha do Google Sheets em vez do navegador.
   // Deixe "" para continuar usando apenas o armazenamento local (localStorage).
-  sheetsApiUrl: "https://script.google.com/macros/s/AKfycbxxc0eIPASxFFufXwYlDsrG8tmBNwoy7vAny71-7xV790t5wmqk7vALCUS31fZ8bCzs3A/exec",
+  sheetsApiUrl: "https://script.google.com/macros/s/AKfycbxiNFDZAwjGutvDp_WWiT_cEnFZLo1miwBW9FuvyuIVv_-T46SJrh5paNaH4w3K8VmL/exec",
   // LOTES: cada pacote é vendido em 3 lotes (fases), cada um com seu período de
   // realização do ensaio, preço e número de vagas. Altere as datas (formato
   // AAAA-MM-DD), preços e vagas conforme o combinado. "vagas:null" = sem limite
@@ -1210,7 +1340,14 @@ const CONFIG = {
     }
   ],
   availableTimes: ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
-  maxSessionsPerDay: null // defina um número para limitar sessões/dia; null = sem limite adicional além dos horários
+  maxSessionsPerDay: null, // defina um número para limitar sessões/dia; null = sem limite adicional além dos horários
+  // LISTA VIP: cadastro por e-mail, limitado a maxSignups pessoas. Quando o
+  // admin clica em "Lançar acesso VIP", os benefícios ficam válidos por
+  // benefitsWindowHours a partir daquele momento — depois disso expiram
+  // sozinhos, mesmo que o admin esqueça de desligar o card. VIP não usa o
+  // sistema de lotes: qualquer data disponível, sempre no valor do 1º lote
+  // de cada pacote, com discountPercent de desconto em cima desse valor.
+  vip: { maxSignups: 20, freePhotos: 10, benefitsWindowHours: 24, discountPercent: 10 }
 };
 
 const GALLERY = [
@@ -1253,15 +1390,20 @@ const FAQS = [
    ESTADO EM MEMÓRIA
 ========================================================= */
 let isAdmin = false;
-let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"" };
+let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false };
 let calCursor = new Date();
 let currentStep = 1;
 const STORAGE_KEY = "christmas-appointments";
+const VIP_STORAGE_KEY = "christmas-vip-settings";
+const VIP_SIGNUPS_KEY = "christmas-vip-signups";
 let appointmentsCache = [];
 let adminFilters = { status:"", search:"", pkg:"", date:"" };
 let agendaRange = "week";
 let pendingCancelId = null;
 let pendingDetailId = null;
+let vipSettings = { vipEnabled:false, vipLaunchAt:null };
+let vipSignups = [];
+let vipCountdownTimer = null;
 
 /* =========================================================
    HELPERS
@@ -1310,6 +1452,42 @@ function escapeHtml(str){
   return (str||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
+/* =========================================================
+   LISTA VIP — janela de 24h a partir do lançamento
+========================================================= */
+// Os benefícios só valem entre vipLaunchAt e vipLaunchAt+benefitsWindowHours,
+// mesmo que o admin esqueça de desligar o card depois.
+function vipWindowEndMs(){
+  if(!vipSettings.vipLaunchAt) return null;
+  const start = new Date(vipSettings.vipLaunchAt).getTime();
+  if(isNaN(start)) return null;
+  return start + CONFIG.vip.benefitsWindowHours * 60 * 60 * 1000;
+}
+function vipLaunched(){ return !!vipSettings.vipLaunchAt; }
+function vipBenefitsActive(){
+  if(!vipSettings.vipEnabled || !vipLaunched()) return false;
+  const end = vipWindowEndMs();
+  return end!=null && Date.now() < end;
+}
+function vipSignupOpen(){
+  return !!vipSettings.vipEnabled && !vipLaunched() && vipSignups.length < CONFIG.vip.maxSignups;
+}
+function vipEmailIsMember(email){
+  const clean = (email||"").trim().toLowerCase();
+  if(!clean) return false;
+  return vipSignups.some(v => (v.email||"").trim().toLowerCase() === clean);
+}
+// Preço VIP: sempre o valor do 1º lote do pacote, com o desconto aplicado —
+// não existem lotes para agendamento VIP.
+function parseBRL(str){ return parseFloat(String(str).replace(/[^\d,]/g,"").replace(",",".")); }
+function fmtBRL(num){ return "R$ " + num.toFixed(2).replace(".",","); }
+function vipBasePrice(pkg){ return pkg.lots && pkg.lots.length ? pkg.lots[0].price : pkg.price; }
+function vipDiscountedPrice(pkg){
+  const val = parseBRL(vipBasePrice(pkg));
+  if(isNaN(val)) return vipBasePrice(pkg);
+  return fmtBRL(val * (1 - CONFIG.vip.discountPercent/100));
+}
+
 function showToast(msg, type){
   const wrap = document.getElementById("toast-wrap");
   const t = document.createElement("div");
@@ -1335,9 +1513,15 @@ function usingSheets(){ return !!CONFIG.sheetsApiUrl; }
 async function loadAppointments(){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl);
+      // "cache-busting" com timestamp + no-store: sem isso, o Google (e às vezes
+      // o próprio navegador) pode devolver uma resposta em cache de segundos
+      // atrás, fazendo o admin e o site mostrarem estados diferentes do VIP
+      // logo depois de uma mudança na planilha.
+      const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache: "no-store" });
       const data = await res.json();
       appointmentsCache = (data && data.ok && data.appointments) ? data.appointments : [];
+      if(data && data.ok && data.settings) vipSettings = data.settings;
+      if(data && data.ok && data.vip) vipSignups = data.vip;
     }catch(e){
       showToast("Não foi possível conectar à planilha. Tente novamente.", "error");
       appointmentsCache = [];
@@ -1347,10 +1531,69 @@ async function loadAppointments(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     appointmentsCache = raw ? JSON.parse(raw) : [];
+    const rawVip = localStorage.getItem(VIP_STORAGE_KEY);
+    vipSettings = rawVip ? JSON.parse(rawVip) : { vipEnabled:false, vipLaunchAt:null };
+    const rawSignups = localStorage.getItem(VIP_SIGNUPS_KEY);
+    vipSignups = rawSignups ? JSON.parse(rawSignups) : [];
   }catch(e){
     appointmentsCache = [];
   }
   return appointmentsCache;
+}
+
+/* ---- VIP: liga/desliga, lançamento e cadastro ---- */
+async function vipSetEnabled(enabled){
+  if(usingSheets()){
+    try{
+      const res = await fetch(CONFIG.sheetsApiUrl, {
+        method:"POST", headers:{ "Content-Type":"text/plain" },
+        body: JSON.stringify({ action:"vipToggle", enabled })
+      });
+      const data = await res.json();
+      if(data.ok && data.settings) vipSettings = data.settings;
+      return !!data.ok;
+    }catch(e){ return false; }
+  }
+  vipSettings.vipEnabled = enabled;
+  localStorage.setItem(VIP_STORAGE_KEY, JSON.stringify(vipSettings));
+  return true;
+}
+async function vipLaunchNow(){
+  if(usingSheets()){
+    try{
+      const res = await fetch(CONFIG.sheetsApiUrl, {
+        method:"POST", headers:{ "Content-Type":"text/plain" },
+        body: JSON.stringify({ action:"vipLaunch" })
+      });
+      const data = await res.json();
+      if(data.ok && data.settings) vipSettings = data.settings;
+      return !!data.ok;
+    }catch(e){ return false; }
+  }
+  vipSettings.vipEnabled = true;
+  vipSettings.vipLaunchAt = new Date().toISOString();
+  localStorage.setItem(VIP_STORAGE_KEY, JSON.stringify(vipSettings));
+  return true;
+}
+async function vipSignupSubmit(name, email){
+  if(usingSheets()){
+    try{
+      const res = await fetch(CONFIG.sheetsApiUrl, {
+        method:"POST", headers:{ "Content-Type":"text/plain" },
+        body: JSON.stringify({ action:"vipSignup", name, email })
+      });
+      const data = await res.json();
+      if(data.ok && data.vip) vipSignups = data.vip;
+      return data;
+    }catch(e){ return { ok:false, reason:"network" }; }
+  }
+  const clean = (email||"").trim().toLowerCase();
+  if(!clean || clean.indexOf("@")===-1) return { ok:false, reason:"invalid_email" };
+  if(vipSignups.some(v=>(v.email||"").trim().toLowerCase()===clean)) return { ok:false, reason:"duplicate" };
+  if(vipSignups.length >= CONFIG.vip.maxSignups) return { ok:false, reason:"full" };
+  vipSignups.push({ id:uid(), name:(name||"").trim(), email:clean, createdAt:new Date().toISOString() });
+  localStorage.setItem(VIP_SIGNUPS_KEY, JSON.stringify(vipSignups));
+  return { ok:true, vip: vipSignups };
 }
 
 async function saveAppointments(list){
@@ -1515,6 +1758,160 @@ function renderPackages(){
     btn.addEventListener("click", ()=> openBooking(btn.dataset.pkg));
   });
   initReveal();
+  renderVipCard();
+}
+
+/* =========================================================
+   RENDER: CARD VIP
+   3 estados: cadastro aberto / contagem regressiva de 24h / encerrado.
+   O card só aparece se o admin ligou o botão VIP.
+========================================================= */
+let vipVerifiedEmail = null;
+
+function renderVipCard(){
+  const slot = document.getElementById("vip-card-slot");
+  if(vipCountdownTimer){ clearInterval(vipCountdownTimer); vipCountdownTimer = null; }
+
+  if(!vipSettings.vipEnabled){ slot.innerHTML = ""; return; }
+
+  const benefitsHtml = `
+    <ul class="vip-benefits">
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Acesso 1 dia antes do lançamento oficial</li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Escolha qualquer data disponível, sem lotes</li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${CONFIG.vip.discountPercent}% de desconto no valor do 1º lote</li>
+      <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${CONFIG.vip.freePhotos} fotos reveladas de presente</li>
+    </ul>`;
+
+  if(vipBenefitsActive()){
+    const ticketsHtml = CONFIG.packages.map(p=>`
+      <div class="vip-ticket">
+        <div class="vt-name">${p.name}</div>
+        <div class="vt-prices"><span class="vt-old">${vipBasePrice(p)}</span><span class="vt-new">${vipDiscountedPrice(p)}</span></div>
+        <div class="vt-tag">Qualquer data · sem lote</div>
+        <button class="vip-btn" data-vip-pkg="${p.id}" disabled>Confirme seu e-mail acima</button>
+      </div>`).join("");
+
+    slot.innerHTML = `
+      <div class="vip-card reveal">
+        <span class="vip-ribbon">Bilhete VIP</span>
+        <span class="vip-tag">✦ Lista VIP — acesso liberado</span>
+        <h3>Seus benefícios estão ativos agora</h3>
+        <p class="vip-desc">Você tem ${CONFIG.vip.benefitsWindowHours}h para agendar com prioridade, qualquer data, com ${CONFIG.vip.discountPercent}% de desconto. Depois desse prazo, o benefício expira.</p>
+        ${benefitsHtml}
+        <div class="vip-countdown" id="vip-countdown"></div>
+        <div class="vip-verify">
+          <input type="email" id="vip-verify-email" placeholder="Confirme o e-mail cadastrado na lista VIP" value="${vipVerifiedEmail && vipEmailIsMember(vipVerifiedEmail) ? vipVerifiedEmail : ""}">
+          <div class="vv-msg" id="vip-verify-msg"></div>
+        </div>
+        <div class="vip-stub">
+          <div class="vip-tickets" id="vip-tickets">${ticketsHtml}</div>
+        </div>
+      </div>`;
+    startVipCountdown();
+
+    const emailInput = document.getElementById("vip-verify-email");
+    const msg = document.getElementById("vip-verify-msg");
+    function refreshVerifyState(){
+      const val = emailInput.value.trim();
+      const ok = val && vipEmailIsMember(val);
+      vipVerifiedEmail = ok ? val : null;
+      msg.textContent = !val ? "" : (ok ? "E-mail confirmado — escolha seu pacote abaixo." : "E-mail não encontrado na lista VIP.");
+      msg.className = "vv-msg " + (val ? (ok ? "ok" : "err") : "");
+      document.querySelectorAll("#vip-tickets [data-vip-pkg]").forEach(btn=>{
+        btn.disabled = !ok;
+        btn.textContent = ok ? "Agendar com desconto VIP" : "Confirme seu e-mail acima";
+      });
+    }
+    emailInput.addEventListener("input", refreshVerifyState);
+    refreshVerifyState();
+    document.querySelectorAll("#vip-tickets [data-vip-pkg]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        if(btn.disabled) return;
+        openVipBooking(btn.dataset.vipPkg);
+      });
+    });
+    return;
+  }
+
+  if(vipLaunched() && !vipBenefitsActive()){
+    slot.innerHTML = `
+      <div class="vip-card reveal">
+        <span class="vip-ribbon">Bilhete VIP</span>
+        <span class="vip-tag">✦ Lista VIP</span>
+        <h3>O acesso antecipado já foi encerrado</h3>
+        <p class="vip-desc">O prazo de ${CONFIG.vip.benefitsWindowHours}h para usar os benefícios da lista VIP terminou. Fique de olho nas próximas novidades.</p>
+      </div>`;
+    return;
+  }
+
+  if(vipSignupOpen()){
+    const vagas = CONFIG.vip.maxSignups - vipSignups.length;
+    slot.innerHTML = `
+      <div class="vip-card reveal">
+        <span class="vip-ribbon">Bilhete VIP</span>
+        <span class="vip-tag">✦ Lista VIP — vagas limitadas</span>
+        <h3>Entre na lista VIP de Natal</h3>
+        <p class="vip-desc">Cadastre seu e-mail e tenha acesso antecipado ao lançamento, com benefícios exclusivos válidos por ${CONFIG.vip.benefitsWindowHours}h.</p>
+        ${benefitsHtml}
+        <form class="vip-form" id="vip-signup-form">
+          <input type="text" id="vip-name" placeholder="Seu nome" required>
+          <input type="email" id="vip-email" placeholder="Seu melhor e-mail" required>
+          <button type="submit" class="vip-btn">Quero ser VIP</button>
+        </form>
+        <p class="vip-count">${vagas} de ${CONFIG.vip.maxSignups} vagas restantes</p>
+      </div>`;
+    const form = document.getElementById("vip-signup-form");
+    form.addEventListener("submit", async (e)=>{
+      e.preventDefault();
+      const btn = form.querySelector(".vip-btn");
+      const name = document.getElementById("vip-name").value.trim();
+      const email = document.getElementById("vip-email").value.trim();
+      if(!name || !email){ showToast("Preencha nome e e-mail.", "error"); return; }
+      btn.disabled = true; btn.textContent = "Enviando…";
+      const res = await vipSignupSubmit(name, email);
+      btn.disabled = false; btn.textContent = "Quero ser VIP";
+      if(res.ok){
+        showToast("Cadastro VIP confirmado! Fique de olho no seu e-mail.", "success");
+        renderVipCard();
+      }else if(res.reason==="duplicate"){
+        showToast("Esse e-mail já está na lista VIP.", "error");
+      }else if(res.reason==="full"){
+        showToast("As vagas da lista VIP acabaram.", "error");
+        renderVipCard();
+      }else{
+        showToast("Não foi possível concluir o cadastro. Tente novamente.", "error");
+      }
+    });
+    return;
+  }
+
+  // vipEnabled mas cheio e ainda não lançado
+  slot.innerHTML = `
+    <div class="vip-card reveal">
+      <span class="vip-ribbon">Bilhete VIP</span>
+      <span class="vip-tag">✦ Lista VIP</span>
+      <h3>As vagas da lista VIP se esgotaram</h3>
+      <p class="vip-desc">Em breve novidades para todos — fique de olho nas nossas redes.</p>
+    </div>`;
+}
+
+function startVipCountdown(){
+  const box = document.getElementById("vip-countdown");
+  if(!box) return;
+  function tick(){
+    const end = vipWindowEndMs();
+    const diff = end - Date.now();
+    if(diff<=0){ clearInterval(vipCountdownTimer); vipCountdownTimer=null; renderVipCard(); return; }
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    box.innerHTML = `
+      <div class="cd-box"><div class="cd-num">${pad(h)}</div><div class="cd-lbl">Horas</div></div>
+      <div class="cd-box"><div class="cd-num">${pad(m)}</div><div class="cd-lbl">Min</div></div>
+      <div class="cd-box"><div class="cd-num">${pad(s)}</div><div class="cd-lbl">Seg</div></div>`;
+  }
+  tick();
+  vipCountdownTimer = setInterval(tick, 1000);
 }
 
 /* =========================================================
@@ -1578,11 +1975,38 @@ function renderFaq(){
 const bookBackdrop = document.getElementById("book-backdrop");
 
 function openBooking(pkgId){
-  booking = { packageId: pkgId||null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"" };
+  booking = { packageId: pkgId||null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false };
   currentStep = 1;
   calCursor = new Date();
+  document.getElementById("vip-step1-note").innerHTML = "";
   renderPkgChoices();
   renderLotChoices();
+  renderStep();
+  bookBackdrop.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+// Agendamento VIP: aberto direto pelo "bilhete" do card, já com o pacote
+// escolhido e o e-mail confirmado contra a lista — sem checkbox, sem lotes,
+// qualquer data disponível, sempre no valor do 1º lote com desconto.
+function openVipBooking(pkgId){
+  if(!vipBenefitsActive() || !vipVerifiedEmail || !vipEmailIsMember(vipVerifiedEmail)){
+    showToast("Confirme seu e-mail da lista VIP para continuar.", "error");
+    return;
+  }
+  const p = pkgById(pkgId);
+  booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email: vipVerifiedEmail, notes:"", vip:true };
+  currentStep = 1;
+  calCursor = new Date();
+  document.getElementById("pkg-choices").innerHTML = "";
+  document.getElementById("lot-choices").innerHTML = "";
+  document.getElementById("vip-step1-note").innerHTML = `
+    <div class="vip-toggle-box active">
+      <div style="flex:1;">
+        <div class="vtb-text">✦ Agendamento <b>VIP</b> — ${p ? p.name : ""} por <b>${p ? vipDiscountedPrice(p) : ""}</b> (de ${p ? vipBasePrice(p) : ""}), qualquer data disponível, sem lotes. + ${CONFIG.vip.freePhotos} fotos reveladas de presente.</div>
+      </div>
+    </div>`;
+  document.getElementById("s1-next").disabled = false;
   renderStep();
   bookBackdrop.classList.add("open");
   document.body.style.overflow = "hidden";
@@ -1662,9 +2086,9 @@ function renderStep(){
 
 document.getElementById("s1-next").addEventListener("click", ()=>{
   if(!booking.packageId){ showToast("Selecione um pacote para continuar.", "error"); return; }
-  if(!booking.lotLabel){ showToast("Selecione o lote para continuar.", "error"); return; }
+  if(!booking.vip && !booking.lotLabel){ showToast("Selecione o lote para continuar.", "error"); return; }
   const lot = getBookingLot();
-  calCursor = lot ? new Date(lot.start+"T12:00:00") : new Date();
+  calCursor = (lot && !booking.vip) ? new Date(lot.start+"T12:00:00") : new Date();
   renderCalendar();
   goToStep(2);
 });
@@ -1697,7 +2121,7 @@ function renderCalendar(){
     const dateObj = new Date(year, month, d);
     const iso = toISODate(dateObj);
     const isPast = dateObj < today;
-    const isOutOfLot = lot ? (iso < lot.start || iso > lot.end) : false;
+    const isOutOfLot = (lot && !booking.vip) ? (iso < lot.start || iso > lot.end) : false;
     const isDisabled = isPast || isOutOfLot;
     const isToday = toISODate(today) === iso;
     const isSelected = booking.date === iso;
@@ -1718,8 +2142,8 @@ function renderCalendar(){
   const prevBtn = document.getElementById("cal-prev");
   const nextBtn = document.getElementById("cal-next");
   const isCurrentMonth = year===today.getFullYear() && month===today.getMonth();
-  const lotStart = lot ? new Date(lot.start+"T12:00:00") : null;
-  const lotEnd = lot ? new Date(lot.end+"T12:00:00") : null;
+  const lotStart = (lot && !booking.vip) ? new Date(lot.start+"T12:00:00") : null;
+  const lotEnd = (lot && !booking.vip) ? new Date(lot.end+"T12:00:00") : null;
   prevBtn.disabled = isCurrentMonth || (lotStart && (year<lotStart.getFullYear() || (year===lotStart.getFullYear() && month<=lotStart.getMonth())));
   nextBtn.disabled = !!(lotEnd && (year>lotEnd.getFullYear() || (year===lotEnd.getFullYear() && month>=lotEnd.getMonth())));
 }
@@ -1824,6 +2248,11 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
 
   const p = pkgById(booking.packageId);
   const lot = getBookingLot();
+  // Booking VIP verificado: sem lotes, qualquer data, valor do 1º lote com
+  // desconto aplicado — mais fotos reveladas de presente, registrado nas
+  // observações do pedido.
+  const isVip = !!booking.vip && vipBenefitsActive() && vipEmailIsMember(booking.email);
+  const vipNote = isVip ? ("[VIP] " + CONFIG.vip.discountPercent + "% off + " + CONFIG.vip.freePhotos + " fotos reveladas de presente.") : "";
 
   // A checagem de conflito de horário E de vagas do lote agora acontece dentro
   // do próprio backend (createAppointmentSafely → Apps Script, protegido por
@@ -1833,12 +2262,12 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
     id: uid(),
     name: booking.name, phone: booking.phone, email: booking.email,
     package: p ? p.name : "—",
-    lot: lot ? lot.label : null,
-    lotPrice: lot ? lot.price : (p ? p.price : null),
-    lotVagas: lot ? lot.vagas : null,
+    lot: isVip ? "VIP" : (lot ? lot.label : null),
+    lotPrice: isVip ? (p ? vipDiscountedPrice(p) : null) : (lot ? lot.price : (p ? p.price : null)),
+    lotVagas: isVip ? null : (lot ? lot.vagas : null),
     date: booking.date, time: booking.time,
     status: "pendente",
-    notes: booking.notes || "",
+    notes: [booking.notes || "", vipNote].filter(Boolean).join(" "),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -1871,8 +2300,10 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
     <div class="summary-row"><span class="lbl">Nome</span><span class="val">${escapeHtml(appt.name)}</span></div>
   `;
 
-  // Avisa automaticamente o WhatsApp do estúdio com os dados do pedido —
-  // abre e já manda direto pra conversa, sem precisar de outro clique aqui no site.
+  // Avisa automaticamente o WhatsApp do estúdio com os dados do pedido.
+  // Usa redirecionamento direto da própria aba (igual clicar num link normal,
+  // como a bolinha verde), em vez de window.open — assim nunca cai no
+  // bloqueio de pop-up do navegador/celular.
   const waText = [
     "Novo pedido — Taise Foto",
     "Pacote: " + appt.package,
@@ -1884,7 +2315,6 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
     appt.notes ? ("Observações: " + appt.notes) : ""
   ].filter(Boolean).join("\n");
   const waLink = "https://wa.me/" + CONFIG.contact.whatsapp + "?text=" + encodeURIComponent(waText);
-  window.open(waLink, "_blank");
 
   btn.disabled = false; btn.classList.remove("loading");
   btn.textContent = "Confirmar agendamento";
@@ -1892,6 +2322,11 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   renderStep();
   renderPackages();
   refreshAdminDataIfOpen();
+
+  // Pequeno atraso só pra dar tempo da tela "Agendamento solicitado!" aparecer
+  // antes de sair pro WhatsApp — não afeta o bloqueio de pop-up, pois aqui é
+  // navegação direta da aba, não abertura de janela nova.
+  setTimeout(()=>{ window.location.href = waLink; }, 900);
 });
 
 document.getElementById("success-close").addEventListener("click", closeBooking);
@@ -1963,7 +2398,59 @@ async function refreshAdminData(){
   renderStats();
   renderTable();
   renderAgenda();
+  renderVipAdmin();
 }
+
+/* ---- Painel VIP (admin) ---- */
+function renderVipAdmin(){
+  const toggle = document.getElementById("vip-enable-toggle");
+  const lbl = document.getElementById("vip-switch-lbl");
+  toggle.checked = !!vipSettings.vipEnabled;
+  lbl.textContent = vipSettings.vipEnabled ? "Card VIP ligado" : "Card VIP desligado";
+
+  const launchBtn = document.getElementById("vip-launch-btn");
+  const status = document.getElementById("vip-launch-status");
+  if(vipLaunched()){
+    const end = vipWindowEndMs();
+    status.textContent = vipBenefitsActive()
+      ? "Benefícios ativos até " + new Date(end).toLocaleString("pt-BR")
+      : "Benefícios encerrados em " + new Date(end).toLocaleString("pt-BR");
+    launchBtn.disabled = true;
+    launchBtn.textContent = "Acesso já lançado";
+  } else {
+    status.textContent = "Ainda não lançado.";
+    launchBtn.disabled = false;
+    launchBtn.textContent = "Lançar acesso VIP (24h)";
+  }
+
+  const list = document.getElementById("vip-signups-list");
+  if(!vipSignups.length){
+    list.innerHTML = `<p style="font-size:12.5px;color:rgba(27,23,18,.5);">Nenhum cadastro VIP ainda.</p>`;
+  } else {
+    list.innerHTML = `<p style="font-size:12.5px;color:rgba(27,23,18,.55);margin-bottom:8px;">${vipSignups.length} de ${CONFIG.vip.maxSignups} cadastrados</p>` +
+      vipSignups.map(v=>`<div class="vip-signup-row"><span>${escapeHtml(v.name||"—")}</span><span class="vsr-email">${escapeHtml(v.email||"")}</span></div>`).join("");
+  }
+}
+
+document.getElementById("vip-enable-toggle").addEventListener("change", async (e)=>{
+  const checked = e.currentTarget.checked;
+  e.currentTarget.disabled = true;
+  const ok = await vipSetEnabled(checked);
+  e.currentTarget.disabled = false;
+  if(!ok){ e.currentTarget.checked = !checked; showToast("Não foi possível atualizar o card VIP.", "error"); return; }
+  renderVipAdmin();
+  renderVipCard();
+});
+
+document.getElementById("vip-launch-btn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("vip-launch-btn");
+  btn.disabled = true; btn.textContent = "Lançando…";
+  const ok = await vipLaunchNow();
+  if(!ok){ showToast("Não foi possível lançar o acesso VIP.", "error"); btn.disabled=false; btn.textContent="Lançar acesso VIP (24h)"; return; }
+  showToast("Acesso VIP lançado! Benefícios válidos por " + CONFIG.vip.benefitsWindowHours + "h.", "success");
+  renderVipAdmin();
+  renderVipCard();
+});
 
 function populatePackageFilter(){
   const sel = document.getElementById("filter-package");
