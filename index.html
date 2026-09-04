@@ -575,7 +575,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .agenda-slot.pendente{background:rgba(199,150,46,.06);border-color:var(--amarelo-status);}
 .agenda-slot.confirmado{background:rgba(46,125,79,.06);border-color:var(--verde-status);}
 .agenda-slot.cancelado{background:rgba(162,58,58,.06);border-color:var(--vermelho-status);opacity:.6;}
-.agenda-slot .a-time{font-weight:700;font-size:13px;width:52px;flex:0 0 auto;}
+.agenda-slot .a-time{font-weight:700;font-size:13px;width:52px;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .agenda-slot .a-info{flex:1;font-size:13.5px;}
 .agenda-slot .a-info b{display:block;}
 .agenda-slot .a-info span{color:rgba(27,23,18,.5);font-size:12px;}
@@ -596,6 +596,15 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .confirm-dialog .c-actions{display:flex;gap:10px;margin-top:22px;}
 .confirm-dialog .c-actions button{flex:1;justify-content:center;}
 .toast-wrap{position:fixed;bottom:26px;right:26px;z-index:110;display:flex;flex-direction:column;gap:10px;}
+.whatsapp-fab{
+  position:fixed;left:22px;bottom:22px;z-index:90;width:56px;height:56px;border-radius:50%;
+  background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 26px -8px rgba(0,0,0,.45);transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  animation:fabPulse 2.6s ease-in-out infinite;
+}
+.whatsapp-fab:hover{transform:scale(1.08);}
+@keyframes fabPulse{0%,100%{box-shadow:0 12px 26px -8px rgba(0,0,0,.45),0 0 0 0 rgba(37,211,102,.5);}50%{box-shadow:0 12px 26px -8px rgba(0,0,0,.45),0 0 0 10px rgba(37,211,102,0);}}
+@media(max-width:640px){.whatsapp-fab{left:16px;bottom:16px;width:50px;height:50px;}}
 .toast{
   background:var(--verde-noturno);color:var(--marfim);padding:14px 20px;border-radius:8px;font-size:13.5px;
   box-shadow:0 12px 30px rgba(0,0,0,.25);display:flex;align-items:center;gap:10px;min-width:240px;
@@ -632,9 +641,26 @@ table.appt-table{width:100%;border-collapse:collapse;}
   .foot-grid{grid-template-columns:1fr;gap:34px;}
   .foot-bottom{flex-direction:column;align-items:flex-start;}
   .stat-grid{grid-template-columns:1fr 1fr;}
+  .admin-topbar .wrap{flex-wrap:wrap;gap:10px;}
+  .admin-actions{width:100%;justify-content:space-between;}
   .admin-panel .ap-head{flex-direction:column;align-items:flex-start;}
+  .admin-panel .ap-head > div{width:100%;}
   .search-input{width:100%;}
-  .appt-table{display:block;overflow-x:auto;white-space:nowrap;}
+  .filter-select{flex:1;min-width:0;}
+  .stat-grid{grid-template-columns:1fr;}
+  /* Tabela de pedidos vira lista de cartões no celular, em vez de tabela com scroll lateral */
+  .appt-table thead{display:none;}
+  .appt-table, .appt-table tbody, .appt-table tr{display:block;width:100%;white-space:normal;}
+  .appt-table{border:none;}
+  .appt-table tr{background:#fff;border:1px solid rgba(27,23,18,.08);border-radius:8px;margin-bottom:12px;overflow:hidden;}
+  .appt-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid rgba(27,23,18,.06);text-align:right;}
+  .appt-table tr td:last-child{border-bottom:none;}
+  .appt-table td::before{content:attr(data-label);font-size:10.5px;font-weight:700;color:rgba(27,23,18,.4);text-align:left;text-transform:uppercase;letter-spacing:.3px;flex:0 0 auto;}
+  .appt-table td[data-label="Cliente"]{text-align:left;}
+  .appt-table td[data-label="Cliente"]::before{display:none;}
+  .appt-table .row-actions{justify-content:flex-end;}
+  .agenda-slot{flex-wrap:wrap;row-gap:6px;}
+  .agenda-slot .status-pill{margin-left:auto;}
   .book-modal{max-height:94vh;}
   .time-grid{grid-template-columns:repeat(2,1fr);}
   .book-footer{flex-direction:column-reverse;}
@@ -650,6 +676,10 @@ table.appt-table{width:100%;border-collapse:collapse;}
 
 <div id="snow-layer"></div>
 <div class="toast-wrap" id="toast-wrap"></div>
+
+<a href="#" id="whatsapp-fab" class="whatsapp-fab" aria-label="Fale conosco no WhatsApp" target="_blank" rel="noopener">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M17.5 14.4c-.3-.15-1.75-.86-2-.96-.28-.1-.48-.15-.68.15-.2.3-.78.96-.95 1.15-.18.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.9-.8-1.5-1.78-1.68-2.08-.17-.3-.02-.46.13-.6.14-.14.3-.35.45-.53.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.68-1.63-.93-2.24-.24-.58-.5-.5-.68-.51h-.58c-.2 0-.53.08-.8.38-.28.3-1.05 1.02-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.24 5.15 4.54.72.3 1.28.49 1.72.63.72.23 1.38.2 1.9.12.58-.09 1.75-.72 2-1.4.24-.7.24-1.28.17-1.4-.07-.13-.27-.2-.57-.35z" fill="currentColor"/><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.33A9.94 9.94 0 0 0 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2Zm0 18.18c-1.7 0-3.28-.5-4.6-1.34l-.33-.2-3 .78.8-2.93-.21-.34A8.17 8.17 0 0 1 3.82 12c0-4.52 3.67-8.18 8.18-8.18 4.52 0 8.18 3.66 8.18 8.18 0 4.51-3.66 8.18-8.18 8.18Z" fill="currentColor"/></svg>
+</a>
 
 <!-- ================= NAVBAR ================= -->
 <header class="navbar" id="navbar">
@@ -919,8 +949,8 @@ table.appt-table{width:100%;border-collapse:collapse;}
         </div>
         <div class="field" id="f-phone">
           <label for="in-phone">Telefone / WhatsApp</label>
-          <input type="tel" id="in-phone" placeholder="(11) 90000-0000">
-          <span class="err">Informe um telefone válido.</span>
+          <input type="tel" id="in-phone" placeholder="+55 (11) 90000-0000" inputmode="numeric">
+          <span class="err">Informe o telefone completo, com DDD (ex.: +55 11 90000-0000).</span>
         </div>
         <div class="field" id="f-email">
           <label for="in-email">E-mail</label>
@@ -1126,7 +1156,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
 ========================================================= */
 const CONFIG = {
   siteName: "Taise Foto",
-  contact: { phone: "(11) 90000-0000", email: "contato@taisefoto.com", whatsapp: "5511900000000" },
+  contact: { phone: "(11) 96038-2670", email: "contato@taisefoto.com", whatsapp: "5511960382670" },
   admin: { user: "Taisefoto", pass: "110307" }, // ⚠️ apenas configuração inicial — ver nota de segurança no fim do arquivo
   // Cole aqui a URL do seu Web App do Google Apps Script (Implantar > Nova implantação > App da Web)
   // para os agendamentos passarem a ser salvos numa planilha do Google Sheets em vez do navegador.
@@ -1143,39 +1173,39 @@ const CONFIG = {
       id: "familia",
       name: "Pacote Família",
       desc: "O essencial para registrar o Natal em família com leveza.",
-      price: "R$ XXX,XX",
-      benefits: ["Sessão de 30 minutos", "1 combinação de roupa", "15 fotos tratadas", "Galeria digital privada"],
+      price: "R$ 380,00",
+      benefits: ["20 fotos digitais", "35 minutos de sessão", "Sem troca de look", "Criança, pais e irmãos", "1 cenário"],
       featured: false,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ XXX,XX", vagas: 20 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ XXX,XX", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ XXX,XX", vagas: null }
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 20 },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 420,00", vagas: 40 },
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 490,00", vagas: null }
       ]
     },
     {
       id: "premium",
-      name: "Pacote Premium",
+      name: "Natal Premium",
       desc: "Nosso pacote mais escolhido, com mais tempo e mais fotos.",
-      price: "R$ XXX,XX",
-      benefits: ["Sessão de 45 minutos", "2 combinações de roupa", "30 fotos tratadas", "Galeria digital privada", "1 foto impressa em moldura"],
+      price: "R$ 650,00",
+      benefits: ["Todas as melhores fotos", "45 minutos de sessão", "1 troca de look", "1 cenário", "1 clipe emocionante da sessão", "Avós inclusos"],
       featured: true,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ XXX,XX", vagas: 20 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ XXX,XX", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ XXX,XX", vagas: null }
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 650,00", vagas: 20 },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 700,00", vagas: 40 },
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 750,00", vagas: null }
       ]
     },
     {
       id: "luxo",
-      name: "Pacote Luxo",
-      desc: "A experiência completa, com tempo estendido e álbum impresso.",
-      price: "R$ XXX,XX",
-      benefits: ["Sessão de 60 minutos", "3 combinações de roupa", "Todas as fotos tratadas", "Álbum impresso premium", "Prioridade de horário"],
+      name: "Natal Luxo",
+      desc: "A experiência de Natal completa, com tempo estendido e recordações impressas.",
+      price: "R$ 800,00",
+      benefits: ["Experiência de Natal completa", "Todas as melhores fotos", "1h de sessão", "1 troca de look", "2 cenários (Natal e Ano Novo)", "1 vídeo emocionante da sessão", "1 box acrílico com 50 fotos reveladas 10x15"],
       featured: false,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ XXX,XX", vagas: 20 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ XXX,XX", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ XXX,XX", vagas: null }
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 800,00", vagas: 20 },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 850,00", vagas: 40 },
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 900,00", vagas: null }
       ]
     }
   ],
@@ -1345,7 +1375,9 @@ async function createAppointmentSafely(appt){
         body: JSON.stringify({ action:"create", appointment: appt })
       });
       const data = await res.json();
-      if(data.ok) await loadAppointments();
+      // Atualiza o cache local na hora, sem precisar de outra chamada de rede
+      // pra planilha — é isso que deixa a confirmação rápida.
+      if(data.ok) appointmentsCache = appointmentsCache.concat([appt]);
       return data;
     }catch(e){
       return { ok:false, reason:"network" };
@@ -1368,7 +1400,10 @@ async function updateAppointmentStatus(id, status){
         body: JSON.stringify({ action:"updateStatus", id, status })
       });
       const data = await res.json();
-      if(data.ok) await loadAppointments();
+      if(data.ok){
+        const idx = appointmentsCache.findIndex(a=>a.id===id);
+        if(idx>-1){ appointmentsCache[idx].status = status; appointmentsCache[idx].updatedAt = new Date().toISOString(); }
+      }
       return !!data.ok;
     }catch(e){
       return false;
@@ -1726,6 +1761,23 @@ function validateField(id, valid){
   el.classList.toggle("invalid", !valid);
   return valid;
 }
+
+// Máscara do telefone: força sempre o formato +55 (DDD) 90000-0000 enquanto digita.
+const phoneInput = document.getElementById("in-phone");
+phoneInput.addEventListener("input", ()=>{
+  let digits = phoneInput.value.replace(/\D/g,"");
+  if(digits.startsWith("0")) digits = digits.slice(1);
+  if(!digits.startsWith("55")) digits = "55"+digits;
+  digits = digits.slice(0,13); // 55 + DDD (2) + até 9 dígitos
+  const ddd = digits.slice(2,4);
+  const rest = digits.slice(4);
+  let out = "+55";
+  if(ddd) out += " ("+ddd+(ddd.length===2 ? ")" : "");
+  if(rest) out += " "+(rest.length>4 ? rest.slice(0,-4)+"-"+rest.slice(-4) : rest);
+  phoneInput.value = out;
+});
+phoneInput.addEventListener("focus", ()=>{ if(!phoneInput.value) phoneInput.value = "+55 "; });
+
 document.getElementById("s4-next").addEventListener("click", ()=>{
   const name = document.getElementById("in-name").value.trim();
   const phone = document.getElementById("in-phone").value.trim();
@@ -1733,7 +1785,8 @@ document.getElementById("s4-next").addEventListener("click", ()=>{
   const notes = document.getElementById("in-notes").value.trim();
 
   const nameOk = name.length >= 3;
-  const phoneOk = phone.replace(/\D/g,"").length >= 10;
+  const phoneDigits = phone.replace(/\D/g,"");
+  const phoneOk = phoneDigits.startsWith("55") && phoneDigits.length>=12 && phoneDigits.length<=13;
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const ok = [
@@ -1772,26 +1825,17 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   const p = pkgById(booking.packageId);
   const lot = getBookingLot();
 
-  // revalida vagas do lote no último instante, evitando corrida entre 2 pessoas
-  if(p && lot){
-    await loadAppointments();
-    const remaining = getLotRemaining(p, lot);
-    if(remaining!=null && remaining<=0){
-      showToast("As vagas deste lote acabaram de esgotar. Escolha outro pacote/lote.", "error");
-      btn.disabled = false; btn.classList.remove("loading");
-      btn.textContent = "Confirmar agendamento";
-      renderPkgChoices();
-      goToStep(1);
-      return;
-    }
-  }
-
+  // A checagem de conflito de horário E de vagas do lote agora acontece dentro
+  // do próprio backend (createAppointmentSafely → Apps Script, protegido por
+  // lock), numa única chamada — evita a rodada extra de rede que deixava o
+  // "Confirmar agendamento" lento.
   const appt = {
     id: uid(),
     name: booking.name, phone: booking.phone, email: booking.email,
     package: p ? p.name : "—",
     lot: lot ? lot.label : null,
     lotPrice: lot ? lot.price : (p ? p.price : null),
+    lotVagas: lot ? lot.vagas : null,
     date: booking.date, time: booking.time,
     status: "pendente",
     notes: booking.notes || "",
@@ -1802,6 +1846,14 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   const result = await createAppointmentSafely(appt);
 
   if(!result.ok){
+    if(result.reason==="sold_out"){
+      showToast("As vagas deste lote acabaram de esgotar. Escolha outro pacote/lote.", "error");
+      btn.disabled = false; btn.classList.remove("loading");
+      btn.textContent = "Confirmar agendamento";
+      renderPkgChoices();
+      goToStep(1);
+      return;
+    }
     document.getElementById("conflict-banner").classList.add("show");
     btn.disabled = false; btn.classList.remove("loading");
     btn.textContent = "Confirmar agendamento";
@@ -1818,6 +1870,22 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
     <div class="summary-row"><span class="lbl">Horário</span><span class="val">${appt.time}</span></div>
     <div class="summary-row"><span class="lbl">Nome</span><span class="val">${escapeHtml(appt.name)}</span></div>
   `;
+
+  // Avisa automaticamente o WhatsApp do estúdio com os dados do pedido —
+  // abre e já manda direto pra conversa, sem precisar de outro clique aqui no site.
+  const waText = [
+    "Novo pedido — Taise Foto",
+    "Pacote: " + appt.package,
+    appt.lot ? ("Lote: " + appt.lot + " (" + appt.lotPrice + ")") : "",
+    "Data: " + fmtDateBR(appt.date),
+    "Horário: " + appt.time,
+    "Nome: " + appt.name,
+    "Telefone: " + appt.phone,
+    appt.notes ? ("Observações: " + appt.notes) : ""
+  ].filter(Boolean).join("\n");
+  const waLink = "https://wa.me/" + CONFIG.contact.whatsapp + "?text=" + encodeURIComponent(waText);
+  window.open(waLink, "_blank");
+
   btn.disabled = false; btn.classList.remove("loading");
   btn.textContent = "Confirmar agendamento";
   currentStep = "success";
@@ -1947,12 +2015,12 @@ function renderTable(){
 
   tbody.innerHTML = list.map(a=>`
     <tr>
-      <td><b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div></td>
-      <td>${escapeHtml(a.package)}${a.lot?`<div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.lot)}</div>`:""}</td>
-      <td>${fmtDateBR(a.date)}</td>
-      <td>${a.time}</td>
-      <td><span class="status-pill ${a.status}"><span class="dot"></span>${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span></td>
-      <td>
+      <td data-label="Cliente"><b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div></td>
+      <td data-label="Pacote">${escapeHtml(a.package)}${a.lot?`<div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.lot)}</div>`:""}</td>
+      <td data-label="Data">${fmtDateBR(a.date)}</td>
+      <td data-label="Horário">${a.time}</td>
+      <td data-label="Status"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span></td>
+      <td data-label="Ações">
         <div class="row-actions">
           <button class="a-conf" title="Confirmar" data-id="${a.id}" ${a.status!=="pendente"?"disabled style='opacity:.3'":""}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1963,6 +2031,9 @@ function renderTable(){
           <button class="a-view" title="Ver detalhes" data-id="${a.id}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
+          <button class="a-phone" title="Chamar no WhatsApp" data-phone="${escapeHtml(a.phone)}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
       </td>
     </tr>
@@ -1971,6 +2042,14 @@ function renderTable(){
   tbody.querySelectorAll(".a-conf:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> confirmAppointment(b.dataset.id)));
   tbody.querySelectorAll(".a-canc:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> openCancelConfirm(b.dataset.id)));
   tbody.querySelectorAll(".a-view").forEach(b=> b.addEventListener("click", ()=> openDetail(b.dataset.id)));
+  tbody.querySelectorAll(".a-phone").forEach(b=> b.addEventListener("click", ()=> openWhatsappTo(b.dataset.phone)));
+}
+
+// Abre o WhatsApp numa conversa com o telefone do cliente (usado pelo botão de telefone do admin).
+function openWhatsappTo(phone){
+  const digits = (phone||"").replace(/\D/g,"");
+  if(!digits){ showToast("Esse pedido não tem telefone cadastrado.", "error"); return; }
+  window.open("https://wa.me/"+digits, "_blank");
 }
 
 // Exporta os pedidos filtrados como CSV (abre direto no Excel/Google Sheets).
@@ -2048,7 +2127,9 @@ function openDetail(id){
       <button class="btn-solid btn-success" id="detail-confirm" ${a.status!=="pendente"?"disabled style='opacity:.4'":""}>Confirmar</button>
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
     </div>
+    <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
   `;
+  document.getElementById("detail-whatsapp").addEventListener("click", ()=> openWhatsappTo(a.phone));
   document.getElementById("detail-backdrop").classList.add("open");
   const cb = document.getElementById("detail-confirm");
   const xb = document.getElementById("detail-cancel");
@@ -2115,7 +2196,18 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   renderFaq();
   initSnow();
   initReveal();
+  initWhatsappLinks();
 });
+
+// Aponta a bolinha flutuante e o ícone do rodapé para o WhatsApp definido em CONFIG.contact.whatsapp.
+function initWhatsappLinks(){
+  const link = "https://wa.me/"+CONFIG.contact.whatsapp;
+  document.querySelectorAll('#whatsapp-fab, a[aria-label="WhatsApp"]').forEach(a=>{
+    a.href = link;
+    a.target = "_blank";
+    a.rel = "noopener";
+  });
+}
 </script>
 </body>
 </html>
