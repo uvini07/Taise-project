@@ -536,6 +536,20 @@ footer .wrap{position:relative;z-index:1;}
 .vip-verify .vv-msg{font-size:12px;margin-top:6px;min-height:16px;}
 .vip-verify .vv-msg.ok{color:#8fbf7a;}
 .vip-verify .vv-msg.err{color:#e08a6b;}
+/* Portão VIP: o bilhete começa "fechado", só com o campo de validação.
+   Ao validar, o bilhete cresce e os pacotes aparecem de dentro dele. */
+.vip-gate{position:relative;z-index:1;overflow:hidden;max-height:260px;opacity:1;
+  transition:max-height .5s ease, opacity .32s ease, margin .5s ease;}
+.vip-gate.hide{max-height:0;opacity:0;margin:0;}
+.vip-gate .vg-title{font-size:13.5px;color:rgba(250,246,238,.82);margin:0 0 12px;}
+.vip-gate .vv-msg{font-size:12.5px;margin-top:8px;min-height:16px;}
+.vip-gate .vv-msg.ok{color:#8fbf7a;}
+.vip-gate .vv-msg.err{color:#e08a6b;}
+.vip-reveal{overflow:hidden;max-height:0;opacity:0;transform:translateY(12px);
+  transition:max-height .8s cubic-bezier(.22,.61,.36,1), opacity .6s ease .15s, transform .6s ease .15s;}
+.vip-reveal.open{max-height:900px;opacity:1;transform:translateY(0);}
+.vip-card.unlocking{animation:vipPop .8s cubic-bezier(.22,.61,.36,1);}
+@keyframes vipPop{0%{transform:scale(1);}38%{transform:scale(1.018);}100%{transform:scale(1);}}
 @media (max-width:760px){
   .vip-card .vip-tickets{grid-template-columns:1fr;}
   .vip-card .vip-ribbon{display:none;}
@@ -1742,6 +1756,37 @@ function vipEmailIsMember(email){
   if(!clean) return false;
   return vipSignups.some(v => (v.email||"").trim().toLowerCase() === clean);
 }
+// Validação contra a lista VIP que já existe na planilha. Não olha o nome das
+// colunas — varre todos os campos de cada linha, então funciona com qualquer
+// cabeçalho (email/e-mail/telefone/celular/whatsapp...).
+function vipPhoneKey(s){
+  let d = String(s||"").replace(/\D/g,"");
+  if(d.length > 11 && d.indexOf("55") === 0) d = d.slice(2);
+  return d;
+}
+function vipFindMember(input){
+  const raw = String(input||"").trim();
+  if(!raw) return null;
+  const isEmail = raw.indexOf("@") !== -1;
+  const email = raw.toLowerCase();
+  const phone = vipPhoneKey(raw);
+  if(!isEmail && phone.length < 8) return null;
+  for(const v of vipSignups){
+    for(const k in v){
+      const val = v[k];
+      if(val === undefined || val === null) continue;
+      const s = String(val).trim();
+      if(!s) continue;
+      if(isEmail){
+        if(s.toLowerCase() === email) return v;
+      }else{
+        const d = vipPhoneKey(s);
+        if(d.length >= 8 && d === phone) return v;
+      }
+    }
+  }
+  return null;
+}
 // Preço VIP: sempre o valor do 1º lote do pacote, com o desconto aplicado —
 // não existem lotes para agendamento VIP.
 function parseBRL(str){ return parseFloat(String(str).replace(/[^\d,]/g,"").replace(",",".")); }
@@ -2113,8 +2158,17 @@ function renderPackages(){
    O card só aparece se o admin ligou o botão VIP.
 ========================================================= */
 let vipVerifiedEmail = null;
+// Guarda o cliente da lista VIP que passou pela validação nesta visita — só
+// com ele preenchido os pacotes VIP existem na tela e podem ser agendados.
+let vipVerifiedMember = null;
 
+// O card é injetado depois do initReveal() inicial, então ele precisa ser
+// observado de novo — sem isso o .reveal segura o card em opacity:0.
 function renderVipCard(){
+  renderVipCardInner();
+  initReveal();
+}
+function renderVipCardInner(){
   const slot = document.getElementById("vip-card-slot");
   if(vipCountdownTimer){ clearInterval(vipCountdownTimer); vipCountdownTimer = null; }
 
@@ -2133,31 +2187,65 @@ function renderVipCard(){
     // de 24h — não precisa já estar cadastrado na lista de e-mails pra
     // conseguir agendar; a lista de 20 é só a fila de interesse antes do
     // lançamento. Escolheu o pacote, já entra direto no agendamento.
-    const ticketsHtml = CONFIG.packages.map(p=>`
-      <div class="vip-ticket">
-        <div class="vt-name">${p.name}</div>
-        <div class="vt-prices"><span class="vt-old">${vipBasePrice(p)}</span><span class="vt-new">${vipDiscountedPrice(p)}</span></div>
-        <div class="vt-tag">Qualquer data · sem lote</div>
-        <button class="vip-btn" data-vip-pkg="${p.id}">Agendar com desconto VIP</button>
-      </div>`).join("");
-
+    const already = !!vipVerifiedMember;
     slot.innerHTML = `
-      <div class="vip-card reveal">
+      <div class="vip-card reveal${already ? "" : " locked"}">
         <span class="vip-ribbon">Bilhete VIP</span>
         <span class="vip-tag">✦ Lista VIP — acesso liberado</span>
-        <h3>Seus benefícios estão ativos agora</h3>
-        <p class="vip-desc">Você tem ${CONFIG.vip.benefitsWindowHours}h para agendar com prioridade, qualquer data, com ${CONFIG.vip.discountPercent}% de desconto. Depois desse prazo, o benefício expira.</p>
+        <h3>${already ? "Seus benefícios estão ativos agora" : "Confirme seu bilhete VIP"}</h3>
+        <p class="vip-desc">${already
+          ? `Você tem ${CONFIG.vip.benefitsWindowHours}h para agendar com prioridade, qualquer data, com ${CONFIG.vip.discountPercent}% de desconto. Depois desse prazo, o benefício expira.`
+          : `Informe o e-mail ou o telefone que você cadastrou na lista VIP para liberar seus pacotes com desconto. O acesso vale por ${CONFIG.vip.benefitsWindowHours}h.`}</p>
         ${benefitsHtml}
         <div class="vip-countdown" id="vip-countdown"></div>
         <div class="vip-stub">
-          <div class="vip-tickets" id="vip-tickets">${ticketsHtml}</div>
+          <div class="vip-gate${already ? " hide" : ""}" id="vip-gate">
+            <p class="vg-title">Confirme que você está na lista VIP</p>
+            <form class="vip-form" id="vip-check-form">
+              <input type="text" id="vip-check-input" placeholder="Seu e-mail ou telefone" autocomplete="off" required>
+              <button type="submit" class="vip-btn">Liberar meus benefícios</button>
+            </form>
+            <div class="vv-msg" id="vip-check-msg" role="status" aria-live="polite"></div>
+          </div>
+          <div class="vip-reveal${already ? " open" : ""}" id="vip-reveal">
+            <div class="vip-tickets" id="vip-tickets"></div>
+          </div>
         </div>
       </div>`;
     startVipCountdown();
+    if(already) vipRenderTickets();
 
-    document.querySelectorAll("#vip-tickets [data-vip-pkg]").forEach(btn=>{
-      btn.addEventListener("click", ()=> openVipBooking(btn.dataset.vipPkg));
-    });
+    const checkForm = document.getElementById("vip-check-form");
+    if(checkForm){
+      checkForm.addEventListener("submit", (e)=>{
+        e.preventDefault();
+        const field = document.getElementById("vip-check-input");
+        const msg = document.getElementById("vip-check-msg");
+        const btn = checkForm.querySelector(".vip-btn");
+        const value = field.value.trim();
+        if(!value){
+          msg.className = "vv-msg err";
+          msg.textContent = "Informe seu e-mail ou telefone.";
+          return;
+        }
+        btn.disabled = true; btn.textContent = "Conferindo…";
+        // pequeno atraso só para o retorno não parecer um "pisca"
+        setTimeout(()=>{
+          const member = vipFindMember(value);
+          btn.disabled = false; btn.textContent = "Liberar meus benefícios";
+          if(!member){
+            msg.className = "vv-msg err";
+            msg.textContent = "Não encontramos esse e-mail ou telefone na lista VIP.";
+            showToast("Dados não encontrados na lista VIP.", "error");
+            return;
+          }
+          vipVerifiedMember = member;
+          msg.className = "vv-msg ok";
+          msg.textContent = "Bilhete confirmado! Liberando seus pacotes…";
+          vipUnlockTickets();
+        }, 420);
+      });
+    }
     return;
   }
 
@@ -2221,6 +2309,44 @@ function renderVipCard(){
       <h3>As vagas da lista VIP se esgotaram</h3>
       <p class="vip-desc">Em breve novidades para todos — fique de olho nas nossas redes.</p>
     </div>`;
+}
+
+// Monta os pacotes VIP só depois da validação — antes disso eles nem existem
+// no DOM, então não há como exibir ou agendar sem estar na lista.
+function vipRenderTickets(){
+  const box = document.getElementById("vip-tickets");
+  if(!box) return;
+  box.innerHTML = CONFIG.packages.map(p=>`
+      <div class="vip-ticket">
+        <div class="vt-name">${p.name}</div>
+        <div class="vt-prices"><span class="vt-old">${vipBasePrice(p)}</span><span class="vt-new">${vipDiscountedPrice(p)}</span></div>
+        <div class="vt-tag">Qualquer data · sem lote</div>
+        <button class="vip-btn" data-vip-pkg="${p.id}">Agendar com desconto VIP</button>
+      </div>`).join("");
+  box.querySelectorAll("[data-vip-pkg]").forEach(btn=>{
+    btn.addEventListener("click", ()=> openVipBooking(btn.dataset.vipPkg));
+  });
+}
+
+// Bilhete "cresce" e os pacotes aparecem de dentro dele.
+function vipUnlockTickets(){
+  const card = document.querySelector(".vip-card");
+  const gate = document.getElementById("vip-gate");
+  const reveal = document.getElementById("vip-reveal");
+  vipRenderTickets();
+  if(card){
+    card.classList.remove("locked");
+    card.classList.add("unlocking");
+    setTimeout(()=> card.classList.remove("unlocking"), 900);
+  }
+  if(gate) gate.classList.add("hide");
+  requestAnimationFrame(()=>{ if(reveal) reveal.classList.add("open"); });
+  setTimeout(()=>{
+    const h3 = card ? card.querySelector("h3") : null;
+    const desc = card ? card.querySelector(".vip-desc") : null;
+    if(h3) h3.textContent = "Seus benefícios estão ativos agora";
+    if(desc) desc.textContent = `Você tem ${CONFIG.vip.benefitsWindowHours}h para agendar com prioridade, qualquer data, com ${CONFIG.vip.discountPercent}% de desconto. Depois desse prazo, o benefício expira.`;
+  }, 320);
 }
 
 function startVipCountdown(){
@@ -2321,6 +2447,10 @@ function openBooking(pkgId){
 function openVipBooking(pkgId){
   if(!vipBenefitsActive()){
     showToast("O acesso VIP não está ativo no momento.", "error");
+    return;
+  }
+  if(!vipVerifiedMember){
+    showToast("Confirme seu e-mail ou telefone da lista VIP primeiro.", "error");
     return;
   }
   const p = pkgById(pkgId);
@@ -2580,7 +2710,7 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   // Booking VIP verificado: sem lotes, qualquer data, valor do 1º lote com
   // desconto aplicado — mais fotos reveladas de presente, registrado nas
   // observações do pedido.
-  const isVip = !!booking.vip && vipBenefitsActive();
+  const isVip = !!booking.vip && vipBenefitsActive() && !!vipVerifiedMember;
   const vipNote = isVip ? ("[VIP] " + CONFIG.vip.discountPercent + "% off + " + CONFIG.vip.freePhotos + " fotos reveladas de presente.") : "";
 
   // A checagem de conflito de horário E de vagas do lote agora acontece dentro
