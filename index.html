@@ -1566,7 +1566,8 @@ footer{background:#320508;color:rgba(240,230,215,.72);}
 const CONFIG = {
   siteName: "Taise Foto",
   contact: { phone: "(11) 96038-2670", email: "contato@taisefoto.com", whatsapp: "5511960382670" },
-  admin: { user: "Taisefoto", pass: "110307" }, // ⚠️ apenas configuração inicial — ver nota de segurança no fim do arquivo
+  // Sem usuário/senha aqui: a autenticação é feita no Apps Script, que guarda
+  // a senha como hash no Script Properties. O site só envia o que foi digitado.
   // Cole aqui a URL do seu Web App do Google Apps Script (Implantar > Nova implantação > App da Web)
   // para os agendamentos passarem a ser salvos numa planilha do Google Sheets em vez do navegador.
   // Deixe "" para continuar usando apenas o armazenamento local (localStorage).
@@ -1669,6 +1670,30 @@ const FAQS = [
    ESTADO EM MEMÓRIA
 ========================================================= */
 let isAdmin = false;
+// Token de sessão do admin, devolvido pelo backend depois do login. Fica em
+// sessionStorage (some ao fechar a aba) e é exigido em toda ação do painel.
+const ADMIN_TOKEN_KEY = "taise-admin-token";
+function adminToken(){ try{ return sessionStorage.getItem(ADMIN_TOKEN_KEY) || ""; }catch(e){ return ""; } }
+function setAdminToken(t){
+  try{ t ? sessionStorage.setItem(ADMIN_TOKEN_KEY, t) : sessionStorage.removeItem(ADMIN_TOKEN_KEY); }catch(e){}
+}
+// Chamada genérica ao backend. Ações do painel vão sempre com o token.
+async function apiPost(payload, comToken){
+  const body = comToken ? Object.assign({}, payload, { token: adminToken() }) : payload;
+  const res = await fetch(CONFIG.sheetsApiUrl, {
+    method:"POST",
+    headers:{ "Content-Type":"text/plain" }, // evita preflight CORS no Apps Script
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+// Sessão expirada ou token adulterado: cai fora do painel na hora.
+function handleUnauthorized(){
+  setAdminToken("");
+  isAdmin = false;
+  showToast("Sua sessão expirou. Entre novamente.", "error");
+  try{ exitAdmin(); }catch(e){}
+}
 let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false };
 let calCursor = new Date();
 let currentStep = 1;
@@ -1681,7 +1706,8 @@ let agendaRange = "week";
 let pendingCancelId = null;
 let pendingDetailId = null;
 let vipSettings = { vipEnabled:false, vipLaunchAt:null };
-let vipSignups = [];
+let vipSignups = [];          // só preenchido no painel autenticado
+let vipCount = 0;             // contagem pública, sem dado pessoal
 let vipCountdownTimer = null;
 
 /* =========================================================
@@ -1749,7 +1775,7 @@ function vipBenefitsActive(){
   return end!=null && Date.now() < end;
 }
 function vipSignupOpen(){
-  return !!vipSettings.vipEnabled && !vipLaunched() && vipSignups.length < CONFIG.vip.maxSignups;
+  return !!vipSettings.vipEnabled && !vipLaunched() && vipCount < CONFIG.vip.maxSignups;
 }
 function vipEmailIsMember(email){
   const clean = (email||"").trim().toLowerCase();
@@ -1763,6 +1789,19 @@ function vipPhoneKey(s){
   let d = String(s||"").replace(/\D/g,"");
   if(d.length > 11 && d.indexOf("55") === 0) d = d.slice(2);
   return d;
+}
+// Pergunta ao backend se o contato está na lista VIP. Resposta booleana —
+// nenhum e-mail ou telefone de terceiros trafega pro navegador.
+async function vipCheckRemote(value){
+  if(!usingSheets()){
+    const m = vipFindMember(value);
+    return { member: !!m, name: m ? (m.name || "") : "" };
+  }
+  try{
+    const data = await apiPost({ action:"vipCheck", value });
+    if(!data || !data.ok) return { erro:true };
+    return { member: !!data.member, name: data.name || "" };
+  }catch(e){ return { erro:true }; }
 }
 function vipFindMember(input){
   const raw = String(input||"").trim();
@@ -1829,9 +1868,11 @@ async function loadAppointments(){
       // logo depois de uma mudança na planilha.
       const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache: "no-store" });
       const data = await res.json();
+      // A resposta pública traz só disponibilidade (data/hora/pacote/lote/status)
+      // — nome, telefone, e-mail e a lista VIP não saem mais do servidor.
       appointmentsCache = (data && data.ok && data.appointments) ? data.appointments : [];
       if(data && data.ok && data.settings) vipSettings = data.settings;
-      if(data && data.ok && data.vip) vipSignups = data.vip;
+      if(data && data.ok && typeof data.vipCount === "number") vipCount = data.vipCount;
     }catch(e){
       showToast("Não foi possível conectar à planilha. Tente novamente.", "error");
       appointmentsCache = [];
@@ -1855,11 +1896,8 @@ async function loadAppointments(){
 async function vipSetEnabled(enabled){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl, {
-        method:"POST", headers:{ "Content-Type":"text/plain" },
-        body: JSON.stringify({ action:"vipToggle", enabled })
-      });
-      const data = await res.json();
+      const data = await apiPost({ action:"vipToggle", enabled }, true);
+      if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
       if(data.ok && data.settings) vipSettings = data.settings;
       return !!data.ok;
     }catch(e){ return false; }
@@ -1871,11 +1909,8 @@ async function vipSetEnabled(enabled){
 async function vipLaunchNow(){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl, {
-        method:"POST", headers:{ "Content-Type":"text/plain" },
-        body: JSON.stringify({ action:"vipLaunch" })
-      });
-      const data = await res.json();
+      const data = await apiPost({ action:"vipLaunch" }, true);
+      if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
       if(data.ok && data.settings) vipSettings = data.settings;
       return !!data.ok;
     }catch(e){ return false; }
@@ -1888,12 +1923,8 @@ async function vipLaunchNow(){
 async function vipSignupSubmit(name, email){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl, {
-        method:"POST", headers:{ "Content-Type":"text/plain" },
-        body: JSON.stringify({ action:"vipSignup", name, email })
-      });
-      const data = await res.json();
-      if(data.ok && data.vip) vipSignups = data.vip;
+      const data = await apiPost({ action:"vipSignup", name, email });
+      if(typeof data.count === "number") vipCount = data.count;
       return data;
     }catch(e){ return { ok:false, reason:"network" }; }
   }
@@ -1901,6 +1932,7 @@ async function vipSignupSubmit(name, email){
   if(!clean || clean.indexOf("@")===-1) return { ok:false, reason:"invalid_email" };
   if(vipSignups.some(v=>(v.email||"").trim().toLowerCase()===clean)) return { ok:false, reason:"duplicate" };
   if(vipSignups.length >= CONFIG.vip.maxSignups) return { ok:false, reason:"full" };
+  vipCount = vipSignups.length + 1;
   vipSignups.push({ id:uid(), name:(name||"").trim(), email:clean, createdAt:new Date().toISOString() });
   localStorage.setItem(VIP_SIGNUPS_KEY, JSON.stringify(vipSignups));
   return { ok:true, vip: vipSignups };
@@ -1922,12 +1954,7 @@ async function saveAppointments(list){
 async function createAppointmentSafely(appt){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl, {
-        method:"POST",
-        headers:{ "Content-Type":"text/plain" }, // evita preflight CORS no Apps Script
-        body: JSON.stringify({ action:"create", appointment: appt })
-      });
-      const data = await res.json();
+      const data = await apiPost({ action:"create", appointment: appt });
       // Atualiza o cache local na hora, sem precisar de outra chamada de rede
       // pra planilha — é isso que deixa a confirmação rápida.
       if(data.ok) appointmentsCache = appointmentsCache.concat([appt]);
@@ -1947,12 +1974,8 @@ async function createAppointmentSafely(appt){
 async function updateAppointmentStatus(id, status){
   if(usingSheets()){
     try{
-      const res = await fetch(CONFIG.sheetsApiUrl, {
-        method:"POST",
-        headers:{ "Content-Type":"text/plain" },
-        body: JSON.stringify({ action:"updateStatus", id, status })
-      });
-      const data = await res.json();
+      const data = await apiPost({ action:"updateStatus", id, status }, true);
+      if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
       if(data.ok){
         const idx = appointmentsCache.findIndex(a=>a.id===id);
         if(idx>-1){ appointmentsCache[idx].status = status; appointmentsCache[idx].updatedAt = new Date().toISOString(); }
@@ -2229,21 +2252,29 @@ function renderVipCardInner(){
           return;
         }
         btn.disabled = true; btn.textContent = "Conferindo…";
-        // pequeno atraso só para o retorno não parecer um "pisca"
-        setTimeout(()=>{
-          const member = vipFindMember(value);
+        msg.className = "vv-msg";
+        msg.textContent = "";
+
+        // A conferência acontece no servidor: mandamos só o que foi digitado e
+        // recebemos "é VIP ou não". A lista de clientes nunca vem pro navegador.
+        vipCheckRemote(value).then(res=>{
           btn.disabled = false; btn.textContent = "Liberar meus benefícios";
-          if(!member){
+          if(res.erro){
+            msg.className = "vv-msg err";
+            msg.textContent = "Não foi possível conferir agora. Tente novamente.";
+            return;
+          }
+          if(!res.member){
             msg.className = "vv-msg err";
             msg.textContent = "Não encontramos esse e-mail ou telefone na lista VIP.";
             showToast("Dados não encontrados na lista VIP.", "error");
             return;
           }
-          vipVerifiedMember = member;
+          vipVerifiedMember = { name: res.name || "" };
           msg.className = "vv-msg ok";
           msg.textContent = "Bilhete confirmado! Liberando seus pacotes…";
           vipUnlockTickets();
-        }, 420);
+        });
       });
     }
     return;
@@ -2261,7 +2292,7 @@ function renderVipCardInner(){
   }
 
   if(vipSignupOpen()){
-    const vagas = CONFIG.vip.maxSignups - vipSignups.length;
+    const vagas = Math.max(0, CONFIG.vip.maxSignups - vipCount);
     slot.innerHTML = `
       <div class="vip-card reveal">
         <span class="vip-ribbon">Bilhete VIP</span>
@@ -2809,19 +2840,40 @@ document.getElementById("foot-admin").addEventListener("click", openLogin);
 document.getElementById("login-cancel").addEventListener("click", closeLogin);
 loginBackdrop.addEventListener("click",(e)=>{ if(e.target===loginBackdrop) closeLogin(); });
 
-document.getElementById("login-submit").addEventListener("click", ()=>{
+document.getElementById("login-submit").addEventListener("click", async ()=>{
+  const btn = document.getElementById("login-submit");
   const u = document.getElementById("login-user").value.trim();
   const p = document.getElementById("login-pass").value;
-  // Nota de segurança: esta validação é apenas para a configuração inicial em
-  // ambiente de demonstração. Em produção, a autenticação deve acontecer no
-  // backend (ex.: Firebase Auth / Supabase Auth), nunca só no frontend.
-  if(u === CONFIG.admin.user && p === CONFIG.admin.pass){
+  const erro = document.getElementById("login-error");
+  erro.classList.remove("show");
+
+  if(!u || !p){ erro.classList.add("show"); return; }
+
+  // A senha é conferida no Apps Script (hash + sal no Script Properties).
+  // O site nunca conhece a senha certa, então não adianta ler o código-fonte.
+  const rotulo = btn.textContent;
+  btn.disabled = true; btn.textContent = "Entrando…";
+  let data;
+  try{
+    data = await apiPost({ action:"adminLogin", user:u, pass:p });
+  }catch(e){
+    data = { ok:false, reason:"network" };
+  }
+  btn.disabled = false; btn.textContent = rotulo;
+
+  if(data && data.ok && data.token){
+    setAdminToken(data.token);
     isAdmin = true;
+    document.getElementById("login-pass").value = "";
     closeLogin();
     enterAdmin();
-  } else {
-    document.getElementById("login-error").classList.add("show");
+    return;
   }
+  if(data && data.reason === "network"){
+    showToast("Não foi possível falar com o servidor. Tente novamente.", "error");
+    return;
+  }
+  erro.classList.add("show");
 });
 
 /* =========================================================
@@ -2836,6 +2888,7 @@ async function enterAdmin(){
 }
 function exitAdmin(){
   isAdmin = false;
+  setAdminToken("");
   document.getElementById("admin-view").classList.remove("open");
   document.getElementById("site-view").style.display = "";
   navbar.style.display = "";
@@ -2852,7 +2905,22 @@ async function refreshAdminData(){
   document.getElementById("appt-table").style.display = "none";
   document.getElementById("empty-state").style.display = "none";
 
-  await loadAppointments();
+  // Dados completos (com dados pessoais) só vêm com token válido.
+  let data;
+  try{
+    data = await apiPost({ action:"adminData" }, true);
+  }catch(e){
+    data = { ok:false, reason:"network" };
+  }
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(data && data.ok){
+    appointmentsCache = data.appointments || [];
+    vipSignups = data.vip || [];
+    vipCount = vipSignups.length;
+    if(data.settings) vipSettings = data.settings;
+  }else{
+    showToast("Não foi possível carregar os dados do painel.", "error");
+  }
   populatePackageFilter();
   renderStats();
   renderTable();
