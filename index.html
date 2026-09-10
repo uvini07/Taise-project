@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Comfortaa:wght@300;400;500;600;700&family=Rokkitt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 :root{
   --verde-noturno:#2b0707;
@@ -1661,8 +1664,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       <p style="font-size:13.5px;color:rgba(27,23,18,.55);margin-bottom:22px;">Acesso restrito à equipe Taise Foto.</p>
       <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
       <div class="field">
-        <label for="login-user">Usuário</label>
-        <input type="text" id="login-user" autocomplete="username">
+        <label for="login-user">E-mail</label>
+        <input type="email" id="login-user" autocomplete="username">
       </div>
       <div class="field">
         <label for="login-pass">Senha</label>
@@ -1848,12 +1851,17 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 const CONFIG = {
   siteName: "Taise Foto",
   contact: { phone: "(11) 96038-2670", email: "contato@taisefoto.com", whatsapp: "5511960382670" },
-  // Sem usuário/senha aqui: a autenticação é feita no Apps Script, que guarda
-  // a senha como hash no Script Properties. O site só envia o que foi digitado.
-  // Cole aqui a URL do seu Web App do Google Apps Script (Implantar > Nova implantação > App da Web)
-  // para os agendamentos passarem a ser salvos numa planilha do Google Sheets em vez do navegador.
-  // Deixe "" para continuar usando apenas o armazenamento local (localStorage).
-  sheetsApiUrl: "https://script.google.com/macros/s/AKfycbx7kNH3NaNwtlUMIjzUg7gIi7StfdO02SzBlFbdvt4DXqBrrHWu7PJ1o8CXwcAHQwyqRA/exec",
+  // Sem usuário/senha aqui: quem cuida do login é o Firebase Authentication.
+  // Estas chaves não são segredo — elas apenas identificam o projeto. O que
+  // protege os dados são as regras em firestore.rules.
+  firebase: {
+    apiKey: "AIzaSyBpNHpsy5PKvsW-Hz5TTsI7cxtnvNMyTbw",
+    authDomain: "taisesite.firebaseapp.com",
+    projectId: "taisesite",
+    storageBucket: "taisesite.firebasestorage.app",
+    messagingSenderId: "2290365935",
+    appId: "1:2290365935:web:fa917e8c43090c7f27f21a"
+  },
   // LOTES: cada pacote é vendido em 3 lotes (fases), cada um com seu período de
   // realização do ensaio, preço e número de vagas. Altere as datas (formato
   // AAAA-MM-DD), preços e vagas conforme o combinado. "vagas:null" = sem limite
@@ -1952,31 +1960,203 @@ const FAQS = [
    ESTADO EM MEMÓRIA
 ========================================================= */
 let isAdmin = false;
-// Token de sessão do admin, devolvido pelo backend depois do login. Fica em
-// sessionStorage (some ao fechar a aba) e é exigido em toda ação do painel.
+// Token de sessão do admin. Com o Firebase quem controla a sessão é o próprio
+// Auth; isto aqui só marca "tem alguém logado" para o resto da tela.
 const ADMIN_TOKEN_KEY = "taise-admin-token";
 function adminToken(){ try{ return sessionStorage.getItem(ADMIN_TOKEN_KEY) || ""; }catch(e){ return ""; } }
 function setAdminToken(t){
   try{ t ? sessionStorage.setItem(ADMIN_TOKEN_KEY, t) : sessionStorage.removeItem(ADMIN_TOKEN_KEY); }catch(e){}
 }
-// Chamada genérica ao backend. Ações do painel vão sempre com o token.
-async function apiPost(payload, comToken){
-  const body = comToken ? Object.assign({}, payload, { token: adminToken() }) : payload;
-  // Sem prazo máximo, uma resposta que nunca chega deixa a tela presa em
-  // "Entrando…" para sempre. 45s cobre o pior caso do Apps Script (até 20s
-  // esperando o lock, mais a execução).
-  const ctrl = new AbortController();
-  const prazo = setTimeout(()=>ctrl.abort(), 45000);
+
+/* =========================================================
+   FIREBASE — banco de dados e login
+   O navegador fala direto com o Firestore. Os dados pessoais ficam em
+   coleções que só o admin logado lê; o visitante enxerga apenas os
+   horários ocupados. Quem garante isso é o arquivo firestore.rules.
+========================================================= */
+firebase.initializeApp(CONFIG.firebase);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+const COL_HORARIOS = "horarios";        // público: data/hora/pacote/status
+const COL_AGENDAMENTOS = "agendamentos"; // privado: dados do cliente
+const COL_VIP_MEMBROS = "vipMembros";    // público por consulta pontual
+const COL_VIP_CADASTROS = "vipCadastros";// privado: dados do cliente
+const DOC_CONFIG_VIP = db.collection("config").doc("vip");
+const DOC_CONTADOR_VIP = db.collection("config").doc("contadorVip");
+
+// Chave de busca de um contato na lista VIP. E-mail vira minúsculo; telefone
+// vira só dígitos, sem o 55 do país — assim "+55 (11) 9…" e "11 9…" batem.
+function vipChaveContato(valor){
+  const bruto = String(valor||"").trim();
+  if(!bruto) return "";
+  if(bruto.indexOf("@") !== -1) return "e_" + bruto.toLowerCase().replace(/[^a-z0-9@._-]/g,"");
+  const d = vipPhoneKey(bruto);
+  return d.length >= 8 ? "t_" + d : "";
+}
+
+// Na primeira entrada do admin, cria os dois documentos de configuração que o
+// site espera encontrar. Sem eles, o cadastro VIP não teria onde somar as
+// vagas — e as regras não deixam o visitante criar esses documentos.
+async function garantirDocumentosIniciais(){
   try{
-    const res = await fetch(CONFIG.sheetsApiUrl, {
-      method:"POST",
-      headers:{ "Content-Type":"text/plain" }, // evita preflight CORS no Apps Script
-      body: JSON.stringify(body),
-      signal: ctrl.signal
+    const [cfg, contador] = await Promise.all([DOC_CONFIG_VIP.get(), DOC_CONTADOR_VIP.get()]);
+    if(!cfg.exists){
+      await DOC_CONFIG_VIP.set({ vipEnabled:false, vipLaunchAt:null, signupOpen:true });
+    }
+    if(!contador.exists){
+      const cadastros = (await db.collection(COL_VIP_CADASTROS).get()).size;
+      await DOC_CONTADOR_VIP.set({ cadastros });
+    }
+  }catch(e){}
+}
+
+async function ehAdminLogado(){
+  const u = auth.currentUser;
+  if(!u) return false;
+  try{
+    const doc = await db.collection("admins").doc(u.uid).get();
+    return doc.exists;
+  }catch(e){ return false; }
+}
+
+async function lerConfigVip(){
+  const doc = await DOC_CONFIG_VIP.get();
+  const d = doc.exists ? doc.data() : {};
+  return {
+    vipEnabled: !!d.vipEnabled,
+    vipLaunchAt: d.vipLaunchAt || null,
+    signupOpen: typeof d.signupOpen === "boolean" ? d.signupOpen : !d.vipLaunchAt
+  };
+}
+async function lerContadorVip(){
+  const doc = await DOC_CONTADOR_VIP.get();
+  return doc.exists ? (doc.data().cadastros || 0) : 0;
+}
+
+// Mesma "linguagem" de antes: as telas continuam pedindo ações por nome e
+// recebendo o mesmo formato de resposta. Só o que está por baixo mudou.
+async function firebaseApi(payload){
+  const acao = payload.action;
+
+  if(acao === "create"){
+    const a = payload.appointment || {};
+    const id = a.id || uid();
+    const lote = db.batch();
+    lote.set(db.collection(COL_HORARIOS).doc(id), {
+      date: a.date||"", time: a.time||"", package: a.package||"",
+      lot: a.lot||"", status: a.status||"pendente"
     });
-    return await res.json();
-  } finally {
-    clearTimeout(prazo);
+    lote.set(db.collection(COL_AGENDAMENTOS).doc(id), Object.assign({}, a, {
+      id, createdAt: a.createdAt || new Date().toISOString()
+    }));
+    await lote.commit();
+    return { ok:true, id };
+  }
+
+  if(acao === "vipStatus"){
+    const cfg = await lerConfigVip();
+    const total = await lerContadorVip();
+    return {
+      ok:true, count: total, max: CONFIG.vip.maxSignups,
+      remaining: Math.max(0, CONFIG.vip.maxSignups - total),
+      signupOpen: cfg.signupOpen, launched: !!cfg.vipLaunchAt
+    };
+  }
+
+  if(acao === "vipCheck"){
+    const chave = vipChaveContato(payload.value);
+    if(!chave) return { ok:true, member:false, name:"" };
+    const doc = await db.collection(COL_VIP_MEMBROS).doc(chave).get();
+    return { ok:true, member: doc.exists, name: doc.exists ? (doc.data().name||"") : "" };
+  }
+
+  if(acao === "vipSignup"){
+    const cfg = await lerConfigVip();
+    if(!cfg.signupOpen) return { ok:false, reason:"launched" };
+    const nome = String(payload.name||"").trim();
+    const email = String(payload.email||"").trim().toLowerCase();
+    const fone = String(payload.phone||"").trim();
+    if(!nome) return { ok:false, reason:"invalid_name" };
+    if(!email || email.indexOf("@") === -1) return { ok:false, reason:"invalid_email" };
+
+    const total = await lerContadorVip();
+    if(total >= CONFIG.vip.maxSignups) return { ok:false, reason:"full", count: total };
+
+    const chaveEmail = vipChaveContato(email);
+    const jaTem = await db.collection(COL_VIP_MEMBROS).doc(chaveEmail).get();
+    if(jaTem.exists) return { ok:false, reason:"duplicate" };
+
+    const id = uid();
+    const lote = db.batch();
+    lote.set(db.collection(COL_VIP_CADASTROS).doc(id), {
+      id, name:nome, email, phone:fone, createdAt:new Date().toISOString()
+    });
+    lote.set(db.collection(COL_VIP_MEMBROS).doc(chaveEmail), { name:nome });
+    const chaveFone = vipChaveContato(fone);
+    if(chaveFone) lote.set(db.collection(COL_VIP_MEMBROS).doc(chaveFone), { name:nome });
+    await lote.commit();
+    await DOC_CONTADOR_VIP.update({ cadastros: total + 1 }).catch(async ()=>{
+      await DOC_CONTADOR_VIP.set({ cadastros: total + 1 });
+    });
+    return { ok:true, count: total + 1, max: CONFIG.vip.maxSignups };
+  }
+
+  // --- daqui pra baixo, só com admin logado ---
+  if(!(await ehAdminLogado())) return { ok:false, reason:"unauthorized" };
+
+  if(acao === "adminData"){
+    const [snapAg, snapVip, cfg] = await Promise.all([
+      db.collection(COL_AGENDAMENTOS).get(),
+      db.collection(COL_VIP_CADASTROS).get(),
+      lerConfigVip()
+    ]);
+    return {
+      ok:true,
+      appointments: snapAg.docs.map(d=>Object.assign({ id:d.id }, d.data())),
+      vip: snapVip.docs.map(d=>Object.assign({ id:d.id }, d.data())),
+      settings: cfg
+    };
+  }
+
+  if(acao === "updateStatus"){
+    const lote = db.batch();
+    lote.update(db.collection(COL_AGENDAMENTOS).doc(payload.id), {
+      status: payload.status, updatedAt: new Date().toISOString()
+    });
+    lote.update(db.collection(COL_HORARIOS).doc(payload.id), { status: payload.status });
+    await lote.commit();
+    return { ok:true };
+  }
+
+  if(acao === "vipToggle"){
+    await DOC_CONFIG_VIP.set({ vipEnabled: !!payload.enabled }, { merge:true });
+    return { ok:true, settings: await lerConfigVip() };
+  }
+
+  if(acao === "vipLaunch"){
+    await DOC_CONFIG_VIP.set({
+      vipEnabled: true, vipLaunchAt: new Date().toISOString()
+    }, { merge:true });
+    return { ok:true, settings: await lerConfigVip() };
+  }
+
+  if(acao === "vipSignupToggle"){
+    await DOC_CONFIG_VIP.set({ signupOpen: !!payload.open }, { merge:true });
+    return { ok:true, settings: await lerConfigVip() };
+  }
+
+  return { ok:false, reason:"unknown_action" };
+}
+
+async function apiPost(payload){
+  try{
+    return await firebaseApi(payload);
+  }catch(e){
+    // "permission-denied" é a regra de segurança agindo: sessão caiu ou a
+    // conta não é admin. O resto vira erro de rede para as telas.
+    if(e && e.code === "permission-denied") return { ok:false, reason:"unauthorized" };
+    return { ok:false, reason:"network", message: String(e && e.message || e) };
   }
 }
 // Sessão expirada ou token adulterado: cai fora do painel na hora.
@@ -2145,33 +2325,31 @@ function showToast(msg, type){
 
 /* =========================================================
    PERSISTÊNCIA
-   Se CONFIG.sheetsApiUrl estiver preenchido, os agendamentos são lidos/
-   gravados numa planilha do Google Sheets através de um Web App do Apps
-   Script (banco de dados real e compartilhado entre todos os acessos).
-   Se estiver vazio, o site cai automaticamente no localStorage do
-   navegador (funciona, mas fica só no aparelho de quem acessou — use o
-   "Exportar CSV" do admin para manter um controle único em Excel).
+   Com CONFIG.firebase preenchido, os agendamentos ficam no Firestore, que é
+   o banco compartilhado entre todos os acessos. Sem ele, o site cai no
+   localStorage do navegador (funciona, mas fica só no aparelho de quem
+   acessou — use o "Exportar CSV" do admin para ter um controle único).
    Estrutura dos dados: appointments{id,name,phone,email,package,lot,
    lotPrice,date,time,status,notes,createdAt,updatedAt}.
 ========================================================= */
-function usingSheets(){ return !!CONFIG.sheetsApiUrl; }
+function usingSheets(){ return !!(CONFIG.firebase && CONFIG.firebase.projectId); }
 
 async function loadAppointments(){
   if(usingSheets()){
     try{
-      // "cache-busting" com timestamp + no-store: sem isso, o Google (e às vezes
-      // o próprio navegador) pode devolver uma resposta em cache de segundos
-      // atrás, fazendo o admin e o site mostrarem estados diferentes do VIP
-      // logo depois de uma mudança na planilha.
-      const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache: "no-store" });
-      const data = await res.json();
-      // A resposta pública traz só disponibilidade (data/hora/pacote/lote/status)
-      // — nome, telefone, e-mail e a lista VIP não saem mais do servidor.
-      appointmentsCache = (data && data.ok && data.appointments) ? data.appointments : [];
-      if(data && data.ok && data.settings) vipSettings = data.settings;
-      if(data && data.ok && typeof data.vipCount === "number") vipCount = data.vipCount;
+      // A coleção "horarios" é a versão pública da agenda: só data, hora,
+      // pacote, lote e status. Nome, telefone e e-mail ficam em "agendamentos",
+      // que as regras de segurança só liberam para o admin logado.
+      const [snap, cfg, total] = await Promise.all([
+        db.collection(COL_HORARIOS).get(),
+        lerConfigVip(),
+        lerContadorVip()
+      ]);
+      appointmentsCache = snap.docs.map(d=>Object.assign({ id:d.id }, d.data()));
+      vipSettings = cfg;
+      vipCount = total;
     }catch(e){
-      showToast("Não foi possível conectar à planilha. Tente novamente.", "error");
+      showToast("Não foi possível conectar ao servidor. Tente novamente.", "error");
       appointmentsCache = [];
     }
     return appointmentsCache;
@@ -2197,16 +2375,10 @@ async function loadAppointments(){
 // decide o que fazer, então uma falha aqui nunca derruba o painel.
 async function lerVipSettingsDaPlanilha(){
   if(!usingSheets()) return null;
-  const ctrl = new AbortController();
-  const prazo = setTimeout(()=>ctrl.abort(), 45000);
   try{
-    const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache:"no-store", signal:ctrl.signal });
-    const data = await res.json();
-    return (data && data.ok && data.settings) ? data.settings : null;
+    return await lerConfigVip();
   }catch(e){
     return null;
-  }finally{
-    clearTimeout(prazo);
   }
 }
 async function vipSetEnabled(enabled){
@@ -3206,15 +3378,28 @@ document.getElementById("login-submit").addEventListener("click", async ()=>{
 
   if(!u || !p){ erro.classList.add("show"); return; }
 
-  // A senha é conferida no Apps Script (hash + sal no Script Properties).
-  // O site nunca conhece a senha certa, então não adianta ler o código-fonte.
+  // Quem confere a senha é o Firebase Authentication — o site nunca vê a
+  // senha certa. Depois do login, só entra no painel quem tem registro em
+  // "admins"; sem isso, as regras de segurança barram tudo mesmo logado.
   entrandoAdmin = true;
   btn.disabled = true; btn.textContent = "Entrando…";
   let data;
   try{
-    data = await apiPost({ action:"adminLogin", user:u, pass:p });
+    const cred = await auth.signInWithEmailAndPassword(u, p);
+    if(await ehAdminLogado()){
+      data = { ok:true, token: cred.user.uid };
+    }else{
+      await auth.signOut();
+      data = { ok:false, reason:"nao_admin", uid: cred.user.uid };
+    }
   }catch(e){
-    data = { ok:false, reason:"network" };
+    const codigosDeCredencial = [
+      "auth/invalid-email","auth/user-not-found","auth/wrong-password",
+      "auth/invalid-credential","auth/invalid-login-credentials"
+    ];
+    data = codigosDeCredencial.indexOf(e.code) !== -1
+      ? { ok:false, reason:"invalid_credentials" }
+      : { ok:false, reason:"network", message:(e && e.message) || "" };
   }finally{
     // Rótulo fixo: capturar o texto atual repunha "Entrando…" quando uma
     // tentativa anterior tinha ficado presa nesse estado.
@@ -3234,6 +3419,15 @@ document.getElementById("login-submit").addEventListener("click", async ()=>{
     showToast("Não foi possível falar com o servidor. Tente novamente.", "error");
     return;
   }
+  // Senha certa, mas a conta ainda não foi autorizada como admin. Mostra o
+  // identificador para cadastrar no Firebase (coleção "admins").
+  if(data && data.reason === "nao_admin"){
+    erro.textContent = "Esta conta ainda não tem acesso de administrador. "
+      + "No Firebase, crie a coleção \"admins\" com um documento de ID: " + data.uid;
+    erro.classList.add("show");
+    return;
+  }
+  erro.textContent = "E-mail ou senha incorretos.";
   erro.classList.add("show");
 });
 
@@ -3245,11 +3439,13 @@ async function enterAdmin(){
   navbar.style.display = "none";
   document.getElementById("admin-view").classList.add("open");
   window.scrollTo(0,0);
+  await garantirDocumentosIniciais();
   await refreshAdminData();
 }
 function exitAdmin(){
   isAdmin = false;
   setAdminToken("");
+  auth.signOut().catch(()=>{});
   document.getElementById("admin-view").classList.remove("open");
   document.getElementById("site-view").style.display = "";
   navbar.style.display = "";

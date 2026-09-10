@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Comfortaa:wght@300;400;500;600;700&family=Rokkitt:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -376,7 +378,17 @@ h1,h2,h3{font-family:var(--retro);font-weight:500;letter-spacing:.004em;}
 </main>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbx7kNH3NaNwtlUMIjzUg7gIi7StfdO02SzBlFbdvt4DXqBrrHWu7PJ1o8CXwcAHQwyqRA/exec";
+// Estas chaves não são segredo: elas só apontam para o projeto. Quem protege
+// os dados são as regras do Firestore (arquivo firestore.rules).
+firebase.initializeApp({
+  apiKey: "AIzaSyBpNHpsy5PKvsW-Hz5TTsI7cxtnvNMyTbw",
+  authDomain: "taisesite.firebaseapp.com",
+  projectId: "taisesite",
+  storageBucket: "taisesite.firebasestorage.app",
+  messagingSenderId: "2290365935",
+  appId: "1:2290365935:web:fa917e8c43090c7f27f21a"
+});
+const db = firebase.firestore();
 const MAX = 20;
 
 /* ---------- neve leve (mesmo efeito do site) ---------- */
@@ -404,14 +416,73 @@ function show(state){
 }
 function digits(s){ return String(s||"").replace(/\D/g,""); }
 
+const DOC_CONFIG_VIP = db.collection("config").doc("vip");
+const DOC_CONTADOR_VIP = db.collection("config").doc("contadorVip");
+
+async function lerConfigVip(){
+  const doc = await DOC_CONFIG_VIP.get();
+  const d = doc.exists ? doc.data() : {};
+  return {
+    vipLaunchAt: d.vipLaunchAt || null,
+    signupOpen: typeof d.signupOpen === "boolean" ? d.signupOpen : !d.vipLaunchAt
+  };
+}
+async function lerContadorVip(){
+  const doc = await DOC_CONTADOR_VIP.get();
+  return doc.exists ? (doc.data().cadastros || 0) : 0;
+}
+// Chave de contato: e-mail em minúsculo, telefone só com dígitos (sem o 55).
+function chaveContato(valor){
+  const bruto = String(valor||"").trim();
+  if(!bruto) return "";
+  if(bruto.indexOf("@") !== -1) return "e_" + bruto.toLowerCase().replace(/[^a-z0-9@._-]/g,"");
+  let d = digits(bruto);
+  if(d.length > 11 && d.indexOf("55") === 0) d = d.slice(2);
+  return d.length >= 8 ? "t_" + d : "";
+}
+
+// Mesmas ações de antes, agora resolvidas direto no Firestore.
 async function api(payload){
-  // text/plain evita o preflight de CORS que o Apps Script não trata bem
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify(payload)
-  });
-  return res.json();
+  try{
+    if(payload.action === "vipStatus"){
+      const [cfg, total] = await Promise.all([lerConfigVip(), lerContadorVip()]);
+      return { ok:true, count:total, max:MAX, remaining:Math.max(0, MAX-total),
+               signupOpen:cfg.signupOpen, launched:!!cfg.vipLaunchAt };
+    }
+    if(payload.action === "vipSignup"){
+      const cfg = await lerConfigVip();
+      if(!cfg.signupOpen) return { ok:false, reason:"launched" };
+      const nome = String(payload.name||"").trim();
+      const email = String(payload.email||"").trim().toLowerCase();
+      const fone = String(payload.phone||"").trim();
+      if(!nome) return { ok:false, reason:"invalid_name" };
+      if(!email || email.indexOf("@") === -1) return { ok:false, reason:"invalid_email" };
+
+      const total = await lerContadorVip();
+      if(total >= MAX) return { ok:false, reason:"full", count:total };
+
+      const chaveEmail = chaveContato(email);
+      const jaTem = await db.collection("vipMembros").doc(chaveEmail).get();
+      if(jaTem.exists) return { ok:false, reason:"duplicate" };
+
+      const id = "v" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+      const lote = db.batch();
+      lote.set(db.collection("vipCadastros").doc(id), {
+        id, name:nome, email, phone:fone, createdAt:new Date().toISOString()
+      });
+      lote.set(db.collection("vipMembros").doc(chaveEmail), { name:nome });
+      const chaveFone = chaveContato(fone);
+      if(chaveFone) lote.set(db.collection("vipMembros").doc(chaveFone), { name:nome });
+      await lote.commit();
+      await DOC_CONTADOR_VIP.update({ cadastros: total + 1 }).catch(async ()=>{
+        await DOC_CONTADOR_VIP.set({ cadastros: total + 1 });
+      });
+      return { ok:true, count: total + 1, max: MAX };
+    }
+    return { ok:false, reason:"unknown_action" };
+  }catch(e){
+    return { ok:false, reason:"network", message:String(e && e.message || e) };
+  }
 }
 
 /* ---------- vagas ---------- */
