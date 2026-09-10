@@ -1962,12 +1962,22 @@ function setAdminToken(t){
 // Chamada genérica ao backend. Ações do painel vão sempre com o token.
 async function apiPost(payload, comToken){
   const body = comToken ? Object.assign({}, payload, { token: adminToken() }) : payload;
-  const res = await fetch(CONFIG.sheetsApiUrl, {
-    method:"POST",
-    headers:{ "Content-Type":"text/plain" }, // evita preflight CORS no Apps Script
-    body: JSON.stringify(body)
-  });
-  return res.json();
+  // Sem prazo máximo, uma resposta que nunca chega deixa a tela presa em
+  // "Entrando…" para sempre. 45s cobre o pior caso do Apps Script (até 20s
+  // esperando o lock, mais a execução).
+  const ctrl = new AbortController();
+  const prazo = setTimeout(()=>ctrl.abort(), 45000);
+  try{
+    const res = await fetch(CONFIG.sheetsApiUrl, {
+      method:"POST",
+      headers:{ "Content-Type":"text/plain" }, // evita preflight CORS no Apps Script
+      body: JSON.stringify(body),
+      signal: ctrl.signal
+    });
+    return await res.json();
+  } finally {
+    clearTimeout(prazo);
+  }
 }
 // Sessão expirada ou token adulterado: cai fora do painel na hora.
 function handleUnauthorized(){
@@ -2183,13 +2193,21 @@ async function loadAppointments(){
 // Lê o estado do VIP pelo endpoint público, que consulta a aba "settings" a
 // cada chamada. É a leitura mais direta da planilha e não depende da resposta
 // autenticada, que em versões antigas do Apps Script não trazia "settings".
-async function syncVipSettingsFromSheet(){
-  if(!usingSheets()) return;
+// Devolve os settings da planilha, ou null se não der para ler — quem chama
+// decide o que fazer, então uma falha aqui nunca derruba o painel.
+async function lerVipSettingsDaPlanilha(){
+  if(!usingSheets()) return null;
+  const ctrl = new AbortController();
+  const prazo = setTimeout(()=>ctrl.abort(), 45000);
   try{
-    const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache:"no-store" });
+    const res = await fetch(CONFIG.sheetsApiUrl + "?t=" + Date.now(), { cache:"no-store", signal:ctrl.signal });
     const data = await res.json();
-    if(data && data.ok && data.settings) vipSettings = data.settings;
-  }catch(e){}
+    return (data && data.ok && data.settings) ? data.settings : null;
+  }catch(e){
+    return null;
+  }finally{
+    clearTimeout(prazo);
+  }
 }
 async function vipSetEnabled(enabled){
   if(usingSheets()){
@@ -3175,7 +3193,11 @@ document.getElementById("foot-admin").addEventListener("click", openLogin);
 document.getElementById("login-cancel").addEventListener("click", closeLogin);
 loginBackdrop.addEventListener("click",(e)=>{ if(e.target===loginBackdrop) closeLogin(); });
 
+// Trava contra duplo clique: cada clique extra virava outra requisição, e o
+// Apps Script atende uma de cada vez — a fila fazia o login parecer travado.
+let entrandoAdmin = false;
 document.getElementById("login-submit").addEventListener("click", async ()=>{
+  if(entrandoAdmin) return;
   const btn = document.getElementById("login-submit");
   const u = document.getElementById("login-user").value.trim();
   const p = document.getElementById("login-pass").value;
@@ -3186,15 +3208,19 @@ document.getElementById("login-submit").addEventListener("click", async ()=>{
 
   // A senha é conferida no Apps Script (hash + sal no Script Properties).
   // O site nunca conhece a senha certa, então não adianta ler o código-fonte.
-  const rotulo = btn.textContent;
+  entrandoAdmin = true;
   btn.disabled = true; btn.textContent = "Entrando…";
   let data;
   try{
     data = await apiPost({ action:"adminLogin", user:u, pass:p });
   }catch(e){
     data = { ok:false, reason:"network" };
+  }finally{
+    // Rótulo fixo: capturar o texto atual repunha "Entrando…" quando uma
+    // tentativa anterior tinha ficado presa nesse estado.
+    entrandoAdmin = false;
+    btn.disabled = false; btn.textContent = "Entrar";
   }
-  btn.disabled = false; btn.textContent = rotulo;
 
   if(data && data.ok && data.token){
     setAdminToken(data.token);
@@ -3240,10 +3266,16 @@ async function refreshAdminData(){
   document.getElementById("appt-table").style.display = "none";
   document.getElementById("empty-state").style.display = "none";
 
-  // Dados completos (com dados pessoais) só vêm com token válido.
-  let data;
+  // Dados completos (com dados pessoais) só vêm com token válido. As duas
+  // chamadas saem juntas: em série, o painel demorava a soma das duas.
+  // A leitura da planilha é a palavra final sobre os botões VIP, então é
+  // aplicada depois — mesmo que alguém tenha mudado direto na planilha.
+  let data, planilha;
   try{
-    data = await apiPost({ action:"adminData" }, true);
+    [data, planilha] = await Promise.all([
+      apiPost({ action:"adminData" }, true).catch(()=>({ ok:false, reason:"network" })),
+      lerVipSettingsDaPlanilha()
+    ]);
   }catch(e){
     data = { ok:false, reason:"network" };
   }
@@ -3256,10 +3288,7 @@ async function refreshAdminData(){
   }else{
     showToast("Não foi possível carregar os dados do painel.", "error");
   }
-  // A célula "VIP-status" da planilha é a palavra final sobre o botão VIP:
-  // o painel abre já refletindo o que está lá, mesmo que alguém tenha mudado
-  // direto na planilha.
-  await syncVipSettingsFromSheet();
+  if(planilha) vipSettings = planilha;
   populatePackageFilter();
   renderStats();
   renderTable();
