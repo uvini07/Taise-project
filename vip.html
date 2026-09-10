@@ -428,7 +428,10 @@ async function carregarVagas(){
   try{
     const data = await api({ action: "vipStatus" });
     if(!data || !data.ok) throw new Error("status");
-    if(data.launched){ show("st-launched"); return; }
+    // Quem manda é o botão "Liberar cadastro VIP" do painel. Respostas de uma
+    // versão antiga do Apps Script não trazem signupOpen — aí vale o lançamento.
+    const aberto = typeof data.signupOpen === "boolean" ? data.signupOpen : !data.launched;
+    if(!aberto){ show("st-launched"); return; }
     const restam = pintaVagas(data.count);
     show(restam > 0 ? "st-form" : "st-full");
   }catch(e){
