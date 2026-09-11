@@ -4,8 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taise Foto — Sessões de Natal</title>
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=2">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="shortcut icon" href="favicon.ico?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="theme-color" content="#3E060A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,6 +282,12 @@ section{position:relative;}
 .pack-price .val{font-size:34px;color:var(--dourado-claro);font-weight:600;}
 .pack-price .unit{font-size:13px;color:rgba(246,241,231,.5);}
 .pack-parcela{display:block;font-size:13px;color:var(--dourado-claro);margin-top:4px;letter-spacing:.2px;}
+.pack-pagamento{
+  margin-top:16px;padding-top:13px;
+  border-top:1px solid rgba(246,241,231,.14);
+  font-size:12.5px;line-height:1.5;color:rgba(246,241,231,.62);
+}
+.pack-pagamento b{color:var(--dourado-claro);font-weight:600;}
 .pack-benefits{list-style:none;margin:26px 0 0;padding:0;display:flex;flex-direction:column;gap:12px;flex:1;}
 .pack-benefits li{font-size:14px;color:rgba(246,241,231,.82);display:flex;gap:10px;align-items:flex-start;line-height:1.5;}
 .pack-benefits li svg{flex:0 0 auto;margin-top:2px;color:var(--dourado);}
@@ -1442,6 +1451,121 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 .breve-som[aria-pressed="true"] .bs-on{display:block;}
 .breve-som[aria-pressed="true"] .bs-off{display:none;}
 
+/* ---- títulos das categorias do FAQ: nome no meio, fio dos dois lados ---- */
+#site-view .faq-cat{
+  display:flex;align-items:center;gap:clamp(12px,2.4vw,22px);
+  margin:clamp(34px,5vw,52px) 0 18px;
+}
+#site-view .faq-cat:first-child{margin-top:0;}
+#site-view .faq-cat::before,
+#site-view .faq-cat::after{
+  content:"";flex:1;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(161,129,94,.55));
+}
+#site-view .faq-cat::after{background:linear-gradient(90deg,rgba(161,129,94,.55),transparent);}
+#site-view .faq-cat span{
+  font-family:var(--sans);
+  font-size:clamp(10.5px,1.8vw,12px);
+  letter-spacing:.24em;text-transform:uppercase;
+  color:var(--gold);white-space:nowrap;
+}
+
+/* respostas com mais de um parágrafo e listas */
+#site-view .faq-a p b{color:var(--dourado-claro);font-weight:600;}
+#site-view .faq-a p i{color:rgba(240,230,215,.8);}
+
+/* ---- paleta de cores das roupas ---- */
+.faq-paleta{
+  display:flex;flex-wrap:wrap;gap:10px 14px;
+  margin:16px 0;
+}
+.fp-cor{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12.5px;color:rgba(240,230,215,.82);
+  padding:7px 13px 7px 8px;border-radius:999px;
+  border:1px solid rgba(240,230,215,.16);
+  background:rgba(240,230,215,.04);
+}
+.fp-cor i{
+  width:17px;height:17px;border-radius:50%;flex:0 0 17px;
+  background:var(--c);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+}
+/* amostra do xadrez, montada com dois gradientes cruzados */
+.fp-xadrez i{
+  background:
+    repeating-linear-gradient(90deg,#6E1016 0 4px,transparent 4px 8px),
+    repeating-linear-gradient(0deg,#6E1016 0 4px,transparent 4px 8px),
+    #3E060A;
+}
+
+/* ---- marca de cliente VIP no painel ---- */
+.vip-star{
+  display:inline-block;margin-right:5px;
+  color:var(--dourado);font-size:14px;line-height:1;
+  text-shadow:0 0 8px rgba(198,161,91,.55);
+  cursor:help;
+}
+
+/* ---- itens adicionais no agendamento ---- */
+.addon-choice{
+  display:flex;align-items:center;gap:11px;flex-wrap:wrap;
+  padding:13px 15px;margin-bottom:9px;
+  border:1px solid rgba(27,23,18,.16);border-radius:6px;
+  cursor:pointer;transition:border-color .25s ease,background .25s ease;
+}
+.addon-choice:hover{border-color:var(--dourado);}
+.addon-choice.selected{border-color:var(--vinho);background:rgba(110,20,35,.05);}
+.addon-choice input{position:absolute;opacity:0;width:0;height:0;}
+.ac-check{
+  flex:0 0 19px;width:19px;height:19px;border-radius:4px;
+  border:1.5px solid rgba(27,23,18,.28);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;transition:all .2s ease;
+}
+.ac-check svg{opacity:0;transition:opacity .2s ease;}
+.addon-choice input:checked + .ac-check{background:var(--vinho);border-color:var(--vinho);}
+.addon-choice input:checked + .ac-check svg{opacity:1;}
+.ac-nome{flex:1 1 100%;font-size:14px;color:var(--carvao);line-height:1.35;}
+.ac-tag{
+  font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;white-space:nowrap;
+  background:rgba(27,23,18,.07);color:rgba(27,23,18,.55);
+  margin-left:30px;   /* alinha com o texto, abaixo da caixinha */
+}
+.ac-preco{font-size:13.5px;font-weight:600;color:var(--vinho);margin-left:auto;white-space:nowrap;}
+/* nome na primeira linha; etiqueta e preço na segunda, sempre igual */
+.addon-choice{row-gap:7px;}
+.addon-choice .ac-check{order:1;}
+.addon-choice .ac-nome{order:2;flex:1 1 auto;min-width:0;}
+.addon-choice .ac-tag{order:3;margin-left:0;}
+.addon-choice .ac-preco{order:4;}
+/* item que já vem no pacote: marcado, travado e em tom de "pronto" */
+.addon-choice.incluso{cursor:default;border-color:rgba(46,125,79,.35);background:rgba(46,125,79,.06);}
+.addon-choice.incluso:hover{border-color:rgba(46,125,79,.35);}
+.addon-choice.incluso .ac-check{background:var(--verde-status);border-color:var(--verde-status);}
+.addon-choice.incluso .ac-check svg{opacity:1;}
+.addon-choice.incluso .ac-tag{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.addon-choice.incluso .ac-preco{color:rgba(27,23,18,.4);}
+
+/* ---- conta aberta do passo 1 ---- */
+.total-box{
+  margin-top:16px;padding:15px 17px;border-radius:8px;
+  background:rgba(27,23,18,.04);border:1px solid rgba(27,23,18,.1);
+}
+.tb-linha{
+  display:flex;justify-content:space-between;gap:14px;
+  font-size:13.5px;color:rgba(27,23,18,.72);padding:4px 0;
+}
+.tb-extra{color:rgba(27,23,18,.6);font-size:13px;}
+.tb-total{
+  margin-top:7px;padding-top:10px;border-top:1px solid rgba(27,23,18,.13);
+  font-size:16px;font-weight:700;color:var(--carvao);
+}
+.tb-pagamento{
+  margin-top:9px;font-size:12.5px;line-height:1.5;color:rgba(27,23,18,.6);
+}
+
 /* ---- menu de acesso ao painel: espelha o botão de música ---- */
 .breve-menu{
   position:fixed;top:clamp(26px,3.4vw,40px);right:clamp(26px,3.4vw,40px);z-index:7;
@@ -1668,13 +1792,13 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     </a>
 
     <!-- preload="none": o arquivo só é baixado se a pessoa ligar a música -->
-    <audio id="breve-audio" src="musica-natal.mp3" loop preload="none"></audio>
+    <audio id="breve-audio" src="musica-natal.mp3" preload="none"></audio>
     <button class="breve-som" id="breve-som" type="button" aria-pressed="false" aria-label="Ativar ou desativar a música" title="Ativar ou desativar a música">
       <span class="bs-ico" aria-hidden="true">
         <svg class="bs-on" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M11 5 6 9H3v6h3l5 4V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
         <svg class="bs-off" width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M11 5 6 9H3v6h3l5 4V5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m16 9 5 6M21 9l-5 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
       </span>
-      <span id="breve-som-txt">Ativar música</span>
+      <span id="breve-som-txt">Ouvir a trilha</span>
     </button>
   </div>
 
@@ -1911,6 +2035,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <div id="vip-step1-note"></div>
         <div id="pkg-choices"></div>
         <div id="lot-choices"></div>
+        <div id="addon-choices"></div>
+        <div id="total-resumo"></div>
         <div class="book-footer" style="justify-content:flex-end;">
           <button class="btn-solid" id="s1-next" disabled>Continuar
             <svg width="13" height="9" viewBox="0 0 13 9" fill="none"><path d="M8.5 1L12 4.5L8.5 8M12 4.5H1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -2148,6 +2274,7 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
           </p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
             <button class="btn-outline" id="vip-launch-btn" style="padding:10px 18px;font-size:12.5px;">Lançar acesso VIP (24h)</button>
+            <button class="btn-outline btn-danger" id="vip-reset-btn" style="padding:10px 18px;font-size:12.5px;" hidden>Encerrar contagem</button>
             <span id="vip-launch-status" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
           </div>
         </div>
@@ -2159,6 +2286,16 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
             <button class="btn-outline" id="site-block-btn" style="padding:10px 18px;font-size:12.5px;">Bloquear site — Em breve</button>
             <span id="site-block-status" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+          </div>
+        </div>
+
+        <div style="border-top:1px solid rgba(27,23,18,.1);margin-top:16px;padding-top:16px;">
+          <p style="font-size:13px;color:rgba(27,23,18,.6);margin:0 0 12px;max-width:640px;">
+            <b style="color:rgba(27,23,18,.8);">Pacotes normais</b> — esconde os três cards de pacotes na página, sem tirar o site do ar. O card VIP continua aparecendo.
+          </p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+            <button class="btn-outline" id="packages-btn" style="padding:10px 18px;font-size:12.5px;">Esconder pacotes</button>
+            <span id="packages-status" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
           </div>
         </div>
 
@@ -2247,6 +2384,8 @@ const CONFIG = {
     {
       id: "familia",
       name: "Pacote Família",
+      entrada: 50,          // % pago na reserva; o restante no dia do ensaio
+      inclusos: [],         // itens da lista "adicionais" que já vêm no pacote
       desc: "O essencial para registrar o Natal em família com leveza.",
       price: "R$ 380,00",
       benefits: ["20 fotos digitais", "35 minutos de sessão", "Sem troca de look", "Criança, pais e irmãos", "1 cenário"],
@@ -2260,6 +2399,8 @@ const CONFIG = {
     {
       id: "premium",
       name: "Natal Premium",
+      entrada: 30,
+      inclusos: ["teaser"],
       desc: "Nosso pacote mais escolhido, com mais tempo e mais fotos.",
       price: "R$ 650,00",
       benefits: ["Todas as melhores fotos", "45 minutos de sessão", "1 troca de look", "1 cenário", "1 clipe emocionante da sessão", "Avós inclusos"],
@@ -2273,6 +2414,8 @@ const CONFIG = {
     {
       id: "luxo",
       name: "Natal Luxo",
+      entrada: 30,
+      inclusos: ["box","teaser","cenario"],
       desc: "A experiência de Natal completa, com tempo estendido e recordações impressas.",
       price: "R$ 800,00",
       benefits: ["Experiência de Natal completa", "Todas as melhores fotos", "1h de sessão", "1 troca de look", "2 cenários (Natal e Ano Novo)", "1 vídeo emocionante da sessão", "1 box acrílico com 50 fotos reveladas 10x15"],
@@ -2292,6 +2435,14 @@ const CONFIG = {
   // sozinhos, mesmo que o admin esqueça de desligar o card. VIP não usa o
   // sistema de lotes: qualquer data disponível, sempre no valor do 1º lote
   // de cada pacote, com discountPercent de desconto em cima desse valor.
+  // ITENS ADICIONAIS: oferecidos na hora de agendar, depois de escolher o
+  // pacote. Se o pacote já traz o item (ver "inclusos"), ele aparece marcado
+  // como incluso e não soma valor nenhum.
+  adicionais: [
+    { id: "box",     nome: "Box acrílico 10x15 com 50 fotos reveladas", preco: 180 },
+    { id: "teaser",  nome: "Vídeo teaser",                              preco: 150 },
+    { id: "cenario", nome: "Cenário adicional",                         preco: 150 }
+  ],
   vip: { maxSignups: 20, freePhotos: 10, benefitsWindowHours: 24, discountPercent: 10 }
 };
 
@@ -2322,13 +2473,62 @@ const IMAGES = {
 };
 
 const FAQS = [
-  { q: "Como funciona o ensaio?", a: "Você agenda o pacote e o horário pelo site. No dia, chegue com alguns minutos de antecedência — o cenário já estará pronto e a fotógrafa vai conduzir toda a sessão com calma." },
-  { q: "Quanto tempo dura?", a: "Depende do pacote escolhido: de 30 a 60 minutos, tempo pensado para respeitar o ritmo das crianças." },
-  { q: "Como faço o pagamento?", a: "O pagamento é combinado diretamente com o estúdio após a confirmação do agendamento, via PIX ou cartão." },
-  { q: "Posso levar minha família toda?", a: "Sim! Os pacotes podem incluir pais, filhos e até os avós — combine os detalhes na confirmação." },
-  { q: "O que acontece se eu precisar cancelar?", a: "Entre em contato com a maior antecedência possível para liberarmos o horário para outra família." },
-  { q: "Como escolho o horário?", a: "No passo de agendamento, o sistema mostra apenas os horários realmente disponíveis para a data escolhida." },
-  { q: "Quando recebo as fotos?", a: "A galeria digital tratada fica pronta em até 10 dias úteis após a sessão." }
+  {
+    categoria: "O ensaio",
+    perguntas: [
+      { q: "Como funciona o ensaio?", a: "No dia do ensaio, eu conduzo vocês durante todo o processo, orientando poses, movimentos e interações de forma natural. Você não precisa saber posar — meu papel é justamente ajudar para que vocês se sintam à vontade e aproveitem o momento.<br><br>A sessão acontece de forma tranquila, respeitando o ritmo de cada família, para que as fotografias tenham espontaneidade, conexão e a personalidade de vocês." },
+      { q: "Quanto tempo dura?", a: "De 40 minutos a 1 hora, conforme o pacote escolhido." },
+      { q: "Quem pode participar?", a: "No <b>Pacote Família</b>, participa o seu núcleo familiar — marido, esposa e filhos.<br><br>Nos pacotes <b>Premium</b> e <b>Luxo</b>, os 4 avós também podem participar." },
+      { q: "Onde o ensaio é realizado?", a: "Os ensaios são realizados em estúdio localizado em <b>Osasco</b>, dentro de um prédio comercial com elevador e fácil acesso.<br><br>O espaço foi preparado para receber você e sua família com conforto e tranquilidade, proporcionando uma experiência acolhedora e um ambiente pensado especialmente para os registros." },
+      { q: "Posso levar mais pessoas?", a: "No <b>Pacote Família</b>, é possível incluir outras pessoas ou crianças que não sejam seus filhos, mediante uma taxa adicional de <b>R$ 80,00 por pessoa</b>.<br><br>Essa opção permite que outros familiares ou pessoas especiais também participem dos registros e tornem o ensaio ainda mais completo." },
+      { q: "Posso levar meu pet?", a: "Sim! Pets são bem-vindos no estúdio e podem participar dos registros. Para garantir a segurança, a organização e o bem-estar de todos, pedimos que o pet esteja sempre acompanhado e que seja levado tapete higiênico.<br><br>É importante ter atenção redobrada para evitar danos aos cenários e equipamentos. Caso o pet faça xixi, cocô ou cause algum dano que exija higienização, reparo ou substituição de algum item do cenário, será cobrada uma taxa de <b>R$ 150,00</b>.<br><br>Essa taxa considera os custos de higienização e/ou solução do problema, inclusive porque, dependendo da situação, a sessão seguinte poderá precisar ser remarcada para que o espaço seja devidamente preparado." },
+      { q: "O que acontece se eu chegar atrasado?", a: "Os ensaios são agendados em sequência, por isso é importante chegar no horário combinado para aproveitarmos todo o tempo da sessão.<br><br>Em caso de atraso, o tempo perdido será descontado do tempo total do ensaio, mantendo o horário previsto para o término da sessão. Por isso, recomendamos chegar alguns minutos antes para começar o ensaio com tranquilidade e aproveitar cada momento." },
+      { q: "Quem é responsável pelos itens e cenários?", a: "O estúdio possui itens de decoração e elementos cenográficos que fazem parte da experiência e são utilizados nas fotografias. Por isso, pedimos que todos os participantes tenham cuidado durante a sessão.<br><br>Em caso de quebra, dano ou avaria de qualquer item, móvel, decoração ou equipamento do estúdio, a responsabilidade pelo reparo ou reposição será do responsável pelo ensaio, podendo ser cobrado o valor correspondente ao dano. Essa regra também se aplica aos itens danificados por crianças ou pets que participem da sessão.<br><br>Contamos com a colaboração de todos para preservar o espaço e garantir que os cenários estejam sempre prontos para receber cada família." }
+    ]
+  },
+  {
+    categoria: "Dicas de roupas e cores",
+    perguntas: [
+      { q: "Que cores combinam com o cenário?", a: "O cenário deste ano segue a paleta de <i>Um Filme de Natal</i>: tons profundos, quentes e atemporais. Estas são as cores que mais valorizam as fotos:<div class=\"faq-paleta\"><span class=\"fp-cor\" style=\"--c:#6E1016\"><i></i>Vermelho escuro</span><span class=\"fp-cor\" style=\"--c:#1C3728\"><i></i>Verde escuro</span><span class=\"fp-cor\" style=\"--c:#A1815E\"><i></i>Dourado</span><span class=\"fp-cor\" style=\"--c:#5B4234\"><i></i>Marrom</span><span class=\"fp-cor fp-xadrez\"><i></i>Xadrez</span></div>Peças em <b>xadrez</b> combinam muito bem com o clima vintage e podem ser usadas como ponto de destaque no look de alguém da família." },
+      { q: "Como escolher as roupas da família?", a: "Escolha uma dessas cores como base e vista a família em tons próximos, variando as peças em vez de repetir o mesmo look em todos. O resultado fica harmônico sem parecer uniforme.<br><br>Prefira tecidos de caimento leve e evite estampas muito chamativas ou logotipos grandes, que competem com o rosto e com o cenário. Se quiser um ponto de cor diferente, deixe para um acessório — um laço, um suspensório, uma echarpe.<br><br>Na dúvida, me chame antes do ensaio: eu ajudo vocês a montarem os looks." }
+    ]
+  },
+  {
+    categoria: "Agendamento e reserva",
+    perguntas: [
+      { q: "Como escolho a data e o horário?", a: "Após escolher o seu pacote, você poderá selecionar a data e o horário do ensaio diretamente no campo de agendamento. Basta escolher, entre as opções disponíveis, o dia e o horário que melhor se encaixam na sua rotina." },
+      { q: "Com quanto tempo de antecedência devo agendar?", a: "Recomendamos que o ensaio seja agendado com antecedência, principalmente para garantir a data e o horário desejados.<br><br>As datas são disponibilizadas conforme a agenda e podem se esgotar rapidamente em períodos de maior procura. Por isso, quanto antes você fizer sua reserva, maiores são as chances de encontrar o dia e horário que melhor se encaixam na sua rotina." },
+      { q: "Como funciona a reserva da data?", a: "A data e o horário só são considerados reservados após a <b>confirmação do pagamento do sinal</b>. O preenchimento do agendamento, por si só, não garante a reserva da data.<br><br>No <b>Pacote Família</b>, a reserva é confirmada mediante o pagamento de <b>50%</b> do valor do pacote, e o saldo restante deve ser pago até o dia do ensaio.<br><br>Nos <b>demais pacotes</b>, a reserva é confirmada com <b>30%</b> de sinal.<br><br>Sem o pagamento do sinal, a data permanece disponível para outros agendamentos." },
+      { q: "Posso reagendar meu ensaio?", a: "Sim! O reagendamento pode ser solicitado com até <b>7 dias de antecedência</b> da sessão, sem custo adicional, mediante disponibilidade de novas datas e horários na agenda.<br><br>Para solicitações feitas com menos de 7 dias de antecedência, será cobrada uma taxa de <b>R$ 80,00</b>, também mediante disponibilidade da agenda." },
+      { q: "E se eu precisar cancelar?", a: "Entendo que imprevistos podem acontecer. Em caso de cancelamento, peço que entre em contato o quanto antes para verificarmos as possibilidades de remarcação.<br><br>Como a data e o horário são reservados exclusivamente para você, cancelamentos e remarcações seguem as condições previstas no contrato no momento da contratação." }
+    ]
+  },
+  {
+    categoria: "Pagamento",
+    perguntas: [
+      { q: "Quais são as formas de pagamento?", a: "O pagamento é feito diretamente com a equipe de atendimento, por <b>link de pagamento no cartão de crédito</b> ou por <b>Pix</b>." },
+      { q: "Qual o valor do sinal?", a: "No <b>Pacote Família</b>, o sinal é de <b>50%</b> do valor do pacote.<br><br>Nos pacotes <b>Premium</b> e <b>Luxo</b>, o sinal é de <b>30%</b>.<br><br>É o pagamento do sinal que reserva de fato a sua data e o seu horário." },
+      { q: "Quando pago o restante?", a: "O saldo pode ser pago <b>até o dia do ensaio</b>. No Pacote Família, são os 50% restantes; nos demais pacotes, os 70% restantes." },
+      { q: "Posso parcelar?", a: "Sim. Nos pacotes <b>Premium</b> e <b>Luxo</b>, o saldo pode ser pago no cartão de crédito em <b>até 10x</b>, com juros conforme simulação.<br><br>Os valores em <b>5x</b> que aparecem nos cards dos pacotes já vêm calculados para você conferir antes de escolher." }
+    ]
+  },
+  {
+    categoria: "Fotos e entrega",
+    perguntas: [
+      { q: "Quando recebo as fotos?", a: "Nos pacotes com quantidade limitada de fotos, você receberá a galeria para seleção em <b>até 2 dias</b> após o ensaio. Depois de escolher suas favoritas, a galeria final — com as imagens tratadas e editadas — é entregue em <b>até 5 dias</b> após a sua seleção.<br><br>Nos pacotes <b>Luxo</b> e <b>Premium</b>, você não precisa fazer seleção: em <b>até 7 dias</b> após o ensaio, recebe a galeria completa com as melhores fotos da sessão, já tratadas e editadas, sem limite de imagens." },
+      { q: "Como funciona a seleção das fotos?", a: "Após o ensaio, você informa o seu e-mail para receber o link de acesso à sua galeria. Por meio desse link, poderá visualizar todas as fotos disponíveis e selecionar suas favoritas de forma simples e online.<br><br>Nos pacotes com quantidade limitada, você seleciona as <b>20 fotos</b> incluídas no seu pacote.<br><br>Nos pacotes <b>Luxo</b> e <b>Premium</b> não é necessário selecionar: você recebe a galeria completa com as melhores fotos do ensaio, sem limite de imagens." },
+      { q: "Posso comprar fotos extras?", a: "Sim. Caso queira mais imagens além das 20 incluídas no pacote, é possível adquirir fotos extras mediante pagamento à parte. É só avisar no momento da seleção." },
+      { q: "Como recebo as fotos?", a: "As fotos são entregues digitalmente, por meio de uma galeria personalizada e exclusiva do seu ensaio.<br><br>Você receberá um link para acessar sua galeria, visualizar e baixar suas fotografias em alta qualidade, de forma prática e segura.<br><br>A galeria fica disponível para download por <b>30 dias</b> após a entrega. Por isso, recomendamos que faça o download e mantenha seus arquivos salvos durante esse período." }
+    ]
+  },
+  {
+    categoria: "Pacotes e extras",
+    perguntas: [
+      { q: "Qual a diferença entre os pacotes?", a: "O <b>Pacote Família</b> é o essencial: 20 fotos digitais, 35 minutos de sessão, 1 cenário e sem troca de look — pensado para o núcleo familiar.<br><br>O <b>Natal Premium</b> traz mais tempo e todas as melhores fotos, com 1 troca de look, clipe da sessão e os avós inclusos.<br><br>O <b>Natal Luxo</b> é a experiência completa: 1 hora de sessão, 2 cenários (Natal e Ano Novo), vídeo da sessão e um box acrílico com 50 fotos reveladas." },
+      { q: "Posso personalizar meu pacote?", a: "Sim! Você pode personalizar seu pacote e deixar o ensaio ainda mais completo. É possível adicionar um <b>cenário extra</b> e também incluir o <b>vídeo clipe</b> do ensaio, mediante contratação adicional.<br><br>Assim, você escolhe os extras que mais combinam com o que deseja registrar." },
+      { q: "Como funcionam os itens adicionais?", a: "Depois de escolher o pacote, ainda no agendamento, aparecem os itens adicionais disponíveis:<br><br>• <b>Box acrílico 10x15 com 50 fotos reveladas</b> — R$ 180,00<br>• <b>Vídeo teaser</b> — R$ 150,00<br>• <b>Cenário adicional</b> — R$ 150,00<br><br>O que já vem no seu pacote aparece marcado como <b>Incluso</b>, sem custo. O que você marcar é somado ao total na hora, e o valor aparece na tela antes de você confirmar." }
+    ]
+  }
 ];
 
 /* =========================================================
@@ -2402,7 +2602,8 @@ async function lerConfigVip(){
     vipEnabled: !!d.vipEnabled,
     vipLaunchAt: d.vipLaunchAt || null,
     signupOpen: typeof d.signupOpen === "boolean" ? d.signupOpen : !d.vipLaunchAt,
-    siteBlocked: !!d.siteBlocked
+    siteBlocked: !!d.siteBlocked,
+    packagesHidden: !!d.packagesHidden
   };
 }
 async function lerContadorVip(){
@@ -2517,6 +2718,13 @@ async function firebaseApi(payload){
     return { ok:true, settings: await lerConfigVip() };
   }
 
+  if(acao === "vipLaunchReset"){
+    // zera a contagem: o card VIP volta a não mostrar cronômetro e o botão
+    // "Lançar acesso VIP" fica disponível de novo
+    await DOC_CONFIG_VIP.set({ vipLaunchAt: null }, { merge:true });
+    return { ok:true, settings: await lerConfigVip() };
+  }
+
   if(acao === "vipSignupToggle"){
     await DOC_CONFIG_VIP.set({ signupOpen: !!payload.open }, { merge:true });
     return { ok:true, settings: await lerConfigVip() };
@@ -2524,6 +2732,11 @@ async function firebaseApi(payload){
 
   if(acao === "siteBlockToggle"){
     await DOC_CONFIG_VIP.set({ siteBlocked: !!payload.blocked }, { merge:true });
+    return { ok:true, settings: await lerConfigVip() };
+  }
+
+  if(acao === "packagesToggle"){
+    await DOC_CONFIG_VIP.set({ packagesHidden: !!payload.hidden }, { merge:true });
     return { ok:true, settings: await lerConfigVip() };
   }
 
@@ -2547,7 +2760,7 @@ function handleUnauthorized(){
   showToast("Sua sessão expirou. Entre novamente.", "error");
   try{ exitAdmin(); }catch(e){}
 }
-let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false };
+let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
 let calCursor = new Date();
 let currentStep = 1;
 const STORAGE_KEY = "christmas-appointments";
@@ -2695,6 +2908,42 @@ function vipDiscountedPrice(pkg){
   return fmtBRL(val * (1 - CONFIG.vip.discountPercent/100));
 }
 
+/* ---- Itens adicionais ----
+   O desconto VIP continua valendo sobre o pacote (é o que a Lista VIP promete:
+   10% no valor do 1º lote). Os adicionais entram por fora, pelo preço cheio, e
+   o resumo mostra a conta aberta para não restar dúvida. */
+function addonPorId(id){ return CONFIG.adicionais.find(a=>a.id===id) || null; }
+function pacoteInclui(pkg, addonId){
+  return !!(pkg && pkg.inclusos && pkg.inclusos.indexOf(addonId) !== -1);
+}
+// Só cobra o que foi marcado E que o pacote ainda não inclui.
+function addonsCobrados(pkg, escolhidos){
+  return (escolhidos||[])
+    .filter(id => !pacoteInclui(pkg, id))
+    .map(addonPorId)
+    .filter(Boolean);
+}
+function totalAddons(pkg, escolhidos){
+  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+a.preco, 0);
+}
+// Valor do pacote em si, já considerando lote ou preço VIP.
+function precoBasePacote(pkg, lot, isVip){
+  if(!pkg) return 0;
+  const txt = isVip ? vipDiscountedPrice(pkg) : (lot ? lot.price : pkg.price);
+  const n = parseBRL(txt);
+  return isNaN(n) ? 0 : n;
+}
+function precoTotal(pkg, lot, isVip, escolhidos){
+  return precoBasePacote(pkg, lot, isVip) + totalAddons(pkg, escolhidos);
+}
+// Texto da condição de pagamento do pacote (entrada + saldo no dia).
+function textoPagamento(pkg, total){
+  if(!pkg || !pkg.entrada) return "";
+  const entrada = total * (pkg.entrada/100);
+  return pkg.entrada + "% na reserva (" + fmtBRL(entrada) + ") e o restante ("
+       + fmtBRL(total - entrada) + ") no dia do ensaio.";
+}
+
 function showToast(msg, type){
   const wrap = document.getElementById("toast-wrap");
   const t = document.createElement("div");
@@ -2788,6 +3037,12 @@ async function vipSetSignupOpen(open){
   vipSettings.signupOpen = open;
   localStorage.setItem(VIP_STORAGE_KEY, JSON.stringify(vipSettings));
   return true;
+}
+async function vipEncerrarContagem(){
+  const data = await apiPost({ action:"vipLaunchReset" });
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
+  if(data && data.ok && data.settings) vipSettings = data.settings;
+  return !!(data && data.ok);
 }
 async function vipLaunchNow(){
   if(usingSheets()){
@@ -3027,7 +3282,9 @@ function initRetroIcons(){
 const PARCELA_5X = {
   380:82.69, 420:91.39, 490:106.63,
   650:141, 700:152, 750:163.20,
-  800:174, 850:185, 900:196
+  800:174, 850:185, 900:196,
+  // valores VIP (1º lote com os 10% de desconto)
+  342:74.42, 585:127.30, 720:156.68
 };
 function precoParaNumero(txt){
   const limpo = String(txt||"").replace(/[^\d,.]/g,"").replace(/\./g,"").replace(",",".");
@@ -3046,6 +3303,12 @@ function parcela5x(preco){
 ========================================================= */
 function renderPackages(){
   const grid = document.getElementById("pack-grid");
+  // escondido pelo painel: o card VIP e o resto da seção continuam no ar
+  if(pacotesEscondidos()){
+    grid.innerHTML = "";
+    renderVipCard();
+    return;
+  }
   grid.innerHTML = CONFIG.packages.map(p => {
     const activeLot = getActiveLot(p);
     return `
@@ -3070,6 +3333,7 @@ function renderPackages(){
       <ul class="pack-benefits">
         ${p.benefits.map(b=>`<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${b}</li>`).join("")}
       </ul>
+      ${p.entrada ? `<p class="pack-pagamento"><b>${p.entrada}%</b> na reserva e o restante no dia do ensaio.</p>` : ""}
       <button class="pack-btn" data-pkg="${p.id}">Escolher ${p.name.replace("Pacote ","")}</button>
     </div>
   `;
@@ -3343,12 +3607,13 @@ document.getElementById("g-next").addEventListener("click", ()=>{
 ========================================================= */
 function renderFaq(){
   const wrap = document.getElementById("faq-wrap");
-  wrap.innerHTML = FAQS.map((f,i)=>`
-    <div class="faq-item" data-i="${i}">
+  wrap.innerHTML = FAQS.map(grupo=>`
+    <div class="faq-cat"><span>${grupo.categoria}</span></div>
+    ` + grupo.perguntas.map(f=>`
+    <div class="faq-item">
       <button class="faq-q"><span>${f.q}</span><span class="plus"></span></button>
       <div class="faq-a"><p>${f.a}</p></div>
-    </div>
-  `).join("");
+    </div>`).join("")).join("");
   wrap.querySelectorAll(".faq-item").forEach(item=>{
     const q = item.querySelector(".faq-q");
     const a = item.querySelector(".faq-a");
@@ -3366,12 +3631,13 @@ function renderFaq(){
 const bookBackdrop = document.getElementById("book-backdrop");
 
 function openBooking(pkgId){
-  booking = { packageId: pkgId||null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false };
+  booking = { packageId: pkgId||null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
   currentStep = 1;
   calCursor = new Date();
   document.getElementById("vip-step1-note").innerHTML = "";
   renderPkgChoices();
   renderLotChoices();
+  renderAddonChoices();
   renderStep();
   bookBackdrop.classList.add("open");
   document.body.style.overflow = "hidden";
@@ -3391,7 +3657,7 @@ function openVipBooking(pkgId){
     return;
   }
   const p = pkgById(pkgId);
-  booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:true };
+  booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:true, addons:[] };
   currentStep = 1;
   calCursor = new Date();
   document.getElementById("pkg-choices").innerHTML = "";
@@ -3402,6 +3668,7 @@ function openVipBooking(pkgId){
         <div class="vtb-text">✦ Agendamento <b>VIP</b> — ${p ? p.name : ""} por <b>${p ? vipDiscountedPrice(p) : ""}</b> (de ${p ? vipBasePrice(p) : ""}), qualquer data disponível, sem lotes. + ${CONFIG.vip.freePhotos} fotos reveladas de presente.</div>
       </div>
     </div>`;
+  renderAddonChoices();
   document.getElementById("s1-next").disabled = false;
   renderStep();
   bookBackdrop.classList.add("open");
@@ -3434,6 +3701,7 @@ function renderPkgChoices(){
       wrap.querySelectorAll(".pkg-choice").forEach(o=>o.classList.remove("selected"));
       el.classList.add("selected");
       renderLotChoices();
+      renderAddonChoices();
     });
   });
 }
@@ -3443,8 +3711,8 @@ function renderPkgChoices(){
 function renderLotChoices(){
   const wrap = document.getElementById("lot-choices");
   const p = pkgById(booking.packageId);
-  if(!p){ wrap.innerHTML = ""; document.getElementById("s1-next").disabled = true; return; }
-  if(!p.lots){ wrap.innerHTML = ""; document.getElementById("s1-next").disabled = false; return; }
+  if(!p){ wrap.innerHTML = ""; document.getElementById("s1-next").disabled = true; renderAddonChoices(); return; }
+  if(!p.lots){ wrap.innerHTML = ""; document.getElementById("s1-next").disabled = false; renderTotalResumo(); return; }
   wrap.innerHTML = `<p class="lot-choices-title">Escolha o lote</p>` + p.lots.map(l=>{
     const rem = getLotRemaining(p, l);
     const soldOut = rem===0;
@@ -3461,9 +3729,11 @@ function renderLotChoices(){
       wrap.querySelectorAll(".lot-choice").forEach(o=>o.classList.remove("selected"));
       el.classList.add("selected");
       document.getElementById("s1-next").disabled = false;
+      renderTotalResumo();
     });
   });
   document.getElementById("s1-next").disabled = !booking.lotLabel;
+  renderTotalResumo();
 }
 
 function goToStep(n){
@@ -3496,6 +3766,65 @@ document.getElementById("s2-next").addEventListener("click", async ()=>{
 });
 
 document.getElementById("s3-next").addEventListener("click", ()=> goToStep(4));
+
+/* ---- Itens adicionais no passo 1 ----
+   Aparecem assim que o pacote é escolhido, antes da data. O que já vem no
+   pacote é mostrado como "Incluso" e não pode ser desmarcado nem cobrado. */
+function renderAddonChoices(){
+  const wrap = document.getElementById("addon-choices");
+  const p = pkgById(booking.packageId);
+  if(!p){ wrap.innerHTML = ""; renderTotalResumo(); return; }
+
+  wrap.innerHTML = `<p class="lot-choices-title">Itens adicionais</p>` +
+    CONFIG.adicionais.map(a=>{
+      const incluso = pacoteInclui(p, a.id);
+      const marcado = incluso || booking.addons.indexOf(a.id) !== -1;
+      return `
+      <label class="addon-choice ${incluso ? "incluso":""} ${marcado && !incluso ? "selected":""}">
+        <input type="checkbox" data-addon="${a.id}" ${marcado?"checked":""} ${incluso?"disabled":""}>
+        <span class="ac-check" aria-hidden="true">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="ac-nome">${a.nome}</span>
+        <span class="ac-tag">${incluso ? "Incluso" : "Adicional — opcional"}</span>
+        <span class="ac-preco">${incluso ? "—" : "+ " + fmtBRL(a.preco)}</span>
+      </label>`;
+    }).join("");
+
+  wrap.querySelectorAll('input[data-addon]').forEach(inp=>{
+    inp.addEventListener("change", ()=>{
+      const id = inp.dataset.addon;
+      const i = booking.addons.indexOf(id);
+      if(inp.checked && i === -1) booking.addons.push(id);
+      if(!inp.checked && i !== -1) booking.addons.splice(i,1);
+      inp.closest(".addon-choice").classList.toggle("selected", inp.checked);
+      renderTotalResumo();
+    });
+  });
+  renderTotalResumo();
+}
+
+// Conta aberta: pacote, cada adicional e o total, mais a condição de pagamento.
+function renderTotalResumo(){
+  const box = document.getElementById("total-resumo");
+  const p = pkgById(booking.packageId);
+  if(!p){ box.innerHTML = ""; return; }
+  const isVip = !!booking.vip && vipBenefitsActive() && !!vipVerifiedMember;
+  const lot = isVip ? null : (p.lots ? p.lots.find(l=>l.label===booking.lotLabel) : null);
+  if(!isVip && p.lots && !lot){ box.innerHTML = ""; return; }
+
+  const base = precoBasePacote(p, lot, isVip);
+  const extras = addonsCobrados(p, booking.addons);
+  const total = base + extras.reduce((s,a)=>s+a.preco,0);
+
+  box.innerHTML = `
+    <div class="total-box">
+      <div class="tb-linha"><span>${p.name}${isVip ? " <b>· VIP -"+CONFIG.vip.discountPercent+"%</b>" : (lot ? " · "+lot.label : "")}</span><span>${fmtBRL(base)}</span></div>
+      ${extras.map(a=>`<div class="tb-linha tb-extra"><span>+ ${a.nome}</span><span>${fmtBRL(a.preco)}</span></div>`).join("")}
+      <div class="tb-linha tb-total"><span>Total</span><span>${fmtBRL(total)}</span></div>
+      <p class="tb-pagamento">${textoPagamento(p, total)}</p>
+    </div>`;
+}
 
 /* ---- STEP 2: CALENDÁRIO ---- */
 const WEEKDAYS = ["D","S","T","Q","Q","S","S"];
@@ -3654,12 +3983,19 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   // do próprio backend (createAppointmentSafely → Apps Script, protegido por
   // lock), numa única chamada — evita a rodada extra de rede que deixava o
   // "Confirmar agendamento" lento.
+  const extrasEscolhidos = addonsCobrados(p, booking.addons);
+  const valorTotal = precoTotal(p, lot, isVip, booking.addons);
+
   const appt = {
     id: uid(),
     name: booking.name, phone: booking.phone, email: booking.email,
     package: p ? p.name : "—",
     lot: isVip ? "VIP" : (lot ? lot.label : null),
     lotPrice: isVip ? (p ? vipDiscountedPrice(p) : null) : (lot ? lot.price : (p ? p.price : null)),
+    addons: extrasEscolhidos.map(a=>a.nome).join(", "),
+    addonsValor: extrasEscolhidos.length ? fmtBRL(extrasEscolhidos.reduce((x,a)=>x+a.preco,0)) : "",
+    total: fmtBRL(valorTotal),
+    pagamento: textoPagamento(p, valorTotal),
     lotVagas: isVip ? null : (lot ? lot.vagas : null),
     date: booking.date, time: booking.time,
     status: "pendente",
@@ -3691,6 +4027,8 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   document.getElementById("success-summary").innerHTML = `
     <div class="summary-row"><span class="lbl">Pacote</span><span class="val">${appt.package}</span></div>
     ${appt.lot ? `<div class="summary-row"><span class="lbl">Lote</span><span class="val">${appt.lot} (${appt.lotPrice})</span></div>` : ""}
+    ${appt.addons ? `<div class="summary-row"><span class="lbl">Adicionais</span><span class="val">${escapeHtml(appt.addons)} (${appt.addonsValor})</span></div>` : ""}
+    <div class="summary-row"><span class="lbl">Total</span><span class="val">${appt.total}</span></div>
     <div class="summary-row"><span class="lbl">Data</span><span class="val">${fmtDateBR(appt.date)}</span></div>
     <div class="summary-row"><span class="lbl">Horário</span><span class="val">${appt.time}</span></div>
     <div class="summary-row"><span class="lbl">Nome</span><span class="val">${escapeHtml(appt.name)}</span></div>
@@ -3704,6 +4042,9 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
     "Novo pedido — Taise Foto",
     "Pacote: " + appt.package,
     appt.lot ? ("Lote: " + appt.lot + " (" + appt.lotPrice + ")") : "",
+    appt.addons ? ("Adicionais: " + appt.addons + " (" + appt.addonsValor + ")") : "",
+    "Total: " + appt.total,
+    appt.pagamento ? ("Pagamento: " + appt.pagamento) : "",
     "Data: " + fmtDateBR(appt.date),
     "Horário: " + appt.time,
     "Nome: " + appt.name,
@@ -3922,23 +4263,25 @@ function pedirConfirmacao({ titulo, texto, itens = [], confirmar = "Confirmar", 
    página, então o botão é a porta de entrada: tentamos tocar, e se o navegador
    recusar, ele simplesmente continua como "Ativar música". A preferência fica
    guardada para quem voltar não precisar clicar de novo. */
-const MUSICA_KEY = "taise-breve-musica";
-function musicaLigada(){ try{ return localStorage.getItem(MUSICA_KEY) === "1"; }catch(e){ return false; } }
-function marcarMusica(ligada){ try{ localStorage.setItem(MUSICA_KEY, ligada ? "1" : "0"); }catch(e){} }
+const DURACAO_MUSICA_MS = 3000;   // a trilha é só uma amostra de 3 segundos
+let timerMusica = null;
 
 function pintarBotaoMusica(tocando){
   const btn = document.getElementById("breve-som");
   if(!btn) return;
   btn.setAttribute("aria-pressed", tocando ? "true" : "false");
-  document.getElementById("breve-som-txt").textContent = tocando ? "Música ligada" : "Ativar música";
+  document.getElementById("breve-som-txt").textContent = tocando ? "Tocando…" : "Ouvir a trilha";
 }
 async function tocarMusicaBreve(){
   const a = document.getElementById("breve-audio");
   if(!a) return false;
   a.volume = .38;
+  a.currentTime = 0;              // sempre do começo
   try{
     await a.play();
     pintarBotaoMusica(true);
+    clearTimeout(timerMusica);
+    timerMusica = setTimeout(()=>pararMusicaBreve(), DURACAO_MUSICA_MS);
     return true;
   }catch(e){
     pintarBotaoMusica(false);   // navegador recusou: fica no botão
@@ -3946,9 +4289,19 @@ async function tocarMusicaBreve(){
   }
 }
 function pararMusicaBreve(){
+  clearTimeout(timerMusica);
   const a = document.getElementById("breve-audio");
-  if(a && !a.paused) a.pause();
+  if(a){ a.pause(); a.currentTime = 0; }
   pintarBotaoMusica(false);
+}
+
+/* ---- Cards dos pacotes normais: mostrar ou esconder ---- */
+function pacotesEscondidos(){ return !!vipSettings.packagesHidden; }
+async function setPacotesEscondidos(hidden){
+  const data = await apiPost({ action:"packagesToggle", hidden });
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
+  if(data && data.ok && data.settings) vipSettings = data.settings;
+  return !!(data && data.ok);
 }
 
 /* ---- Bloqueio do site (tela "Em Breve") ---- */
@@ -3977,7 +4330,6 @@ function aplicarBloqueioSite(){
     site.style.display = "none";
     navbar.style.display = "none";
     document.getElementById("whatsapp-fab").style.display = "none";
-    if(musicaLigada()) tocarMusicaBreve();
   }else{
     breve.hidden = true;
     pararMusicaBreve();   // saiu da tela: o som não acompanha
@@ -4005,6 +4357,16 @@ function renderVipAdmin(){
     ? "Cadastro aberto — a página de inscrição está no ar."
     : "Cadastro fechado — a página mostra \"inscrições encerradas\".";
 
+  const pkgBtn = document.getElementById("packages-btn");
+  const pkgStatus = document.getElementById("packages-status");
+  const escondidos = pacotesEscondidos();
+  pkgBtn.disabled = false;
+  pkgBtn.textContent = escondidos ? "Mostrar pacotes" : "Esconder pacotes";
+  pkgBtn.classList.toggle("btn-danger", escondidos);
+  pkgStatus.textContent = escondidos
+    ? "Pacotes escondidos — os visitantes não veem os três cards."
+    : "Pacotes visíveis na página.";
+
   const blockBtn = document.getElementById("site-block-btn");
   const blockStatus = document.getElementById("site-block-status");
   const bloqueado = siteBloqueado();
@@ -4017,6 +4379,10 @@ function renderVipAdmin(){
 
   const launchBtn = document.getElementById("vip-launch-btn");
   const status = document.getElementById("vip-launch-status");
+  const resetBtn = document.getElementById("vip-reset-btn");
+  resetBtn.hidden = !vipLaunched();
+  resetBtn.disabled = false;
+  resetBtn.textContent = "Encerrar contagem";
   if(vipLaunched()){
     const end = vipWindowEndMs();
     status.textContent = vipBenefitsActive()
@@ -4070,6 +4436,67 @@ document.getElementById("vip-launch-btn").addEventListener("click", async ()=>{
   showToast("Acesso VIP lançado! Benefícios válidos por " + CONFIG.vip.benefitsWindowHours + "h.", "success");
   renderVipAdmin();
   renderVipCard();
+});
+
+document.getElementById("vip-reset-btn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("vip-reset-btn");
+  const confirmado = await pedirConfirmacao({
+    titulo: "Encerrar a contagem dos Benefícios VIP?",
+    texto: "O cronômetro some do card VIP e os benefícios do pré-lançamento deixam de valer imediatamente.",
+    itens: [
+      "O contador de 24 horas desaparece da página.",
+      "Quem está na lista deixa de ter o desconto e a escolha antecipada de data.",
+      "Você pode lançar de novo depois — a contagem recomeça do zero."
+    ],
+    confirmar: "Encerrar contagem",
+    perigo: true
+  });
+  if(!confirmado) return;
+
+  btn.disabled = true; btn.textContent = "Encerrando…";
+  const ok = await vipEncerrarContagem();
+  if(!ok){
+    showToast("Não foi possível encerrar a contagem.", "error");
+    renderVipAdmin();
+    return;
+  }
+  showToast("Contagem encerrada. Você pode lançar o acesso VIP de novo quando quiser.", "success");
+  renderVipAdmin();
+  renderVipCard();
+});
+
+document.getElementById("packages-btn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("packages-btn");
+  const esconder = !pacotesEscondidos();
+  const confirmado = esconder
+    ? await pedirConfirmacao({
+        titulo: "Esconder os pacotes da página?",
+        texto: "Os três cards de pacotes deixam de aparecer para quem visitar o site. O restante da página continua no ar.",
+        itens: [
+          "Ninguém consegue escolher pacote nem agendar por eles.",
+          "O card VIP e o resto do site continuam normais.",
+          "Agendamentos já feitos não são afetados."
+        ],
+        confirmar: "Esconder pacotes",
+        perigo: true
+      })
+    : await pedirConfirmacao({
+        titulo: "Mostrar os pacotes de novo?",
+        texto: "Os três cards voltam a aparecer na página e os visitantes poderão agendar normalmente.",
+        confirmar: "Mostrar pacotes"
+      });
+  if(!confirmado) return;
+
+  btn.disabled = true; btn.textContent = esconder ? "Escondendo…" : "Mostrando…";
+  const ok = await setPacotesEscondidos(esconder);
+  if(!ok){
+    showToast("Não foi possível alterar os pacotes.", "error");
+    renderVipAdmin();
+    return;
+  }
+  showToast(esconder ? "Pacotes escondidos da página." : "Pacotes visíveis novamente.", "success");
+  renderVipAdmin();
+  renderPackages();
 });
 
 document.getElementById("site-block-btn").addEventListener("click", async ()=>{
@@ -4154,6 +4581,11 @@ function getFilteredAppointments(){
   }).sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
 }
 
+// Agendamento feito pela Lista VIP — o lote fica gravado como "VIP".
+function ehAgendamentoVip(a){
+  return String(a && a.lot || "").trim().toUpperCase() === "VIP";
+}
+
 function renderTable(){
   const list = getFilteredAppointments();
   document.getElementById("table-skeleton").style.display = "none";
@@ -4171,7 +4603,7 @@ function renderTable(){
 
   tbody.innerHTML = list.map(a=>`
     <tr>
-      <td data-label="Cliente"><b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div></td>
+      <td data-label="Cliente">${ehAgendamentoVip(a)?'<span class="vip-star" title="Cliente VIP — comprou pelo pré-lançamento">&#9733;</span>':''}<b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div></td>
       <td data-label="Pacote">${escapeHtml(a.package)}${a.lot?`<div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.lot)}</div>`:""}</td>
       <td data-label="Data">${fmtDateBR(a.date)}</td>
       <td data-label="Horário">${a.time}</td>
@@ -4269,7 +4701,7 @@ function openDetail(id){
   if(!a) return;
   pendingDetailId = id;
   document.getElementById("detail-body").innerHTML = `
-    <div class="d-row"><span class="lbl">Nome completo</span><span class="val">${escapeHtml(a.name)}</span></div>
+    <div class="d-row"><span class="lbl">Nome completo</span><span class="val">${ehAgendamentoVip(a)?'<span class="vip-star">&#9733;</span> ':''}${escapeHtml(a.name)}</span></div>
     <div class="d-row"><span class="lbl">Telefone</span><span class="val">${escapeHtml(a.phone)}</span></div>
     <div class="d-row"><span class="lbl">E-mail</span><span class="val">${escapeHtml(a.email)}</span></div>
     <div class="d-row"><span class="lbl">Pacote</span><span class="val">${escapeHtml(a.package)}</span></div>
@@ -4388,13 +4820,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
   document.getElementById("breve-som").addEventListener("click", async ()=>{
     const a = document.getElementById("breve-audio");
-    if(a.paused){
-      const tocou = await tocarMusicaBreve();
-      marcarMusica(tocou);
-    }else{
-      pararMusicaBreve();
-      marcarMusica(false);
-    }
+    if(a.paused) await tocarMusicaBreve();
+    else pararMusicaBreve();
   });
 });
 // Digitar #admin numa aba já aberta não recarrega a página, só troca o hash.
