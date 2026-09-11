@@ -1439,6 +1439,42 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 .breve-som[aria-pressed="true"] .bs-on{display:block;}
 .breve-som[aria-pressed="true"] .bs-off{display:none;}
 
+/* ---- menu de acesso ao painel: espelha o botão de música ---- */
+.breve-menu{
+  position:fixed;top:clamp(26px,3.4vw,40px);right:clamp(26px,3.4vw,40px);z-index:7;
+  opacity:0;animation:riseIn 1s ease 1.05s forwards;
+}
+.bm-btn{
+  width:42px;height:42px;border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(62,6,10,.55);backdrop-filter:blur(6px);
+  border:1px solid rgba(161,129,94,.42);color:rgba(240,230,215,.72);
+  transition:color .3s ease,border-color .3s ease,background .3s ease;
+}
+.bm-btn:hover,.breve-menu.aberto .bm-btn{
+  color:var(--creme);border-color:rgba(161,129,94,.75);background:rgba(62,6,10,.85);
+}
+.bm-drop{
+  position:absolute;top:calc(100% + 10px);right:0;min-width:186px;
+  background:#F3EADB;border-radius:8px;padding:7px;
+  box-shadow:0 22px 48px rgba(0,0,0,.5);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .25s ease,transform .25s ease,visibility .25s;
+}
+.breve-menu.aberto .bm-drop{opacity:1;visibility:visible;transform:translateY(0);}
+.bm-item{
+  display:flex;align-items:center;gap:9px;width:100%;
+  padding:11px 13px;border-radius:5px;border:none;background:none;
+  font-family:var(--sans);font-size:13.5px;text-align:left;
+  color:#3E060A;transition:background .2s ease;
+}
+.bm-item:hover{background:rgba(62,6,10,.08);}
+.bm-item svg{flex:0 0 auto;opacity:.75;}
+@media(max-width:640px){
+  .breve-menu{top:22px;right:22px;}
+  .bm-btn{width:38px;height:38px;}
+}
+
 /* ---- partitura: três linhas deslizando em onda contínua ---- */
 .breve-partitura{
   position:absolute;left:0;right:0;bottom:clamp(18px,4vh,46px);
@@ -1639,6 +1675,19 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     </button>
   </div>
 
+  <!-- menu discreto para voltar ao painel sem precisar decorar a URL -->
+  <div class="breve-menu" id="breve-menu">
+    <button class="bm-btn" id="bm-btn" type="button" aria-expanded="false" aria-haspopup="true" aria-label="Menu">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="5" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="19" r="1.6" fill="currentColor"/></svg>
+    </button>
+    <div class="bm-drop" id="bm-drop">
+      <button class="bm-item" id="bm-admin" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7"/></svg>
+        Administração
+      </button>
+    </div>
+  </div>
+
   <!-- partitura: três linhas que ondulam devagar, como se respirassem -->
   <div class="breve-partitura" aria-hidden="true">
     <svg viewBox="0 0 1200 170" preserveAspectRatio="none">
@@ -1696,8 +1745,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         </a>
       </div>
       <div class="hero-stats">
-        <div><b>200+</b><span>famílias fotografadas</span></div>
-        <div><b>8</b><span>anos de estúdio</span></div>
+        <div><b>500+</b><span>famílias fotografadas</span></div>
+        <div><b>10</b><span>anos de estúdio</span></div>
         <div><b>4,9</b><span>avaliação média</span></div>
       </div>
     </div>
@@ -4302,6 +4351,33 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   // Com o site bloqueado a navbar some, e com ela o acesso ao painel. Este
   // atalho pela URL (…/index.html#admin) mantém a porta de entrada aberta.
   if(location.hash === "#admin") openLogin();
+
+  // menu da tela "Em Breve": abre o login do painel sem depender da URL
+  const breveMenu = document.getElementById("breve-menu");
+  const bmBtn = document.getElementById("bm-btn");
+  bmBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    const abrindo = !breveMenu.classList.contains("aberto");
+    breveMenu.classList.toggle("aberto", abrindo);
+    bmBtn.setAttribute("aria-expanded", abrindo ? "true" : "false");
+  });
+  document.addEventListener("click", (e)=>{
+    if(!breveMenu.contains(e.target)){
+      breveMenu.classList.remove("aberto");
+      bmBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+  document.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape"){
+      breveMenu.classList.remove("aberto");
+      bmBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+  document.getElementById("bm-admin").addEventListener("click", ()=>{
+    breveMenu.classList.remove("aberto");
+    bmBtn.setAttribute("aria-expanded", "false");
+    openLogin();
+  });
 
   document.getElementById("breve-som").addEventListener("click", async ()=>{
     const a = document.getElementById("breve-audio");
