@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lista VIP — Um Filme de Natal | Taise Rufino Fotografia</title>
 <meta name="description" content="Garanta uma das 20 vagas da lista VIP das sessões de Natal 2026 da Taise Rufino Fotografia.">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#3E060A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Comfortaa:wght@300;400;500;600;700&family=Rokkitt:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -133,14 +136,6 @@ h1,h2,h3{font-family:var(--retro);font-weight:500;letter-spacing:.004em;}
   border-radius:50%;background:var(--fundo);}
 .vip-stub::before{left:-34px;}
 .vip-stub::after{right:-34px;}
-
-/* vagas */
-.vagas{display:flex;align-items:center;gap:12px;margin-bottom:18px;position:relative;z-index:1;flex-wrap:wrap;}
-.vagas-num{font-family:var(--retro);font-size:30px;color:var(--gold-claro);line-height:1;}
-.vagas-lbl{font-size:12px;color:rgba(240,230,215,.6);}
-.vagas-bar{flex:1 1 160px;height:6px;border-radius:6px;background:rgba(240,230,215,.14);overflow:hidden;min-width:120px;}
-.vagas-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-claro));
-  width:0;transition:width .9s cubic-bezier(.22,.61,.36,1);}
 
 /* formulário */
 .vip-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative;z-index:1;}
@@ -299,9 +294,7 @@ h1,h2,h3{font-family:var(--retro);font-weight:500;letter-spacing:.004em;}
   border-color:rgba(240,230,215,.4);background:rgba(255,255,255,.09);
 }
 
-/* números de vagas e selo de sucesso com halo dourado */
-.vagas-num{text-shadow:0 0 22px rgba(198,161,91,.4);}
-.vagas-bar i{box-shadow:0 0 14px rgba(198,161,91,.55);}
+/* selo de sucesso com halo dourado */
 .done-badge{box-shadow:0 0 30px -8px rgba(198,161,91,.6);}
 
 @media(max-width:640px){
@@ -376,11 +369,6 @@ h1,h2,h3{font-family:var(--retro);font-weight:500;letter-spacing:.004em;}
 
       <!-- formulário -->
       <div class="state" id="st-form">
-        <div class="vagas">
-          <span class="vagas-num" id="vagas-num">–</span>
-          <span class="vagas-lbl" id="vagas-lbl">já estão na lista &mdash; inscrição ilimitada</span>
-        </div>
-
         <form class="vip-form" id="vip-form" novalidate>
           <div class="field full">
             <label for="f-name">Nome completo</label>
@@ -561,15 +549,6 @@ async function api(payload){
 }
 
 /* ---------- vagas ---------- */
-// A inscricao na lista e ilimitada: o numero aqui mostra quantas pessoas ja
-// entraram, nao quantas vagas sobraram. As 20 vagas sao de COMPRA, no dia do
-// pre-lancamento, e estao explicadas no aviso do topo do card.
-function pintaVagas(count){
-  const total = Math.max(0, count|0);
-  $("vagas-num").textContent = total;
-  $("vagas-lbl").textContent = (total === 1 ? "pessoa já está" : "pessoas já estão")
-    + " na lista — inscrição ilimitada";
-}
 
 async function carregarVagas(){
   try{
@@ -579,7 +558,6 @@ async function carregarVagas(){
     // versão antiga do Apps Script não trazem signupOpen — aí vale o lançamento.
     const aberto = typeof data.signupOpen === "boolean" ? data.signupOpen : !data.launched;
     if(!aberto){ show("st-launched"); return; }
-    pintaVagas(data.count);
     show("st-form");
   }catch(e){
     show("st-error");
@@ -663,7 +641,6 @@ $("vip-form").addEventListener("submit", async (e)=>{
 
   const r = data ? data.reason : "network";
   if(r === "full"){
-    pintaVagas(data.count || MAX);
     show("st-full");
     return;
   }
@@ -671,7 +648,6 @@ $("vip-form").addEventListener("submit", async (e)=>{
   if(r === "duplicate"){
     msg.className = "form-msg err";
     msg.textContent = "Esse e-mail ou telefone já está na lista VIP — sua vaga já está garantida.";
-    if(typeof data.count === "number") pintaVagas(data.count);
     return;
   }
   if(r === "busy"){

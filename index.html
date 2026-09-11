@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Taise Foto — Sessões de Natal</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#3E060A">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Comfortaa:wght@300;400;500;600;700&family=Rokkitt:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -3816,6 +3819,10 @@ async function enterAdmin(){
   document.getElementById("site-view").style.display = "none";
   navbar.style.display = "none";
   document.getElementById("admin-view").classList.add("open");
+  // Com o site bloqueado, a tela "Em Breve" é fixa e cobre tudo — inclusive o
+  // painel. Esta chamada a tira do caminho (e para a música) agora que o
+  // admin-view está aberto.
+  aplicarBloqueioSite();
   window.scrollTo(0,0);
   await garantirDocumentosIniciais();
   await refreshAdminData();
