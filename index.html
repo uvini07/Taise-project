@@ -2779,6 +2779,15 @@ let vipCountdownTimer = null;
 /* =========================================================
    HELPERS
 ========================================================= */
+// Liga um evento sem derrubar a página inteira quando o elemento não existe.
+// Comentar ou remover um botão no HTML passa a ser inofensivo: antes, um único
+// elemento ausente parava o script e o resto do site (galeria, FAQ) não carregava.
+function ligar(id, evento, fn, opcoes){
+  const el = document.getElementById(id);
+  if(el) el.addEventListener(evento, fn, opcoes);
+  return el;
+}
+
 function pad(n){ return n.toString().padStart(2,"0"); }
 function toISODate(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
 function fmtDateBR(iso){ const [y,m,d]=iso.split("-"); return d+"/"+m+"/"+y; }
@@ -3169,15 +3178,15 @@ window.addEventListener("scroll", ()=>{
 });
 
 const navMoreWrap = document.getElementById("nav-more-wrap");
-document.getElementById("nav-more-btn").addEventListener("click", (e)=>{
+ligar("nav-more-btn", "click", (e)=>{
   e.stopPropagation();
   navMoreWrap.classList.toggle("open");
 });
 document.addEventListener("click", ()=> navMoreWrap.classList.remove("open"));
 
 const mobileMenu = document.getElementById("mobile-menu");
-document.getElementById("burger-btn").addEventListener("click", ()=> mobileMenu.classList.add("open"));
-document.getElementById("close-mob").addEventListener("click", ()=> mobileMenu.classList.remove("open"));
+ligar("burger-btn", "click", ()=> mobileMenu.classList.add("open"));
+ligar("close-mob", "click", ()=> mobileMenu.classList.remove("open"));
 mobileMenu.querySelectorAll("a").forEach(a=> a.addEventListener("click", ()=> mobileMenu.classList.remove("open")));
 
 /* =========================================================
@@ -3588,17 +3597,17 @@ function renderGallery(){
     });
   });
 }
-document.getElementById("lightbox-close").addEventListener("click", ()=> document.getElementById("lightbox").classList.remove("open"));
-document.getElementById("lightbox").addEventListener("click", (e)=>{ if(e.target.id==="lightbox") e.currentTarget.classList.remove("open"); });
+ligar("lightbox-close", "click", ()=> document.getElementById("lightbox").classList.remove("open"));
+ligar("lightbox", "click", (e)=>{ if(e.target.id==="lightbox") e.currentTarget.classList.remove("open"); });
 
 function galleryScrollStep(){
   const item = document.querySelector("#gallery-grid .g-item");
   return item ? item.getBoundingClientRect().width + 18 : 300;
 }
-document.getElementById("g-prev").addEventListener("click", ()=>{
+ligar("g-prev", "click", ()=>{
   document.getElementById("gallery-grid").scrollBy({ left: -galleryScrollStep(), behavior:"smooth" });
 });
-document.getElementById("g-next").addEventListener("click", ()=>{
+ligar("g-next", "click", ()=>{
   document.getElementById("gallery-grid").scrollBy({ left: galleryScrollStep(), behavior:"smooth" });
 });
 
@@ -3678,13 +3687,13 @@ function closeBooking(){
   bookBackdrop.classList.remove("open");
   document.body.style.overflow = "";
 }
-document.getElementById("book-close").addEventListener("click", closeBooking);
+ligar("book-close", "click", closeBooking);
 bookBackdrop.addEventListener("click", (e)=>{ if(e.target===bookBackdrop) closeBooking(); });
-document.getElementById("hero-cta").addEventListener("click", ()=> openBooking(null));
-document.getElementById("final-cta").addEventListener("click", ()=> openBooking(null));
-document.getElementById("nav-cta").addEventListener("click", ()=> openBooking(null));
-document.getElementById("dd-agendar").addEventListener("click", (e)=>{ e.preventDefault(); openBooking(null); });
-document.getElementById("mob-agendar").addEventListener("click", ()=>{ mobileMenu.classList.remove("open"); openBooking(null); });
+ligar("hero-cta", "click", ()=> openBooking(null));
+ligar("final-cta", "click", ()=> openBooking(null));
+ligar("nav-cta", "click", ()=> openBooking(null));
+ligar("dd-agendar", "click", (e)=>{ e.preventDefault(); openBooking(null); });
+ligar("mob-agendar", "click", ()=>{ mobileMenu.classList.remove("open"); openBooking(null); });
 
 function renderPkgChoices(){
   const wrap = document.getElementById("pkg-choices");
@@ -3750,7 +3759,7 @@ function renderStep(){
   document.querySelectorAll(".step-labels span").forEach(s=> s.classList.toggle("active", +s.dataset.step === currentStep));
 }
 
-document.getElementById("s1-next").addEventListener("click", ()=>{
+ligar("s1-next", "click", ()=>{
   if(!booking.packageId){ showToast("Selecione um pacote para continuar.", "error"); return; }
   if(!booking.vip && !booking.lotLabel){ showToast("Selecione o lote para continuar.", "error"); return; }
   const lot = getBookingLot();
@@ -3760,12 +3769,12 @@ document.getElementById("s1-next").addEventListener("click", ()=>{
 });
 document.querySelectorAll('[data-back]').forEach(btn=> btn.addEventListener("click", ()=> goToStep(+btn.dataset.back)));
 
-document.getElementById("s2-next").addEventListener("click", async ()=>{
+ligar("s2-next", "click", async ()=>{
   await renderTimeSlots();
   goToStep(3);
 });
 
-document.getElementById("s3-next").addEventListener("click", ()=> goToStep(4));
+ligar("s3-next", "click", ()=> goToStep(4));
 
 /* ---- Itens adicionais no passo 1 ----
    Aparecem assim que o pacote é escolhido, antes da data. O que já vem no
@@ -3872,8 +3881,8 @@ function renderCalendar(){
   prevBtn.disabled = isCurrentMonth || (lotStart && (year<lotStart.getFullYear() || (year===lotStart.getFullYear() && month<=lotStart.getMonth())));
   nextBtn.disabled = !!(lotEnd && (year>lotEnd.getFullYear() || (year===lotEnd.getFullYear() && month>=lotEnd.getMonth())));
 }
-document.getElementById("cal-prev").addEventListener("click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()-1, 1); renderCalendar(); });
-document.getElementById("cal-next").addEventListener("click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()+1, 1); renderCalendar(); });
+ligar("cal-prev", "click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()-1, 1); renderCalendar(); });
+ligar("cal-next", "click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()+1, 1); renderCalendar(); });
 
 /* ---- STEP 3: HORÁRIOS ---- */
 async function renderTimeSlots(){
@@ -3927,7 +3936,7 @@ phoneInput.addEventListener("input", ()=>{
 });
 phoneInput.addEventListener("focus", ()=>{ if(!phoneInput.value) phoneInput.value = "+55 "; });
 
-document.getElementById("s4-next").addEventListener("click", ()=>{
+ligar("s4-next", "click", ()=>{
   const name = document.getElementById("in-name").value.trim();
   const phone = document.getElementById("in-phone").value.trim();
   const email = document.getElementById("in-email").value.trim();
@@ -3966,7 +3975,7 @@ function renderSummary(){
   `;
 }
 
-document.getElementById("confirm-booking").addEventListener("click", async (e)=>{
+ligar("confirm-booking", "click", async (e)=>{
   const btn = e.currentTarget;
   btn.disabled = true; btn.classList.add("loading");
   btn.innerHTML = '<span class="spinner"></span> Confirmando agendamento…';
@@ -4066,7 +4075,7 @@ document.getElementById("confirm-booking").addEventListener("click", async (e)=>
   setTimeout(()=>{ window.location.href = waLink; }, 900);
 });
 
-document.getElementById("success-close").addEventListener("click", closeBooking);
+ligar("success-close", "click", closeBooking);
 
 /* =========================================================
    LOGIN ADMINISTRATIVO
@@ -4081,16 +4090,16 @@ function openLogin(){
 }
 function closeLogin(){ loginBackdrop.classList.remove("open"); document.body.style.overflow = ""; }
 
-document.getElementById("dd-admin").addEventListener("click", openLogin);
-document.getElementById("mob-admin").addEventListener("click", ()=>{ mobileMenu.classList.remove("open"); openLogin(); });
-document.getElementById("foot-admin").addEventListener("click", openLogin);
-document.getElementById("login-cancel").addEventListener("click", closeLogin);
+ligar("dd-admin", "click", openLogin);
+ligar("mob-admin", "click", ()=>{ mobileMenu.classList.remove("open"); openLogin(); });
+ligar("foot-admin", "click", openLogin);
+ligar("login-cancel", "click", closeLogin);
 loginBackdrop.addEventListener("click",(e)=>{ if(e.target===loginBackdrop) closeLogin(); });
 
 // Trava contra duplo clique: cada clique extra virava outra requisição, e o
 // Apps Script atende uma de cada vez — a fila fazia o login parecer travado.
 let entrandoAdmin = false;
-document.getElementById("login-submit").addEventListener("click", async ()=>{
+ligar("login-submit", "click", async ()=>{
   if(entrandoAdmin) return;
   const btn = document.getElementById("login-submit");
   const u = document.getElementById("login-user").value.trim();
@@ -4178,8 +4187,8 @@ function exitAdmin(){
   // Se o site está bloqueado, sair do painel devolve para a tela "Em Breve".
   aplicarBloqueioSite();
 }
-document.getElementById("admin-logout").addEventListener("click", exitAdmin);
-document.getElementById("admin-back-site").addEventListener("click", (e)=>{ e.preventDefault(); exitAdmin(); });
+ligar("admin-logout", "click", exitAdmin);
+ligar("admin-back-site", "click", (e)=>{ e.preventDefault(); exitAdmin(); });
 
 function refreshAdminDataIfOpen(){
   if(document.getElementById("admin-view").classList.contains("open")) refreshAdminData();
@@ -4405,7 +4414,7 @@ function renderVipAdmin(){
   }
 }
 
-document.getElementById("vip-enable-toggle").addEventListener("change", async (e)=>{
+ligar("vip-enable-toggle", "change", async (e)=>{
   const checked = e.currentTarget.checked;
   e.currentTarget.disabled = true;
   const ok = await vipSetEnabled(checked);
@@ -4415,7 +4424,7 @@ document.getElementById("vip-enable-toggle").addEventListener("change", async (e
   renderVipCard();
 });
 
-document.getElementById("vip-launch-btn").addEventListener("click", async ()=>{
+ligar("vip-launch-btn", "click", async ()=>{
   const btn = document.getElementById("vip-launch-btn");
   const fim = new Date(Date.now() + CONFIG.vip.benefitsWindowHours * 3600 * 1000);
   const confirmado = await pedirConfirmacao({
@@ -4438,7 +4447,7 @@ document.getElementById("vip-launch-btn").addEventListener("click", async ()=>{
   renderVipCard();
 });
 
-document.getElementById("vip-reset-btn").addEventListener("click", async ()=>{
+ligar("vip-reset-btn", "click", async ()=>{
   const btn = document.getElementById("vip-reset-btn");
   const confirmado = await pedirConfirmacao({
     titulo: "Encerrar a contagem dos Benefícios VIP?",
@@ -4465,7 +4474,7 @@ document.getElementById("vip-reset-btn").addEventListener("click", async ()=>{
   renderVipCard();
 });
 
-document.getElementById("packages-btn").addEventListener("click", async ()=>{
+ligar("packages-btn", "click", async ()=>{
   const btn = document.getElementById("packages-btn");
   const esconder = !pacotesEscondidos();
   const confirmado = esconder
@@ -4499,7 +4508,7 @@ document.getElementById("packages-btn").addEventListener("click", async ()=>{
   renderPackages();
 });
 
-document.getElementById("site-block-btn").addEventListener("click", async ()=>{
+ligar("site-block-btn", "click", async ()=>{
   const btn = document.getElementById("site-block-btn");
   const bloquear = !siteBloqueado();
   const confirmado = bloquear
@@ -4533,7 +4542,7 @@ document.getElementById("site-block-btn").addEventListener("click", async ()=>{
   renderVipAdmin();
 });
 
-document.getElementById("vip-release-btn").addEventListener("click", async ()=>{
+ligar("vip-release-btn", "click", async ()=>{
   const btn = document.getElementById("vip-release-btn");
   const abrir = !vipSignupAberto();
   btn.disabled = true; btn.textContent = abrir ? "Liberando…" : "Fechando…";
@@ -4661,11 +4670,11 @@ function exportAppointmentsCSV(){
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
-document.getElementById("export-csv").addEventListener("click", exportAppointmentsCSV);
+ligar("export-csv", "click", exportAppointmentsCSV);
 
-document.getElementById("admin-search").addEventListener("input", (e)=>{ adminFilters.search = e.target.value; renderTable(); });
-document.getElementById("filter-package").addEventListener("change", (e)=>{ adminFilters.pkg = e.target.value; renderTable(); });
-document.getElementById("filter-date").addEventListener("change", (e)=>{ adminFilters.date = e.target.value; renderTable(); });
+ligar("admin-search", "input", (e)=>{ adminFilters.search = e.target.value; renderTable(); });
+ligar("filter-package", "change", (e)=>{ adminFilters.pkg = e.target.value; renderTable(); });
+ligar("filter-date", "change", (e)=>{ adminFilters.date = e.target.value; renderTable(); });
 document.querySelectorAll(".chip-filter").forEach(chip=>{
   chip.addEventListener("click", ()=>{
     document.querySelectorAll(".chip-filter").forEach(c=>c.classList.remove("active"));
@@ -4685,8 +4694,8 @@ function openCancelConfirm(id){
   pendingCancelId = id;
   document.getElementById("cancel-backdrop").classList.add("open");
 }
-document.getElementById("cancel-no").addEventListener("click", ()=> document.getElementById("cancel-backdrop").classList.remove("open"));
-document.getElementById("cancel-yes").addEventListener("click", async ()=>{
+ligar("cancel-no", "click", ()=> document.getElementById("cancel-backdrop").classList.remove("open"));
+ligar("cancel-yes", "click", async ()=>{
   document.getElementById("cancel-backdrop").classList.remove("open");
   if(pendingCancelId){
     await updateAppointmentStatus(pendingCancelId, "cancelado");
@@ -4717,16 +4726,16 @@ function openDetail(id){
     </div>
     <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
   `;
-  document.getElementById("detail-whatsapp").addEventListener("click", ()=> openWhatsappTo(a.phone));
+  ligar("detail-whatsapp", "click", ()=> openWhatsappTo(a.phone));
   document.getElementById("detail-backdrop").classList.add("open");
   const cb = document.getElementById("detail-confirm");
   const xb = document.getElementById("detail-cancel");
   if(cb) cb.addEventListener("click", async ()=>{ await confirmAppointment(id); document.getElementById("detail-backdrop").classList.remove("open"); });
   if(xb) xb.addEventListener("click", ()=>{ document.getElementById("detail-backdrop").classList.remove("open"); openCancelConfirm(id); });
 }
-document.getElementById("detail-close").addEventListener("click", ()=> document.getElementById("detail-backdrop").classList.remove("open"));
-document.getElementById("detail-backdrop").addEventListener("click",(e)=>{ if(e.target.id==="detail-backdrop") e.currentTarget.classList.remove("open"); });
-document.getElementById("cancel-backdrop").addEventListener("click",(e)=>{ if(e.target.id==="cancel-backdrop") e.currentTarget.classList.remove("open"); });
+ligar("detail-close", "click", ()=> document.getElementById("detail-backdrop").classList.remove("open"));
+ligar("detail-backdrop", "click",(e)=>{ if(e.target.id==="detail-backdrop") e.currentTarget.classList.remove("open"); });
+ligar("cancel-backdrop", "click",(e)=>{ if(e.target.id==="cancel-backdrop") e.currentTarget.classList.remove("open"); });
 
 /* ---- AGENDA ---- */
 document.querySelectorAll("#agenda-tabs .tab-btn").forEach(btn=>{
@@ -4812,13 +4821,13 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       bmBtn.setAttribute("aria-expanded", "false");
     }
   });
-  document.getElementById("bm-admin").addEventListener("click", ()=>{
+  ligar("bm-admin", "click", ()=>{
     breveMenu.classList.remove("aberto");
     bmBtn.setAttribute("aria-expanded", "false");
     openLogin();
   });
 
-  document.getElementById("breve-som").addEventListener("click", async ()=>{
+  ligar("breve-som", "click", async ()=>{
     const a = document.getElementById("breve-audio");
     if(a.paused) await tocarMusicaBreve();
     else pararMusicaBreve();
