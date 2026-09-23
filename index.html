@@ -271,6 +271,12 @@ section{position:relative;}
 .pack-lot-box{padding:10px 12px;border-radius:4px;background:rgba(246,241,231,.06);border:1px solid rgba(246,241,231,.14);}
 .pack-lot-box.active{border-color:var(--dourado);background:rgba(198,161,91,.1);}
 .pack-lot-box.sold-out{opacity:.5;}
+/* Lote clicavel: toca no quadrado e o agendamento abre com pacote + lote ja escolhidos */
+.pack-lot-box.clickable{cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .18s ease,background .18s ease,transform .12s ease;}
+.pack-lot-box.clickable:hover{border-color:var(--dourado);background:rgba(198,161,91,.12);}
+.pack-lot-box.clickable:active{transform:scale(.985);}
+.pack-lot-box.clickable:focus-visible{outline:2px solid var(--dourado);outline-offset:2px;}
+.plb-cta{display:block;font-size:11.5px;font-weight:600;letter-spacing:.3px;color:var(--dourado-claro);margin-top:6px;opacity:.85;}
 .plb-top{display:flex;justify-content:space-between;align-items:baseline;}
 .plb-label{font-size:12px;font-weight:700;letter-spacing:.3px;color:var(--dourado-claro);text-transform:uppercase;}
 .plb-price{font-size:14.5px;font-weight:600;color:var(--marfim);}
@@ -736,6 +742,12 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .row-actions .a-conf:hover{background:rgba(46,125,79,.12);border-color:var(--verde-status);color:var(--verde-status);}
 .row-actions .a-canc:hover{background:rgba(162,58,58,.12);border-color:var(--vermelho-status);color:var(--vermelho-status);}
 .row-actions .a-view:hover{background:rgba(27,23,18,.06);}
+/* Botão "jogar na Google Agenda": laranja = ainda não lancei, verde = já lancei.
+   Só aparece em pedido confirmado. */
+.row-actions .a-agenda.pendente{border-color:var(--amarelo-status);color:var(--amarelo-status);background:rgba(199,150,46,.1);}
+.row-actions .a-agenda.pendente:hover{background:rgba(199,150,46,.22);}
+.row-actions .a-agenda.marcado{border-color:var(--verde-status);color:var(--verde-status);background:rgba(46,125,79,.12);}
+.row-actions .a-agenda.marcado:hover{background:rgba(46,125,79,.22);}
 .empty-state{padding:70px 24px;text-align:center;}
 .empty-state .e-ico{width:52px;height:52px;margin:0 auto 16px;color:rgba(27,23,18,.22);}
 .empty-state h4{font-size:16px;color:rgba(27,23,18,.6);}
@@ -2387,6 +2399,7 @@ const CONFIG = {
       entrada: 50,          // % pago na reserva; o restante no dia do ensaio
       inclusos: [],         // itens da lista "adicionais" que já vêm no pacote
       desc: "O essencial para registrar o Natal em família com leveza.",
+      duracaoMin: 35,     // duração da sessão — usada pra calcular o fim do evento na agenda
       price: "R$ 380,00",
       benefits: ["20 fotos digitais", "35 minutos de sessão", "Sem troca de look", "Criança, pais e irmãos", "1 cenário"],
       featured: false,
@@ -2402,6 +2415,7 @@ const CONFIG = {
       entrada: 30,
       inclusos: ["teaser"],
       desc: "Nosso pacote mais escolhido, com mais tempo e mais fotos.",
+      duracaoMin: 45,
       price: "R$ 650,00",
       benefits: ["Todas as melhores fotos", "45 minutos de sessão", "1 troca de look", "1 cenário", "1 clipe emocionante da sessão", "Avós inclusos"],
       featured: true,
@@ -2417,6 +2431,7 @@ const CONFIG = {
       entrada: 30,
       inclusos: ["box","teaser","cenario"],
       desc: "A experiência de Natal completa, com tempo estendido e recordações impressas.",
+      duracaoMin: 60,
       price: "R$ 800,00",
       benefits: ["Experiência de Natal completa", "Todas as melhores fotos", "1h de sessão", "1 troca de look", "2 cenários (Natal e Ano Novo)", "1 vídeo emocionante da sessão", "1 box acrílico com 50 fotos reveladas 10x15"],
       featured: false,
@@ -2703,6 +2718,17 @@ async function firebaseApi(payload){
     });
     lote.update(db.collection(COL_HORARIOS).doc(payload.id), { status: payload.status });
     await lote.commit();
+    return { ok:true };
+  }
+
+  // Sinal visual do painel: marca que esse pedido já foi lançado na agenda.
+  // O Google não devolve confirmação de salvamento, então o que registramos
+  // é o clique de quem lançou, não o evento em si.
+  if(acao === "agendaFlag"){
+    await db.collection(COL_AGENDAMENTOS).doc(payload.id).update({
+      naAgenda: !!payload.naAgenda,
+      naAgendaAt: payload.naAgenda ? new Date().toISOString() : null
+    });
     return { ok:true };
   }
 
@@ -3310,8 +3336,21 @@ function parcela5x(preco){
 /* =========================================================
    RENDER: PACOTES (landing)
 ========================================================= */
+// Com os pacotes escondidos não existe o que agendar, então os CTAs de
+// agendamento da landing somem junto. O fluxo VIP não entra aqui: ele tem
+// card próprio e continua no ar mesmo com os pacotes ocultos.
+const CTAS_AGENDAMENTO = ["hero-cta", "final-cta", "nav-cta"];
+function aplicarVisibilidadeCtas(){
+  const escondidos = pacotesEscondidos();
+  CTAS_AGENDAMENTO.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = escondidos ? "none" : "";
+  });
+}
+
 function renderPackages(){
   const grid = document.getElementById("pack-grid");
+  aplicarVisibilidadeCtas();
   // escondido pelo painel: o card VIP e o resto da seção continuam no ar
   if(pacotesEscondidos()){
     grid.innerHTML = "";
@@ -3331,11 +3370,13 @@ function renderPackages(){
           const rem = getLotRemaining(p, l);
           const soldOut = rem===0;
           return `
-          <div class="pack-lot-box ${activeLot && activeLot.label===l.label ? "active":""} ${soldOut?"sold-out":""}">
+          <div class="pack-lot-box ${activeLot && activeLot.label===l.label ? "active":""} ${soldOut?"sold-out":"clickable"}"
+               ${soldOut ? "" : `data-pkg="${p.id}" data-lot="${l.label}" role="button" tabindex="0" aria-label="Agendar ${p.name} no ${l.label} por ${l.price}"`}>
             <div class="plb-top"><span class="plb-label">${l.label}</span><span class="plb-price">${l.price}</span></div>
             <span class="plb-parcela">${parcela5x(l.price)}</span>
             <span class="plb-period">${fmtLotPeriod(l)}</span>
             <span class="plb-vagas ${rem!=null && rem<=5 && rem>0 ?"low":""}">${soldOut ? "Esgotado" : (rem!=null ? rem+" vaga"+(rem===1?"":"s")+" restante"+(rem===1?"":"s") : "Vagas abertas")}</span>
+            ${soldOut ? "" : `<span class="plb-cta">Toque para agendar neste lote →</span>`}
           </div>`;
         }).join("")}
       </div>` : `<div class="pack-price"><span class="val">${p.price}</span></div><span class="pack-parcela">${parcela5x(p.price)}</span>`}
@@ -3349,6 +3390,14 @@ function renderPackages(){
   }).join("");
   grid.querySelectorAll(".pack-btn").forEach(btn=>{
     btn.addEventListener("click", ()=> openBooking(btn.dataset.pkg));
+  });
+  // Clicar no quadrado do lote abre o agendamento ja com aquele pacote e lote.
+  grid.querySelectorAll(".pack-lot-box.clickable").forEach(box=>{
+    const abrir = ()=> openBooking(box.dataset.pkg, box.dataset.lot);
+    box.addEventListener("click", abrir);
+    box.addEventListener("keydown", e=>{
+      if(e.key==="Enter" || e.key===" "){ e.preventDefault(); abrir(); }
+    });
   });
   initReveal();
   renderVipCard();
@@ -3639,8 +3688,17 @@ function renderFaq(){
 ========================================================= */
 const bookBackdrop = document.getElementById("book-backdrop");
 
-function openBooking(pkgId){
-  booking = { packageId: pkgId||null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
+// lotLabel e opcional: vem preenchido quando a pessoa clica direto no quadrado
+// de um lote no card do pacote, ja deixando o passo 1 pronto pra avancar.
+function openBooking(pkgId, lotLabel){
+  const pkg = pkgById(pkgId);
+  let lot = null;
+  if(pkg && pkg.lots && lotLabel){
+    const alvo = pkg.lots.find(l=>l.label===lotLabel);
+    // so pre-seleciona se o lote ainda tiver vaga
+    if(alvo && getLotRemaining(pkg, alvo)!==0) lot = alvo.label;
+  }
+  booking = { packageId: pkgId||null, lotLabel: lot, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
   currentStep = 1;
   calCursor = new Date();
   document.getElementById("vip-step1-note").innerHTML = "";
@@ -4628,6 +4686,10 @@ function renderTable(){
           <button class="a-view" title="Ver detalhes" data-id="${a.id}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
+          ${a.status==="confirmado" ? `
+          <button class="a-agenda ${a.naAgenda?"marcado":"pendente"}" data-id="${a.id}" title="${a.naAgenda?"Já lançado na Google Agenda — clique para abrir de novo":"Jogar na Google Agenda"}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </button>` : ""}
           <button class="a-phone" title="Chamar no WhatsApp" data-phone="${escapeHtml(a.phone)}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -4640,9 +4702,29 @@ function renderTable(){
   tbody.querySelectorAll(".a-canc:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> openCancelConfirm(b.dataset.id)));
   tbody.querySelectorAll(".a-view").forEach(b=> b.addEventListener("click", ()=> openDetail(b.dataset.id)));
   tbody.querySelectorAll(".a-phone").forEach(b=> b.addEventListener("click", ()=> openWhatsappTo(b.dataset.phone)));
+  tbody.querySelectorAll(".a-agenda").forEach(b=> b.addEventListener("click", async ()=>{
+    const a = appointmentsCache.find(x=>x.id===b.dataset.id);
+    if(!a) return;
+    window.open(googleAgendaUrl(a), "_blank", "noopener");
+    if(a.naAgenda) return;                       // já verde: só reabre
+    if(await marcarNaAgenda(a.id, true)) renderTable();
+    else showToast("Abri a agenda, mas não consegui marcar o pedido como lançado.", "error");
+  }));
 }
 
 // Abre o WhatsApp numa conversa com o telefone do cliente (usado pelo botão de telefone do admin).
+// Marca/desmarca "já lancei na Google Agenda". Pinta na hora e desfaz se a
+// gravação falhar, pra cor nunca mentir sobre o que está salvo.
+async function marcarNaAgenda(id, naAgenda){
+  const idx = appointmentsCache.findIndex(a=>a.id===id);
+  if(idx>-1) appointmentsCache[idx].naAgenda = naAgenda;
+  const data = await apiPost({ action:"agendaFlag", id, naAgenda });
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return false; }
+  const ok = !!(data && data.ok);
+  if(!ok && idx>-1) appointmentsCache[idx].naAgenda = !naAgenda;
+  return ok;
+}
+
 function openWhatsappTo(phone){
   const digits = (phone||"").replace(/\D/g,"");
   if(!digits){ showToast("Esse pedido não tem telefone cadastrado.", "error"); return; }
@@ -4705,6 +4787,57 @@ ligar("cancel-yes", "click", async ()=>{
   }
 });
 
+/* =========================================================
+   GOOGLE AGENDA — link "Adicionar à agenda"
+   Monta a URL de novo evento já preenchida com os dados do agendamento.
+   Abre na conta indicada em AGENDA_DESTINO; o Google só respeita esse
+   authuser se a conta estiver logada no navegador de quem clica.
+========================================================= */
+const AGENDA_DESTINO = "tarufino@gmail.com";
+
+// "2026-12-01" + "14:00" + 45min -> { ini:"20261201T140000", fim:"20261201T144500" }
+// Sem sufixo Z: assim o Google cria no fuso passado em ctz (Brasília).
+function janelaEvento(dateISO, hhmm, duracaoMin){
+  const [a,m,d] = String(dateISO).split("-").map(Number);
+  const [h,min] = String(hhmm||"00:00").split(":").map(Number);
+  const ini = new Date(a, m-1, d, h||0, min||0);
+  const fim = new Date(ini.getTime() + (duracaoMin||60)*60000);
+  const carimbo = x => [
+    x.getFullYear(),
+    String(x.getMonth()+1).padStart(2,"0"),
+    String(x.getDate()).padStart(2,"0"),
+    "T",
+    String(x.getHours()).padStart(2,"0"),
+    String(x.getMinutes()).padStart(2,"0"),
+    "00"
+  ].join("");
+  return { ini: carimbo(ini), fim: carimbo(fim) };
+}
+
+function googleAgendaUrl(a){
+  const pkg = CONFIG.packages.find(p => p.name === a.package);
+  const { ini, fim } = janelaEvento(a.date, a.time, pkg && pkg.duracaoMin);
+  const detalhes = [
+    "Cliente: " + (a.name||"—"),
+    "Telefone: " + (a.phone||"—"),
+    "E-mail: " + (a.email||"—"),
+    "Pacote: " + (a.package||"—"),
+    a.lot ? ("Lote: " + a.lot + (a.lotPrice ? " ("+a.lotPrice+")" : "")) : "",
+    a.notes ? ("Observações: " + a.notes) : "",
+    "Status: " + (a.status||"—")
+  ].filter(Boolean).join(String.fromCharCode(10));
+
+  const q = new URLSearchParams({
+    action: "TEMPLATE",
+    text: "Ensaio de Natal — " + (a.name||"Cliente"),
+    dates: ini + "/" + fim,
+    details: detalhes,
+    ctz: "America/Sao_Paulo",
+    authuser: AGENDA_DESTINO
+  });
+  return "https://calendar.google.com/calendar/render?" + q.toString();
+}
+
 function openDetail(id){
   const a = appointmentsCache.find(x=>x.id===id);
   if(!a) return;
@@ -4725,8 +4858,16 @@ function openDetail(id){
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
     </div>
     <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
+    ${a.status==="confirmado" ? `<button class="btn-outline" id="detail-agenda" style="width:100%;justify-content:center;margin-top:10px;">${a.naAgenda?"Abrir de novo na Google Agenda":"Adicionar à Google Agenda"}</button>` : ""}
   `;
   ligar("detail-whatsapp", "click", ()=> openWhatsappTo(a.phone));
+  // Abre o Google Agenda em outra aba com o evento pronto — só falta salvar.
+  // Mesma marcação do botão da tabela, pra as duas telas contarem a mesma história.
+  ligar("detail-agenda", "click", async ()=>{
+    window.open(googleAgendaUrl(a), "_blank", "noopener");
+    if(a.naAgenda) return;
+    if(await marcarNaAgenda(a.id, true)) renderTable();
+  });
   document.getElementById("detail-backdrop").classList.add("open");
   const cb = document.getElementById("detail-confirm");
   const xb = document.getElementById("detail-cancel");
