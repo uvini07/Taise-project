@@ -1,0 +1,47 @@
+FOTOS DO SITE — Taise Foto
+==========================
+
+As fotos ficam NESTA MESMA PASTA, ao lado do index.html:
+
+  img1   -> foto GRANDE da secao "A experiencia"
+  img2   -> foto MENOR (polaroid) da mesma secao
+  img3   -> 1a foto do carrossel da galeria
+  img4   -> 2a foto do carrossel
+  ...
+  img12  -> 10a e ultima foto do carrossel
+
+Total: 12 fotos (2 na experiencia + 10 no carrossel).
+
+EXTENSAO
+--------
+Pode usar .jpg, .jpeg, .png, .webp ou .avif — o site procura nessa ordem e
+usa a primeira que encontrar. Prefira .jpg: e a primeira tentativa, entao
+o site acha a foto de primeira, sem requisicoes perdidas.
+
+TROCAR UMA FOTO
+---------------
+Basta substituir o arquivo (ex.: jogar um img5.jpg novo por cima).
+IMPORTANTE: otimize antes de subir. Foto direto da camera tem uns 8 MB e
+deixa o site lento, alem de pesar no GitHub. O ideal e:
+
+  - maior lado: 1600 pixels
+  - qualidade JPEG: 85
+  - resultado: entre 150 KB e 300 KB por foto
+
+ENQUANTO A FOTO NAO ESTIVER AQUI
+--------------------------------
+Aparece um quadrado cinza no lugar, sem quebrar o layout da pagina.
+Foto que falta tambem nao abre em tela cheia ao clicar.
+
+USAR MENOS DE 10 FOTOS NO CARROSSEL
+-----------------------------------
+Abra o index.html, procure por "const GALLERY" e apague a linha da foto
+que voce nao vai usar. As legendas que aparecem ao passar o mouse tambem
+sao editadas ai.
+
+PASTA "fotos-originais"
+-----------------------
+Guarda as suas fotos em tamanho original (4000 px, ~8 MB cada) e, em
+"site-antigo", as fotos que estavam no site antes. Essa pasta NAO vai para
+o GitHub (esta no .gitignore) e NAO precisa ir para o servidor — e so o seu
+arquivo de seguranca. Se quiser, pode mover para fora do projeto.

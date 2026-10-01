@@ -18,7 +18,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
 /* ===== FOTOS DO SITE =====================================================
-   Todas as fotos ficam na pasta "img/", ao lado deste arquivo:
+   Todas as fotos ficam na mesma pasta deste arquivo (a raiz do site):
 
      img1  -> foto grande da seção "A experiência"
      img2  -> foto menor (polaroid) da mesma seção
@@ -30,7 +30,7 @@
    da página chamam imgFalhou() e ele precisa existir antes delas.
 ========================================================================= */
 var IMAGENS = {
-  pasta: "img/",
+  pasta: "",          // "" = mesma pasta do index.html; "img/" seria uma subpasta
   extensoes: ["jpg","jpeg","png","webp","avif"],
   galeriaMax: 10
 };
@@ -269,7 +269,7 @@ section{position:relative;}
 .exp-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:60px;align-items:center;}
 .exp-media{position:relative;}
 .exp-media .m-main{border-radius:2px;width:88%;box-shadow:0 30px 60px -20px rgba(27,23,18,.35);}
-/* ---- fotos vindas da pasta img/ ----
+/* ---- fotos em arquivo (img1.jpg, img2.jpg, ...) ----
    Enquanto o arquivo nao existe (ou ainda esta carregando) fica um quadrado
    cinza no lugar, para a pagina nao "pular" quando a foto entrar. */
 .foto-arquivo{background:#d9d9d9;}
@@ -1984,9 +1984,9 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   <div class="retro-icons" data-icons="poltrona,nota,estrela,moldura,luz,camera,oval,estrela,vitrola"></div>
   <div class="wrap exp-grid">
     <div class="exp-media reveal">
-      <img class="m-main foto-arquivo" src="img/img1.jpg" alt="Família em sessão de Natal"
+      <img class="m-main foto-arquivo" src="img1.jpg" alt="Família em sessão de Natal"
            data-img="1" data-ext="0" onerror="imgFalhou(this)">
-      <img class="m-float foto-arquivo" src="img/img2.jpg" alt="Detalhe da sessão"
+      <img class="m-float foto-arquivo" src="img2.jpg" alt="Detalhe da sessão"
            data-img="2" data-ext="0" onerror="imgFalhou(this)">
     </div>
     <div class="exp-copy">
@@ -2601,7 +2601,7 @@ const CONFIG = {
   vip: { maxSignups: 20, freePhotos: 10, benefitsWindowHours: 24, discountPercent: 10, vagasCompra: 20 }
 };
 
-/* ---- Fotos do site (pasta img/) ----
+/* ---- Fotos do site (arquivos na mesma pasta do index.html) ----
    img1 = foto grande da seção "A experiência"
    img2 = foto menor (polaroid) da mesma seção
    img3 ... img12 = carrossel da galeria (no máximo 10 fotos)

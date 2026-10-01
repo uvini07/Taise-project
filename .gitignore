@@ -1,0 +1,16 @@
+# Fotos em tamanho original (varios MB cada). Ficam so na sua maquina:
+# o site usa as versoes otimizadas que estao na raiz (img1.jpg ... img12.jpg).
+fotos-originais/
+
+# Arquivos locais / de sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Ferramental local do editor / agentes — nao faz parte do site
+.agents/
+.claude/skills/
+skills-lock.json
+
+# Musica nao usada pelo site (o player usa musica-natal.mp3)
+Silverman Sound Studios - Christmas Spirit.mp3
