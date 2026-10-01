@@ -1,0 +1,86 @@
+rules_version = '2';
+
+// ============================================================================
+// REGRAS DE SEGURANÇA — Taise Foto
+//
+// A ideia central: o navegador fala direto com o banco, então é AQUI que os
+// dados dos clientes ficam protegidos. Nome, telefone e e-mail vivem em
+// coleções que só o admin logado consegue ler. O visitante enxerga apenas
+// data/hora/pacote/status, que é o necessário para escolher um horário.
+//
+// Onde colar: Firebase → Firestore Database → aba "Regras" → Publicar.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Admin é quem tem um documento em "admins" com o próprio UID.
+    function ehAdmin() {
+      return request.auth != null
+          && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Cada pessoa só enxerga o próprio registro de admin, e ninguém cria
+    // admin pelo site — isso é feito à mão no console do Firebase.
+    match /admins/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+
+    // Disponibilidade pública. Nunca guarde dado pessoal aqui: qualquer
+    // visitante do site lê esta coleção inteira.
+    match /horarios/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys()
+                       .hasOnly(['date','time','package','lot','status']);
+      allow update, delete: if ehAdmin();
+    }
+
+    // Agendamento completo, com dados pessoais. Qualquer um cria (é o
+    // formulário do site), mas só o admin lê, altera ou apaga.
+    match /agendamentos/{id} {
+      allow read, update, delete: if ehAdmin();
+      allow create: if true;
+    }
+
+    // Marca de "esse contato está na lista VIP". Responde a consulta pontual
+    // (get) para validar quem chega pelo site, mas nunca deixa listar tudo —
+    // é isso que impede alguém de baixar a lista de contatos.
+    match /vipMembros/{chave} {
+      allow get: if true;
+      allow list: if ehAdmin();
+      allow create: if true;
+      allow update, delete: if ehAdmin();
+    }
+
+    // Cadastro VIP com dados pessoais: mesma lógica dos agendamentos.
+    match /vipCadastros/{id} {
+      allow read, update, delete: if ehAdmin();
+      allow create: if true;
+    }
+
+    // Estado do VIP (ligado, lançamento, cadastro aberto). O site precisa ler
+    // para saber o que mostrar; só o admin muda.
+    match /config/vip {
+      allow read: if true;
+      allow write: if ehAdmin();
+    }
+
+    // Contador de vagas VIP. Leitura livre para mostrar "x vagas restantes".
+    // Uma inscrição só pode somar 1 e não pode tocar em nenhum outro campo,
+    // então ninguém zera nem adultera o contador pelo navegador.
+    match /config/contadorVip {
+      allow read: if true;
+      allow create, delete: if ehAdmin();
+      allow update: if ehAdmin()
+                    || (request.resource.data.keys().hasOnly(['cadastros'])
+                        && request.resource.data.cadastros is int
+                        && request.resource.data.cadastros == resource.data.cadastros + 1);
+    }
+
+    // Qualquer coisa fora do que está descrito acima fica bloqueada.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1854,7 +1854,7 @@ const CONFIG = {
       lots: [
         { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 20 },
         { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 420,00", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 490,00", vagas: null }
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 490,00", vagas: null }
       ]
     },
     {
@@ -1867,7 +1867,7 @@ const CONFIG = {
       lots: [
         { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 650,00", vagas: 20 },
         { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 700,00", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 750,00", vagas: null }
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 750,00", vagas: null }
       ]
     },
     {
@@ -1880,11 +1880,38 @@ const CONFIG = {
       lots: [
         { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 800,00", vagas: 20 },
         { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 850,00", vagas: 40 },
-        { label: "3º Lote", start: "2026-12-01", end: "2026-12-19", price: "R$ 900,00", vagas: null }
+        { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 900,00", vagas: null }
       ]
     }
   ],
-  availableTimes: ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+  // TEMPORADA: nenhuma reserva e aceita antes de seasonStart nem depois de
+  // seasonEnd, valendo tambem para VIP e para qualquer lote.
+  seasonStart: "2026-11-01",
+  seasonEnd: "2026-12-20",
+  // AGENDA (sessoes de 1h em 1h). "weekTimes" = padrao de segunda a sexta.
+  // "dateTimes" sobrepoe dias especificos: [] significa dia indisponivel.
+  // Sabados e domingos SEM entrada em dateTimes ficam automaticamente fechados.
+  weekTimes: ["10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+  dateTimes: {
+    "2026-11-01": [],
+    "2026-11-07": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-08": [],
+    "2026-11-14": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-15": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-21": ["09:00","10:00","11:00"],
+    "2026-11-22": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-28": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-29": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-11-30": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-12-01": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-12-05": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-12-06": ["09:00","10:00","11:00","14:00","15:00","16:00","17:00"],
+    "2026-12-12": ["09:00","10:00","11:00","13:00","14:00","15:00"],
+    "2026-12-13": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-12-19": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+    "2026-12-20": ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"],
+  },
+  availableTimes: ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00"], // usado apenas como fallback/legado
   maxSessionsPerDay: null, // defina um número para limitar sessões/dia; null = sem limite adicional além dos horários
   // LISTA VIP: cadastro por e-mail, limitado a maxSignups pessoas. Quando o
   // admin clica em "Lançar acesso VIP", os benefícios ficam válidos por
@@ -2095,6 +2122,15 @@ function vipFindMember(input){
 // não existem lotes para agendamento VIP.
 function parseBRL(str){ return parseFloat(String(str).replace(/[^\d,]/g,"").replace(",",".")); }
 function fmtBRL(num){ return "R$ " + num.toFixed(2).replace(".",","); }
+// Pedidos gravados antes de o total passar a ser salvo nao tem a.total:
+// nesse caso soma o valor do lote com o valor dos adicionais.
+function totalDoPedido(a){
+  if(a && a.total) return a.total;
+  const base  = parseBRL(a && a.lotPrice);
+  const extra = parseBRL(a && a.addonsValor);
+  const soma = (isNaN(base)?0:base) + (isNaN(extra)?0:extra);
+  return soma ? fmtBRL(soma) : "—";
+}
 function vipBasePrice(pkg){ return pkg.lots && pkg.lots.length ? pkg.lots[0].price : pkg.price; }
 function vipDiscountedPrice(pkg){
   const val = parseBRL(vipBasePrice(pkg));
@@ -2877,7 +2913,7 @@ document.getElementById("s1-next").addEventListener("click", ()=>{
   if(!booking.packageId){ showToast("Selecione um pacote para continuar.", "error"); return; }
   if(!booking.vip && !booking.lotLabel){ showToast("Selecione o lote para continuar.", "error"); return; }
   const lot = getBookingLot();
-  calCursor = (lot && !booking.vip) ? new Date(lot.start+"T12:00:00") : new Date();
+  calCursor = new Date(seasonRange(lot, booking.vip).start+"T12:00:00");
   renderCalendar();
   goToStep(2);
 });
@@ -2890,7 +2926,26 @@ document.getElementById("s2-next").addEventListener("click", async ()=>{
 
 document.getElementById("s3-next").addEventListener("click", ()=> goToStep(4));
 
-/* ---- STEP 2: CALENDÁRIO ---- */
+/* ---- AGENDA: horarios disponiveis por data ---- */
+function seasonRange(lot, isVip){
+  let start = CONFIG.seasonStart, end = CONFIG.seasonEnd;
+  if(lot && !isVip){
+    if(lot.start > start) start = lot.start;
+    if(lot.end   < end)   end   = lot.end;
+  }
+  return { start, end };
+}
+function timesForDate(iso){
+  if(!iso) return [];
+  if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd) return [];
+  const map = CONFIG.dateTimes || {};
+  if(Object.prototype.hasOwnProperty.call(map, iso)) return map[iso];
+  const dow = new Date(iso+"T12:00:00").getDay();
+  if(dow===0 || dow===6) return []; // fim de semana sem agenda definida = fechado
+  return CONFIG.weekTimes || CONFIG.availableTimes || [];
+}
+
+/* ---- STEP 2: CALENDARIO ---- */
 const WEEKDAYS = ["D","S","T","Q","Q","S","S"];
 function renderCalendar(){
   const grid = document.getElementById("cal-grid");
@@ -2898,6 +2953,7 @@ function renderCalendar(){
   label.textContent = calCursor.toLocaleDateString("pt-BR", { month:"long", year:"numeric" });
 
   const lot = getBookingLot();
+  const range = seasonRange(lot, booking.vip);
   const year = calCursor.getFullYear(), month = calCursor.getMonth();
   const firstDay = new Date(year, month, 1);
   const startOffset = firstDay.getDay();
@@ -2910,8 +2966,8 @@ function renderCalendar(){
     const dateObj = new Date(year, month, d);
     const iso = toISODate(dateObj);
     const isPast = dateObj < today;
-    const isOutOfLot = (lot && !booking.vip) ? (iso < lot.start || iso > lot.end) : false;
-    const isDisabled = isPast || isOutOfLot;
+    const isOutOfRange = iso < range.start || iso > range.end;
+    const isDisabled = isPast || isOutOfRange || timesForDate(iso).length === 0;
     const isToday = toISODate(today) === iso;
     const isSelected = booking.date === iso;
     html += `<div class="cal-day ${isDisabled?"disabled":""} ${isToday?"today":""} ${isSelected?"selected":""}" data-iso="${isDisabled?"":iso}">${d}</div>`;
@@ -2930,11 +2986,11 @@ function renderCalendar(){
 
   const prevBtn = document.getElementById("cal-prev");
   const nextBtn = document.getElementById("cal-next");
-  const isCurrentMonth = year===today.getFullYear() && month===today.getMonth();
-  const lotStart = (lot && !booking.vip) ? new Date(lot.start+"T12:00:00") : null;
-  const lotEnd = (lot && !booking.vip) ? new Date(lot.end+"T12:00:00") : null;
-  prevBtn.disabled = isCurrentMonth || (lotStart && (year<lotStart.getFullYear() || (year===lotStart.getFullYear() && month<=lotStart.getMonth())));
-  nextBtn.disabled = !!(lotEnd && (year>lotEnd.getFullYear() || (year===lotEnd.getFullYear() && month>=lotEnd.getMonth())));
+  const rStart = new Date(range.start+"T12:00:00");
+  const rEnd   = new Date(range.end+"T12:00:00");
+  const monthIdx = year*12 + month;
+  prevBtn.disabled = monthIdx <= rStart.getFullYear()*12 + rStart.getMonth();
+  nextBtn.disabled = monthIdx >= rEnd.getFullYear()*12 + rEnd.getMonth();
 }
 document.getElementById("cal-prev").addEventListener("click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()-1, 1); renderCalendar(); });
 document.getElementById("cal-next").addEventListener("click", ()=>{ calCursor = new Date(calCursor.getFullYear(), calCursor.getMonth()+1, 1); renderCalendar(); });
@@ -2951,7 +3007,12 @@ async function renderTimeSlots(){
   const taken = new Set(list.filter(a=> a.date===booking.date && a.status!=="cancelado").map(a=>a.time));
 
   loading.style.display = "none";
-  grid.innerHTML = CONFIG.availableTimes.map(t=>{
+  const dayTimes = timesForDate(booking.date);
+  if(!dayTimes.length){
+    grid.innerHTML = '<div class="time-slot locked" style="grid-column:1/-1">Sem horarios nesta data</div>';
+    return;
+  }
+  grid.innerHTML = dayTimes.map(t=>{
     const locked = taken.has(t);
     return `<div class="time-slot ${locked?"locked":""} ${booking.time===t?"selected":""}" data-time="${locked?"":t}">
       ${locked ? '🔒 Indisponível' : t}
@@ -3373,9 +3434,11 @@ function openWhatsappTo(phone){
 // Não substitui o armazenamento local — é uma cópia para você manter em Excel/planilha.
 function exportAppointmentsCSV(){
   const list = getFilteredAppointments();
-  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status","Observações","Criado em"];
+  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Valor do lote","Adicionais","Valor adicionais","Valor total","Pagamento","Data","Horário","Status","Observações","Criado em"];
   const rows = list.map(a => [
-    a.name, a.phone, a.email, a.package, a.lot||"", fmtDateBR(a.date), a.time, a.status,
+    a.name, a.phone, a.email, a.package, a.lot||"", a.lotPrice||"",
+    a.addons||"", a.addonsValor||"", totalDoPedido(a), a.pagamento||"",
+    fmtDateBR(a.date), a.time, a.status,
     (a.notes||"").replace(/[\r\n]+/g," "), new Date(a.createdAt).toLocaleString("pt-BR")
   ]);
   const escapeCsv = (v) => `"${String(v).replace(/"/g,'""')}"`;
@@ -3435,6 +3498,9 @@ function openDetail(id){
     <div class="d-row"><span class="lbl">E-mail</span><span class="val">${escapeHtml(a.email)}</span></div>
     <div class="d-row"><span class="lbl">Pacote</span><span class="val">${escapeHtml(a.package)}</span></div>
     ${a.lot?`<div class="d-row"><span class="lbl">Lote</span><span class="val">${escapeHtml(a.lot)}${a.lotPrice?" ("+escapeHtml(a.lotPrice)+")":""}</span></div>`:""}
+    <div class="d-row"><span class="lbl">Adicionais</span><span class="val">${a.addons ? escapeHtml(a.addons)+(a.addonsValor?" ("+escapeHtml(a.addonsValor)+")":"") : "Nenhum"}</span></div>
+    <div class="d-row"><span class="lbl">Valor total</span><span class="val"><b>${escapeHtml(totalDoPedido(a))}</b></span></div>
+    ${a.pagamento?`<div class="d-row"><span class="lbl">Pagamento</span><span class="val">${escapeHtml(a.pagamento)}</span></div>`:""}
     <div class="d-row"><span class="lbl">Data</span><span class="val">${fmtDateBR(a.date)}</span></div>
     <div class="d-row"><span class="lbl">Horário</span><span class="val">${a.time}</span></div>
     <div class="d-row"><span class="lbl">Status</span><span class="val"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span></span></div>
