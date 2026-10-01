@@ -591,7 +591,19 @@ footer .wrap{position:relative;z-index:1;}
 .vip-ticket .vt-old{font-size:12.5px;color:rgba(250,246,238,.4);text-decoration:line-through;}
 .vip-ticket .vt-new{font-size:19px;font-weight:700;color:var(--dourado);}
 .vip-ticket .vt-tag{font-size:10.5px;color:rgba(250,246,238,.5);text-transform:uppercase;letter-spacing:.06em;}
-.vip-ticket .vip-btn{width:100%;margin-top:2px;}
+.vip-ticket .vt-desc{font-size:12.5px;line-height:1.5;color:rgba(250,246,238,.6);margin:0;}
+.vip-ticket .vt-benefits{
+  list-style:none;margin:4px 0 0;padding:0;
+  display:flex;flex-direction:column;gap:7px;
+}
+.vip-ticket .vt-benefits li{
+  display:flex;align-items:flex-start;gap:7px;
+  font-size:12.5px;line-height:1.45;color:rgba(250,246,238,.78);
+}
+.vip-ticket .vt-benefits li svg{flex:0 0 auto;margin-top:3px;color:var(--dourado);}
+/* margin-top:auto gruda o botao na base: os pacotes tem quantidades
+   diferentes de beneficios e, sem isso, os botoes ficam desalinhados. */
+.vip-ticket .vip-btn{width:100%;margin-top:auto;padding-top:11px;}
 .vip-card .vip-form{display:flex;flex-wrap:wrap;gap:10px;position:relative;z-index:1;}
 .vip-card .vip-form input{
   flex:1 1 200px;padding:12px 14px;border-radius:5px;border:1.5px solid rgba(250,246,238,.25);
@@ -3831,8 +3843,12 @@ function vipRenderTickets(){
   box.innerHTML = CONFIG.packages.map(p=>`
       <div class="vip-ticket">
         <div class="vt-name">${p.name}</div>
+        <p class="vt-desc">${p.desc}</p>
         <div class="vt-prices"><span class="vt-old">${vipBasePrice(p)}</span><span class="vt-new">${vipDiscountedPrice(p)}</span></div>
         <div class="vt-tag">Qualquer data · sem lote</div>
+        <ul class="vt-benefits">
+          ${p.benefits.map(b=>`<li><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>${b}</span></li>`).join("")}
+        </ul>
         <button class="vip-btn" data-vip-pkg="${p.id}"${restam<=0?" disabled":""}>${restam<=0?"Vagas esgotadas":"Agendar com desconto VIP"}</button>
       </div>`).join("");
   box.querySelectorAll("[data-vip-pkg]").forEach(btn=>{
