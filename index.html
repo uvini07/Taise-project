@@ -869,6 +869,48 @@ footer .wrap{position:relative;z-index:1;}
 .vip-switch-track::before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:all .2s ease;}
 .vip-switch input:checked + .vip-switch-track{background:var(--dourado);}
 .vip-switch input:checked + .vip-switch-track::before{transform:translateX(18px);}
+/* ---- disparo de mensagem no WhatsApp ---- */
+.msg-campo{
+  width:100%;min-height:150px;resize:vertical;padding:13px 15px;
+  border:1px solid rgba(27,23,18,.18);border-radius:7px;background:#fff;
+  font-family:var(--sans);font-size:13.5px;line-height:1.6;color:var(--carvao);
+}
+.msg-campo:focus{outline:none;border-color:var(--vinho);}
+.msg-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+.msg-tag{
+  border:1px dashed rgba(27,23,18,.26);border-radius:999px;padding:5px 11px;
+  background:none;font-size:11.5px;color:rgba(27,23,18,.65);font-family:var(--sans);
+}
+.msg-tag:hover{border-color:var(--vinho);color:var(--vinho);border-style:solid;}
+.msg-previa{
+  margin-top:14px;padding:13px 15px;border-radius:7px;
+  background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.3);
+  font-size:13px;line-height:1.6;white-space:pre-wrap;color:rgba(27,23,18,.82);
+}
+.msg-previa b{display:block;margin-bottom:6px;font-size:11.5px;text-transform:uppercase;
+  letter-spacing:.08em;color:rgba(27,23,18,.5);}
+.msg-barra{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+.msg-contador{font-size:12.5px;color:rgba(27,23,18,.6);}
+.msg-lista{margin-top:16px;border-top:1px solid rgba(27,23,18,.1);}
+.msg-item{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:11px 0;border-bottom:1px solid rgba(27,23,18,.07);font-size:13.5px;
+}
+.msg-item:last-child{border-bottom:none;}
+.msg-item .mi-nome{flex:1 1 180px;min-width:0;}
+.msg-item .mi-nome span{display:block;font-size:12px;color:rgba(27,23,18,.5);}
+.msg-item .mi-ctx{font-size:12px;color:rgba(27,23,18,.5);flex:0 0 auto;}
+.msg-item.enviado{opacity:.5;}
+.msg-item .mi-ok{color:var(--verde-status);font-size:12px;font-weight:700;flex:0 0 auto;}
+.btn-zap{
+  padding:8px 14px;border-radius:6px;border:1px solid #25D366;background:rgba(37,211,102,.1);
+  color:#1a7f45;font-size:12.5px;font-weight:600;font-family:var(--sans);flex:0 0 auto;
+}
+.btn-zap:hover{background:#25D366;color:#fff;}
+@media (max-width:760px){
+  .msg-item .mi-ctx{flex:1 1 100%;}
+  .btn-zap{width:100%;text-align:center;}
+}
 .vip-signup-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(27,23,18,.06);font-size:13px;}
 .vip-signup-row:last-child{border-bottom:none;}
 .vip-signup-row .vsr-email{color:rgba(27,23,18,.6);}
@@ -2625,6 +2667,43 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
           <div class="skeleton" style="height:44px;margin-bottom:10px;"></div>
           <div class="skeleton" style="height:44px;"></div>
         </div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Mensagem no WhatsApp</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <select class="filter-select" id="msg-publico">
+            <option value="ativos">Todos os agendamentos (sem os cancelados)</option>
+            <option value="confirmado">Só confirmados</option>
+            <option value="pendente">Só pendentes</option>
+            <option value="cancelado">Só cancelados</option>
+            <option value="vip">Lista VIP (cadastros)</option>
+          </select>
+        </div>
+      </div>
+      <div style="padding:22px 24px;">
+        <p style="font-size:13px;color:rgba(27,23,18,.6);margin:0 0 12px;max-width:680px;">
+          Escreva a mensagem uma vez e envie para cada cliente com um clique. O WhatsApp abre
+          com o texto já pronto e <b style="color:rgba(27,23,18,.8);">você confere antes de apertar enviar</b> —
+          nada sai sozinho.
+        </p>
+
+        <textarea class="msg-campo" id="msg-texto" placeholder="Escreva aqui a mensagem..."></textarea>
+
+        <div class="msg-tags" id="msg-tags"></div>
+
+        <div class="msg-previa" id="msg-previa"></div>
+
+        <div class="msg-barra">
+          <button class="btn-solid" id="msg-proximo" style="padding:11px 20px;font-size:13px;">Abrir o próximo não enviado</button>
+          <button class="btn-outline" id="msg-copiar" style="padding:11px 18px;font-size:12.5px;">Copiar mensagem</button>
+          <button class="btn-outline" id="msg-limpar" style="padding:11px 18px;font-size:12.5px;">Limpar marcações</button>
+          <span class="msg-contador" id="msg-contador"></span>
+        </div>
+
+        <div class="msg-lista" id="msg-lista"></div>
       </div>
     </div>
 
@@ -4992,7 +5071,10 @@ async function refreshAdminData(){
   renderTable();
   renderAgenda();
   renderVipAdmin();
+  // O painel de mensagens so se liga uma vez; depois so refaz a lista.
+  if(!msgIniciado){ msgIniciado = true; initMensagens(); } else { renderMensagens(); }
 }
+let msgIniciado = false;
 
 /* ---- Confirmação para ações que mexem no site no ar ----
    Devolve uma promessa que vira true só quando o admin confirma. Enquanto o
@@ -5479,6 +5561,184 @@ async function marcarNaAgenda(id, naAgenda){
   const ok = !!(data && data.ok);
   if(!ok && idx>-1) appointmentsCache[idx].naAgenda = !naAgenda;
   return ok;
+}
+
+/* =========================================================
+   MENSAGEM EM LOTE NO WHATSAPP
+   O WhatsApp nao permite disparo automatico por link: cada link wa.me abre
+   UMA conversa com o texto pronto, e quem aperta enviar e a pessoa. Entao a
+   ferramenta monta a lista, personaliza o texto de cada um e marca quem ja
+   foi aberto, para nao repetir nem pular ninguem.
+========================================================= */
+const MSG_TEXTO_KEY = "taise-msg-texto";
+const MSG_ENVIADOS_KEY = "taise-msg-enviados";
+const MSG_PADRAO = "Oi {primeiro_nome}! Aqui \u00e9 a Taise \ud83d\udc8c\n\nPassando para confirmar o seu ensaio de Natal no dia {data}, \u00e0s {horario} ({pacote}).\n\nQualquer d\u00favida, \u00e9 s\u00f3 me chamar por aqui!";
+
+const MSG_CAMPOS = [
+  { chave:"{primeiro_nome}", desc:"primeiro nome" },
+  { chave:"{nome}",          desc:"nome completo" },
+  { chave:"{data}",          desc:"data do ensaio" },
+  { chave:"{horario}",       desc:"hor\u00e1rio" },
+  { chave:"{pacote}",        desc:"pacote" },
+  { chave:"{total}",         desc:"valor total" }
+];
+
+function msgEnviados(){
+  try{ return new Set(JSON.parse(localStorage.getItem(MSG_ENVIADOS_KEY) || "[]")); }
+  catch(e){ return new Set(); }
+}
+function msgSalvarEnviados(set){
+  try{ localStorage.setItem(MSG_ENVIADOS_KEY, JSON.stringify([...set])); }catch(e){}
+}
+function msgSoDigitos(tel){ return String(tel||"").replace(/\D/g,""); }
+
+// Monta a lista de destinatarios do publico escolhido, sem telefone repetido.
+function msgDestinatarios(){
+  const publico = (document.getElementById("msg-publico")||{}).value || "ativos";
+  let brutos;
+  if(publico === "vip"){
+    brutos = (vipSignups||[]).map(v=>({ nome:v.name, tel:v.phone, ctx:"Lista VIP" }));
+  } else {
+    brutos = (appointmentsCache||[])
+      .filter(a => publico === "ativos" ? a.status !== "cancelado" : a.status === publico)
+      .sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time))
+      .map(a=>({
+        nome:a.name, tel:a.phone,
+        ctx:[fmtDateBR(a.date), a.time, a.package].filter(Boolean).join(" \u00b7 "),
+        data:fmtDateBR(a.date), horario:a.time, pacote:a.package, total:a.total || ""
+      }));
+  }
+  const vistos = new Set();
+  return brutos.filter(d=>{
+    const t = msgSoDigitos(d.tel);
+    if(!t || vistos.has(t)) return false;
+    vistos.add(t);
+    return true;
+  });
+}
+
+function msgPersonalizar(texto, d){
+  return String(texto||"")
+    .replace(/\{primeiro_nome\}/g, String(d.nome||"").trim().split(/\s+/)[0] || "")
+    .replace(/\{nome\}/g, d.nome || "")
+    .replace(/\{data\}/g, d.data || "")
+    .replace(/\{horario\}/g, d.horario || "")
+    .replace(/\{pacote\}/g, d.pacote || "")
+    .replace(/\{total\}/g, d.total || "");
+}
+
+function msgAbrirPara(d){
+  const texto = msgPersonalizar(document.getElementById("msg-texto").value, d);
+  window.open("https://wa.me/" + msgSoDigitos(d.tel) + "?text=" + encodeURIComponent(texto), "_blank");
+  const set = msgEnviados();
+  set.add(msgSoDigitos(d.tel));
+  msgSalvarEnviados(set);
+  renderMensagens();
+}
+
+function renderMensagens(){
+  const lista = document.getElementById("msg-lista");
+  if(!lista) return;
+  const campo = document.getElementById("msg-texto");
+  const destinos = msgDestinatarios();
+  const enviados = msgEnviados();
+  const feitos = destinos.filter(d=>enviados.has(msgSoDigitos(d.tel))).length;
+
+  // previa com os dados do primeiro da fila, para conferir antes de disparar
+  const previa = document.getElementById("msg-previa");
+  if(previa){
+    previa.innerHTML = destinos.length
+      ? "<b>Pr\u00e9via para " + escapeHtml(destinos[0].nome || "o primeiro da lista") + "</b>" +
+        escapeHtml(msgPersonalizar(campo.value, destinos[0]))
+      : "<b>Pr\u00e9via</b>Nenhum cliente neste filtro.";
+  }
+
+  const contador = document.getElementById("msg-contador");
+  if(contador){
+    contador.textContent = destinos.length
+      ? feitos + " de " + destinos.length + " j\u00e1 abertos"
+      : "Nenhum cliente com telefone neste filtro.";
+  }
+  const btnProx = document.getElementById("msg-proximo");
+  if(btnProx) btnProx.disabled = feitos >= destinos.length;
+
+  lista.innerHTML = destinos.map((d,i)=>{
+    const ok = enviados.has(msgSoDigitos(d.tel));
+    return `<div class="msg-item ${ok?"enviado":""}">
+      <span class="mi-nome">${escapeHtml(d.nome || "\u2014")}<span>${escapeHtml(d.tel || "")}</span></span>
+      <span class="mi-ctx">${escapeHtml(d.ctx || "")}</span>
+      ${ok ? '<span class="mi-ok">\u2713 aberto</span>' : ""}
+      <button class="btn-zap" data-msg-i="${i}">${ok ? "Abrir de novo" : "Abrir no WhatsApp"}</button>
+    </div>`;
+  }).join("") || '<p style="font-size:12.5px;color:rgba(27,23,18,.5);padding:14px 0;">Nenhum cliente com telefone neste filtro.</p>';
+
+  lista.querySelectorAll("[data-msg-i]").forEach(btn=>{
+    btn.addEventListener("click", ()=> msgAbrirPara(destinos[+btn.dataset.msgI]));
+  });
+}
+
+function initMensagens(){
+  const campo = document.getElementById("msg-texto");
+  if(!campo) return;
+  let salvo = "";
+  try{ salvo = localStorage.getItem(MSG_TEXTO_KEY) || ""; }catch(e){}
+  campo.value = salvo || MSG_PADRAO;
+
+  const tags = document.getElementById("msg-tags");
+  if(tags){
+    tags.innerHTML = MSG_CAMPOS.map(c=>`<button type="button" class="msg-tag" data-campo="${c.chave}">${c.chave} \u2014 ${c.desc}</button>`).join("");
+    tags.querySelectorAll("[data-campo]").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        // insere onde o cursor estiver
+        const ini = campo.selectionStart, fim = campo.selectionEnd;
+        campo.value = campo.value.slice(0,ini) + b.dataset.campo + campo.value.slice(fim);
+        campo.focus();
+        campo.selectionStart = campo.selectionEnd = ini + b.dataset.campo.length;
+        campo.dispatchEvent(new Event("input"));
+      });
+    });
+  }
+
+  campo.addEventListener("input", ()=>{
+    try{ localStorage.setItem(MSG_TEXTO_KEY, campo.value); }catch(e){}
+    renderMensagens();
+  });
+
+  ligar("msg-publico", "change", renderMensagens);
+
+  ligar("msg-proximo", "click", ()=>{
+    const enviados = msgEnviados();
+    const prox = msgDestinatarios().find(d=>!enviados.has(msgSoDigitos(d.tel)));
+    if(!prox){ showToast("Todos os clientes deste filtro j\u00e1 foram abertos.", "success"); return; }
+    msgAbrirPara(prox);
+  });
+
+  ligar("msg-copiar", "click", async ()=>{
+    const destinos = msgDestinatarios();
+    const texto = destinos.length
+      ? msgPersonalizar(campo.value, destinos[0])
+      : campo.value;
+    try{
+      await navigator.clipboard.writeText(texto);
+      showToast("Mensagem copiada.", "success");
+    }catch(e){
+      showToast("N\u00e3o foi poss\u00edvel copiar automaticamente.", "error");
+    }
+  });
+
+  ligar("msg-limpar", "click", async ()=>{
+    const ok = await pedirConfirmacao({
+      titulo: "Limpar as marca\u00e7\u00f5es de enviado?",
+      texto: "Todos voltam para a lista como \"ainda n\u00e3o aberto\". As conversas j\u00e1 enviadas no WhatsApp n\u00e3o s\u00e3o afetadas.",
+      confirmar: "Limpar marca\u00e7\u00f5es"
+    });
+    if(!ok) return;
+    msgSalvarEnviados(new Set());
+    renderMensagens();
+    showToast("Marca\u00e7\u00f5es limpas.", "success");
+  });
+
+  renderMensagens();
 }
 
 function openWhatsappTo(phone){
