@@ -3843,12 +3843,6 @@ function vipRenderTickets(){
   // Vagas de compra sao por ordem de chegada, entao o aviso fica a vista.
   const restam = vagasVipRestantes();
   const aviso = document.getElementById("vip-vagas-aviso");
-  if(aviso){
-    aviso.className = "vip-vagas-aviso" + (restam <= 0 ? " esgotado" : "");
-    aviso.textContent = restam > 0
-      ? "Restam " + restam + " de " + vagasVipCompra() + " vagas · por ordem de chegada"
-      : "Vagas VIP esgotadas — todas as " + vagasVipCompra() + " já foram fechadas.";
-  }
   box.innerHTML = CONFIG.packages.map(p=>`
       <div class="vip-ticket">
         <div class="vt-name">${p.name}</div>
