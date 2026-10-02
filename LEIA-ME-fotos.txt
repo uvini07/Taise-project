@@ -1,47 +1,72 @@
-FOTOS DO SITE — Taise Foto
-==========================
+ARQUIVOS DO SITE — Taise Foto
+=============================
 
-As fotos ficam NESTA MESMA PASTA, ao lado do index.html:
+Tudo fica NESTA MESMA PASTA, ao lado do index.html.
+Extensao aceita para fotos: .jpg, .jpeg, .png, .webp ou .avif
+(o site procura nessa ordem; prefira .jpg, que e a primeira tentativa).
 
-  img1   -> foto GRANDE da secao "A experiencia"
-  img2   -> foto MENOR (polaroid) da mesma secao
-  img3   -> 1a foto do carrossel da galeria
-  img4   -> 2a foto do carrossel
-  ...
-  img12  -> 10a e ultima foto do carrossel
 
-Total: 12 fotos (2 na experiencia + 10 no carrossel).
+1) SECAO "A EXPERIENCIA"  -> 2 fotos
+---------------------------------------
+  img1   foto GRANDE (fica melhor em pe / vertical)
+  img2   foto MENOR, estilo polaroid (quase quadrada)
 
-EXTENSAO
---------
-Pode usar .jpg, .jpeg, .png, .webp ou .avif — o site procura nessa ordem e
-usa a primeira que encontrar. Prefira .jpg: e a primeira tentativa, entao
-o site acha a foto de primeira, sem requisicoes perdidas.
+Se faltar, aparece um quadrado cinza no lugar — o espaco faz parte do
+layout, entao ele e mantido.
 
-TROCAR UMA FOTO
----------------
-Basta substituir o arquivo (ex.: jogar um img5.jpg novo por cima).
-IMPORTANTE: otimize antes de subir. Foto direto da camera tem uns 8 MB e
-deixa o site lento, alem de pesar no GitHub. O ideal e:
 
-  - maior lado: 1600 pixels
-  - qualidade JPEG: 85
-  - resultado: entre 150 KB e 300 KB por foto
+2) CARROSSEL "CONHECA O CENARIO"  -> ate 18 fotos
+--------------------------------------------------
+  img3, img4, img5 ... ate img20
 
-ENQUANTO A FOTO NAO ESTIVER AQUI
---------------------------------
-Aparece um quadrado cinza no lugar, sem quebrar o layout da pagina.
-Foto que falta tambem nao abre em tela cheia ao clicar.
+Foto que nao existir simplesmente NAO aparece no carrossel. Da para ir
+adicionando aos poucos: com 10 arquivos, o carrossel mostra 10.
 
-USAR MENOS DE 10 FOTOS NO CARROSSEL
------------------------------------
-Abra o index.html, procure por "const GALLERY" e apague a linha da foto
-que voce nao vai usar. As legendas que aparecem ao passar o mouse tambem
-sao editadas ai.
+
+3) "CENARIO EXTRA" (Ano Novo)  -> 3 fotos
+------------------------------------------
+  cenario-extra1
+  cenario-extra2
+  cenario-extra3
+
+Se nenhuma das tres existir, o bloco inteiro some da pagina.
+
+
+4) BOX ACRILICO  -> 1 foto
+---------------------------
+  box-acrilico
+
+Aparece na secao de pacotes. Sem o arquivo, o bloco some.
+
+
+5) VIDEO  -> 1 arquivo
+-----------------------
+  video.mp4   (tambem aceita .webm, .ogv ou .mov)
+
+Fica entre "A experiencia" e a galeria. Enquanto o arquivo nao existir, a
+secao inteira fica escondida — nao aparece player quebrado.
+Dica: deixe o arquivo abaixo de 10 MB e em 1080p, senao demora a abrir no
+celular.
+
+
+TAMANHO RECOMENDADO DAS FOTOS
+-----------------------------
+  maior lado: 1600 pixels
+  qualidade JPEG: 85
+  resultado: entre 150 KB e 300 KB por foto
+
+Foto direto da camera tem uns 8 MB e deixa o site lento.
+
+
+TROCAR LEGENDAS OU TIRAR FOTOS DO CARROSSEL
+-------------------------------------------
+Abra o index.html e procure por "const GALLERY" (carrossel) ou
+"const CENARIO_EXTRA" (Ano Novo). Cada linha e uma foto: apague a linha
+para tirar, edite o texto entre aspas para mudar a legenda.
+
 
 PASTA "fotos-originais"
 -----------------------
-Guarda as suas fotos em tamanho original (4000 px, ~8 MB cada) e, em
-"site-antigo", as fotos que estavam no site antes. Essa pasta NAO vai para
-o GitHub (esta no .gitignore) e NAO precisa ir para o servidor — e so o seu
-arquivo de seguranca. Se quiser, pode mover para fora do projeto.
+Suas fotos em tamanho original e, em "site-antigo", as que estavam no site
+antes. Nao vai para o GitHub (esta no .gitignore) e nao precisa ir para o
+servidor — e so backup.

@@ -22,7 +22,7 @@
 
      img1  -> foto grande da seção "A experiência"
      img2  -> foto menor (polaroid) da mesma seção
-     img3 ... img12 -> carrossel da galeria (no máximo 10 fotos)
+     img3 ... img20 -> carrossel da galeria (no máximo 18 fotos)
 
    A extensão não importa: o site procura o arquivo em jpg, jpeg, png, webp
    e avif, nessa ordem. Enquanto nenhum existir, aparece um quadrado cinza no
@@ -32,14 +32,15 @@
 var IMAGENS = {
   pasta: "",          // "" = mesma pasta do index.html; "img/" seria uma subpasta
   extensoes: ["jpg","jpeg","png","webp","avif"],
-  galeriaMax: 10
+  galeriaMax: 18
 };
-function imgSrc(n, i){
-  return IMAGENS.pasta + "img" + n + "." + IMAGENS.extensoes[i || 0];
+// "nome" e o nome do arquivo sem extensao: "img3", "cenario-extra1", "box-acrilico".
+function imgSrc(nome, i){
+  return IMAGENS.pasta + nome + "." + IMAGENS.extensoes[i || 0];
 }
-function imgTag(n, classe, alt, adiar){
-  return '<img class="foto-arquivo ' + (classe||"") + '" src="' + imgSrc(n,0) +
-         '" alt="' + alt + '" data-img="' + n + '" data-ext="0"' +
+function imgTag(nome, classe, alt, adiar){
+  return '<img class="foto-arquivo ' + (classe||"") + '" src="' + imgSrc(nome,0) +
+         '" alt="' + alt + '" data-img="' + nome + '" data-ext="0"' +
          (adiar ? ' loading="lazy"' : '') + ' onerror="imgFalhou(this)">';
 }
 // Tenta a proxima extensao; quando todas falham, vira o quadrado cinza.
@@ -55,7 +56,16 @@ function imgFalhou(el){
   // o icone de imagem quebrada nem o texto do alt sobre o quadrado cinza.
   el.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
   var item = el.closest(".g-item");
-  if(item) item.classList.add("sem-foto");
+  if(item){
+    // Numa galeria o espaco nao e fixo: em vez de um quadrado cinza, some o
+    // item. Assim o carrossel mostra so as fotos que existem de verdade.
+    item.classList.add("sem-foto");
+    item.hidden = true;
+    if(typeof ajustarCenarioExtra === "function") ajustarCenarioExtra();
+    return;
+  }
+  var bloco = el.closest("[data-some-se-faltar]");
+  if(bloco) bloco.hidden = true;
 }
 </script>
 <style>
@@ -379,6 +389,71 @@ section{position:relative;}
   opacity:0;transition:opacity .35s ease;
 }
 .gallery-grid .g-item:hover::after{opacity:1;}
+/* ---------- CENARIO EXTRA (3 fotos, sem carrossel) ---------- */
+.cenario-extra{margin-top:56px;}
+.cenario-extra .ce-head{margin-bottom:22px;}
+.cenario-extra h3{
+  font-size:clamp(22px,2.6vw,30px);line-height:1.2;
+}
+.cenario-extra .ce-sub{
+  margin-top:8px;font-size:15px;line-height:1.6;color:rgba(27,23,18,.7);
+}
+.ce-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
+  overflow:visible;scroll-snap-type:none;padding-bottom:0;
+}
+.ce-grid .g-item{width:auto;}
+.ce-grid .g-item img{height:340px;}
+
+/* ---------- VIDEO ---------- */
+.video-sec .video-wrap{
+  position:relative;max-width:860px;margin:0 auto;border-radius:3px;overflow:hidden;
+  box-shadow:0 22px 48px -20px rgba(27,23,18,.45);
+}
+.video-sec video{
+  display:block;width:100%;height:auto;max-height:78vh;background:#141010;
+}
+
+/* ---------- BOX ACRILICO ---------- */
+.box-acrilico{
+  margin-top:48px;display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:center;
+}
+.box-acrilico .ba-foto{border-radius:3px;overflow:hidden;box-shadow:0 20px 44px -18px rgba(0,0,0,.5);}
+.box-acrilico .ba-foto img{display:block;width:100%;height:auto;}
+.box-acrilico h3{font-size:clamp(21px,2.4vw,28px);line-height:1.25;}
+.box-acrilico p{margin-top:14px;font-size:15.5px;line-height:1.7;opacity:.82;}
+.box-acrilico .ba-preco{
+  display:inline-block;margin-top:18px;padding:9px 16px;border-radius:999px;
+  border:1px solid var(--dourado);color:var(--dourado);
+  font-family:var(--sans);font-size:13px;letter-spacing:.03em;
+}
+
+/* ---------- ONDE FICA O ESTUDIO ---------- */
+.estudio{background:var(--marfim);position:relative;overflow:hidden;}
+.estudio-box{
+  max-width:720px;margin:0 auto;text-align:center;
+  border:1px solid rgba(27,23,18,.14);border-radius:4px;padding:38px 32px;
+  background:rgba(27,23,18,.025);
+}
+.estudio-end{
+  margin-top:18px;font-size:17px;line-height:1.75;font-style:normal;
+}
+.estudio-end b{display:block;font-weight:700;}
+.estudio-nota{margin-top:14px;font-size:13.5px;line-height:1.6;opacity:.6;}
+.estudio-box .btn-solid{display:inline-flex;margin-top:24px;}
+
+@media (max-width:900px){
+  .box-acrilico{grid-template-columns:1fr;gap:26px;}
+}
+@media (max-width:760px){
+  .ce-grid{grid-template-columns:1fr;gap:14px;}
+  .ce-grid .g-item{width:auto;}
+  .ce-grid .g-item img{height:300px;}
+  .cenario-extra{margin-top:40px;}
+  .estudio-box{padding:28px 20px;}
+  .estudio-end{font-size:16px;}
+}
+
 .g-cap{position:absolute;left:14px;bottom:12px;color:var(--marfim);font-size:12.5px;opacity:0;transform:translateY(6px);
   transition:all .35s ease;font-family:var(--sans);font-style:italic;}
 .g-item:hover .g-cap{opacity:1;transform:translateY(0);}
@@ -1031,6 +1106,14 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .experience{background:var(--w-mid);}
 .gallery{background:var(--w-base);}
 .faq{background:var(--w-mid);}
+.estudio{background:var(--w-base);}
+.estudio-box{
+  border-color:rgba(201,162,90,.38);
+  background:rgba(198,161,91,.06);
+}
+.estudio-end{color:var(--marfim);}
+.estudio-end b{color:var(--gold);}
+.estudio-nota{color:rgba(240,230,215,.6);}
 .packages{background:var(--w-deep);}
 .exp-copy p,.exp-list .item p{color:rgba(240,230,215,.74);}
 .exp-list .item h4{color:var(--creme);}
@@ -1642,6 +1725,22 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 .addon-choice.incluso .ac-check svg{opacity:1;}
 .addon-choice.incluso .ac-tag{background:rgba(46,125,79,.14);color:var(--verde-status);}
 .addon-choice.incluso .ac-preco{color:rgba(27,23,18,.4);}
+/* quantidade do "Pessoa extra": so aparece depois de marcar o item */
+.ac-qtd{
+  order:5;flex:1 1 100%;display:none;align-items:center;gap:10px;
+  margin-top:2px;padding-top:11px;border-top:1px dashed rgba(27,23,18,.16);
+  font-size:13px;color:rgba(27,23,18,.65);
+}
+.addon-choice.selected .ac-qtd{display:flex;}
+.ac-qtd .q-btn{
+  width:28px;height:28px;flex:0 0 28px;border-radius:5px;
+  border:1px solid rgba(27,23,18,.2);background:#fff;color:var(--carvao);
+  font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;
+}
+.ac-qtd .q-btn:hover:not(:disabled){border-color:var(--vinho);color:var(--vinho);}
+.ac-qtd .q-btn:disabled{opacity:.35;cursor:not-allowed;}
+.ac-qtd .q-num{min-width:26px;text-align:center;font-weight:700;color:var(--carvao);font-size:14.5px;}
+.ac-qtd .q-sub{margin-left:auto;font-weight:700;color:var(--vinho);}
 
 /* ---- conta aberta do passo 1 ---- */
 .total-box{
@@ -2001,9 +2100,9 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   <div class="wrap exp-grid">
     <div class="exp-media reveal">
       <img class="m-main foto-arquivo" src="img1.jpg" alt="Família em sessão de Natal"
-           data-img="1" data-ext="0" onerror="imgFalhou(this)">
+           data-img="img1" data-ext="0" onerror="imgFalhou(this)">
       <img class="m-float foto-arquivo" src="img2.jpg" alt="Detalhe da sessão"
-           data-img="2" data-ext="0" onerror="imgFalhou(this)">
+           data-img="img2" data-ext="0" onerror="imgFalhou(this)">
     </div>
     <div class="exp-copy">
       <div class="section-head reveal">
@@ -2018,7 +2117,7 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         </div>
         <div class="item reveal reveal-delay2">
           <div class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-          <div><h4>Sessão de 45 minutos</h4><p>Tempo pensado para crianças pequenas, sem pressa e sem estresse para os pais.</p></div>
+          <div><h4>Sessões a partir de 30 min</h4><p>Tempo pensado para crianças pequenas, sem pressa e sem estresse para os pais.</p></div>
         </div>
         <div class="item reveal reveal-delay3">
           <div class="ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18" stroke="currentColor" stroke-width="1.6"/></svg></div>
@@ -2029,19 +2128,41 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   </div>
 </section>
 
+<!-- VIDEO -->
+<section class="video-sec section-pad" id="video" hidden>
+  <div class="wrap">
+    <div class="section-head reveal" style="margin:0 auto 34px;text-align:center;">
+      <span class="section-tag">Bastidores</span>
+      <h2>Um pedacinho da sessão</h2>
+      <p>Para você sentir o clima antes de marcar a sua.</p>
+    </div>
+    <div class="video-wrap reveal">
+      <video id="video-estudio" controls playsinline preload="metadata"></video>
+    </div>
+  </div>
+</section>
+
 <!-- GALLERY -->
 <section class="gallery section-pad" id="galeria">
   <div class="retro-icons" data-icons="moldura,rolo,camera,estrela,oval,luz,poltrona,estrela,nota,vitrola"></div>
   <div class="wrap">
     <div class="section-head reveal">
       <span class="section-tag">Galeria</span>
-      <h2>Momentos já registrados</h2>
+      <h2>Conheça o cenário</h2>
       <p>Um recorte de sessões reais, para você imaginar a sua.</p>
     </div>
     <div class="gallery-carousel">
       <button class="g-nav g-prev" id="g-prev" aria-label="Anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="gallery-grid" id="gallery-grid"></div>
       <button class="g-nav g-next" id="g-next" aria-label="Próxima"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+
+    <div class="cenario-extra reveal">
+      <div class="ce-head">
+        <h3>Cenário Extra</h3>
+        <p class="ce-sub">O cenário de Ano Novo, disponível como adicional para quem quiser levar as duas datas na mesma sessão.</p>
+      </div>
+      <div class="gallery-grid ce-grid" id="cenario-extra-grid"></div>
     </div>
   </div>
 </section>
@@ -2057,6 +2178,37 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     </div>
     <div id="vip-card-slot"></div>
     <div class="pack-grid" id="pack-grid"></div>
+
+    <div class="box-acrilico reveal" id="box-acrilico">
+      <div class="ba-foto" id="box-acrilico-foto"></div>
+      <div>
+        <h3>Box acrílico com 50 fotos reveladas</h3>
+        <p>As fotos da sessão impressas em 10x15 e guardadas num box de acrílico — para folhear com as crianças, deixar à vista na estante e reencontrar daqui a muitos anos.</p>
+        <p>Já vem incluso no <b>Natal Luxo</b> e pode ser adicionado a qualquer pacote na hora de agendar.</p>
+        <span class="ba-preco">Adicional — R$ 180,00</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESTUDIO -->
+<section class="estudio section-pad" id="estudio">
+  <div class="retro-icons" data-icons="moldura,estrela,luz,camera,oval,nota,estrela,poltrona"></div>
+  <div class="wrap">
+    <div class="section-head reveal" style="margin:0 auto 34px;text-align:center;">
+      <span class="section-tag">Localização</span>
+      <h2>Onde fica o estúdio?</h2>
+    </div>
+    <div class="estudio-box reveal">
+      <address class="estudio-end">
+        <b>Rua Presidente Castelo Branco, 45 — 5º andar</b>
+        Edifício Comercial In Offices
+      </address>
+      <p class="estudio-nota">O ensaio acontece em estúdio fechado, com cenário montado e climátizado — sem depender do tempo lá fora.</p>
+      <a class="btn-solid" id="estudio-mapa" href="https://www.google.com/maps/search/?api=1&amp;query=Rua%20Presidente%20Castelo%20Branco%2C%2045%20-%20Edif%C3%ADcio%20Comercial%20In%20Offices" target="_blank" rel="noopener noreferrer">Abrir no mapa
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17L17 7M17 7H9M17 7v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -2609,7 +2761,9 @@ const CONFIG = {
   adicionais: [
     { id: "box",     nome: "Box acrílico 10x15 com 50 fotos reveladas", preco: 180 },
     { id: "teaser",  nome: "Vídeo teaser",                              preco: 150 },
-    { id: "cenario", nome: "Cenário adicional",                         preco: 150 }
+    { id: "cenario", nome: "Cenário adicional",                         preco: 150 },
+    // porPessoa: o valor e multiplicado pela quantidade escolhida.
+    { id: "pessoa",  nome: "Pessoa extra",                               preco: 80, porPessoa: true, maxQtd: 10 }
   ],
   // vagasCompra = quantos ensaios podem ser FECHADOS pela lista VIP. Nao tem
   // relacao com maxSignups (quantos podem se cadastrar): valem os primeiros
@@ -2634,7 +2788,15 @@ const GALLERY = [
   { n:9, cap:"Vestida para a festa" },
   { n:10, cap:"Luz de Natal" },
   { n:11, cap:"Detetive do Natal" },
-  { n:12, cap:"Carinho em família" }
+  { n:12, cap:"Carinho em família" },
+  { n:13, cap:"Primeiro Natal" },
+  { n:14, cap:"Olhar de encantamento" },
+  { n:15, cap:"Brincadeira em família" },
+  { n:16, cap:"Presentes e sorrisos" },
+  { n:17, cap:"Cantinho da árvore" },
+  { n:18, cap:"Risada solta" },
+  { n:19, cap:"Colo de mãe" },
+  { n:20, cap:"Noite de Natal" }
 ];
 
 
@@ -2643,7 +2805,7 @@ const FAQS = [
     categoria: "O ensaio",
     perguntas: [
       { q: "Como funciona o ensaio?", a: "No dia do ensaio, eu conduzo vocês durante todo o processo, orientando poses, movimentos e interações de forma natural. Você não precisa saber posar — meu papel é justamente ajudar para que vocês se sintam à vontade e aproveitem o momento.<br><br>A sessão acontece de forma tranquila, respeitando o ritmo de cada família, para que as fotografias tenham espontaneidade, conexão e a personalidade de vocês." },
-      { q: "Quanto tempo dura?", a: "De 40 minutos a 1 hora, conforme o pacote escolhido." },
+      { q: "Quanto tempo dura?", a: "Sessões a partir de 30 min, conforme o pacote escolhido." },
       { q: "Quem pode participar?", a: "No <b>Pacote Família</b>, participa o seu núcleo familiar — marido, esposa e filhos.<br><br>Nos pacotes <b>Premium</b> e <b>Luxo</b>, os 4 avós também podem participar." },
       { q: "Onde o ensaio é realizado?", a: "Os ensaios são realizados em estúdio localizado em <b>Osasco</b>, dentro de um prédio comercial com elevador e fácil acesso.<br><br>O espaço foi preparado para receber você e sua família com conforto e tranquilidade, proporcionando uma experiência acolhedora e um ambiente pensado especialmente para os registros." },
       { q: "Posso levar mais pessoas?", a: "No <b>Pacote Família</b>, é possível incluir outras pessoas ou crianças que não sejam seus filhos, mediante uma taxa adicional de <b>R$ 80,00 por pessoa</b>.<br><br>Essa opção permite que outros familiares ou pessoas especiais também participem dos registros e tornem o ensaio ainda mais completo." },
@@ -2980,7 +3142,7 @@ function handleUnauthorized(){
   showToast("Sua sessão expirou. Entre novamente.", "error");
   try{ exitAdmin(); }catch(e){}
 }
-let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
+let booking = { packageId:null, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[], addonQtd:{} };
 let calCursor = new Date();
 let currentStep = 1;
 const STORAGE_KEY = "christmas-appointments";
@@ -3161,8 +3323,17 @@ function addonsCobrados(pkg, escolhidos){
     .map(addonPorId)
     .filter(Boolean);
 }
+// Quantos "de cada" o cliente pediu. So os adicionais com porPessoa usam isso;
+// os demais contam sempre como 1.
+function qtdAddon(a){
+  if(!a || !a.porPessoa) return 1;
+  const n = parseInt((booking.addonQtd || {})[a.id], 10);
+  const teto = a.maxQtd || 10;
+  return Math.min(teto, Math.max(1, isNaN(n) ? 1 : n));
+}
+function subtotalAddon(a){ return a.preco * qtdAddon(a); }
 function totalAddons(pkg, escolhidos){
-  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+a.preco, 0);
+  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+subtotalAddon(a), 0);
 }
 
 /* ---- Valor de 1o lote nas datas de segunda a sexta ----
@@ -3843,6 +4014,12 @@ function vipRenderTickets(){
   // Vagas de compra sao por ordem de chegada, entao o aviso fica a vista.
   const restam = vagasVipRestantes();
   const aviso = document.getElementById("vip-vagas-aviso");
+  if(aviso){
+    aviso.className = "vip-vagas-aviso" + (restam <= 0 ? " esgotado" : "");
+    aviso.textContent = restam > 0
+      ? "Restam " + restam + " de " + vagasVipCompra() + " vagas · por ordem de chegada"
+      : "Vagas VIP esgotadas — todas as " + vagasVipCompra() + " já foram fechadas.";
+  }
   box.innerHTML = CONFIG.packages.map(p=>`
       <div class="vip-ticket">
         <div class="vt-name">${p.name}</div>
@@ -3929,22 +4106,83 @@ function startVipCountdown(){
 /* =========================================================
    RENDER: GALERIA
 ========================================================= */
-function renderGallery(){
-  const grid = document.getElementById("gallery-grid");
-  grid.innerHTML = GALLERY.slice(0, IMAGENS.galeriaMax).map((g,i)=>`
-    <div class="g-item" data-img="${g.n}">
-      ${imgTag(g.n, "", g.cap, i >= 3)}
-      <span class="g-cap">${g.cap}</span>
+/* ---- Cenário Extra: 3 fotos do cenário de Ano Novo ----
+   Arquivos esperados: cenario-extra1, cenario-extra2 e cenario-extra3.
+   Vale a mesma regra das outras fotos: qualquer extensão aceita e, se o
+   arquivo não existir, a foto some em vez de deixar espaço vazio. */
+const CENARIO_EXTRA = [
+  { nome:"cenario-extra1", cap:"Cenário de Ano Novo" },
+  { nome:"cenario-extra2", cap:"Detalhes da virada" },
+  { nome:"cenario-extra3", cap:"Brinde ao ano novo" }
+];
+function renderCenarioExtra(){
+  const grid = document.getElementById("cenario-extra-grid");
+  if(!grid) return;
+  grid.innerHTML = CENARIO_EXTRA.map(c=>`
+    <div class="g-item" data-img="${c.nome}">
+      ${imgTag(c.nome, "", c.cap, true)}
+      <span class="g-cap">${c.cap}</span>
     </div>
   `).join("");
+  ligarLightbox(grid);
+}
+// Sem nenhuma das tres fotos, o bloco inteiro sai do ar.
+function ajustarCenarioExtra(){
+  const bloco = document.querySelector(".cenario-extra");
+  const grid = document.getElementById("cenario-extra-grid");
+  if(!bloco || !grid) return;
+  const visiveis = [...grid.querySelectorAll(".g-item")].filter(i=>!i.hidden).length;
+  bloco.hidden = visiveis === 0;
+}
+
+function renderBoxAcrilico(){
+  const alvo = document.getElementById("box-acrilico-foto");
+  if(!alvo) return;
+  const bloco = document.getElementById("box-acrilico");
+  if(bloco) bloco.setAttribute("data-some-se-faltar", "");
+  alvo.innerHTML = imgTag("box-acrilico", "", "Box acrílico com 50 fotos reveladas", true);
+}
+
+/* ---- Vídeo da sessão ----
+   Procura o arquivo "video" na pasta do site. A seção nasce escondida e só
+   aparece quando um dos formatos carrega — assim nunca fica um player
+   quebrado no ar enquanto o arquivo não estiver lá. */
+const VIDEO_EXTENSOES = ["mp4","webm","ogv","mov"];
+function renderVideo(){
+  const sec = document.getElementById("video");
+  const v = document.getElementById("video-estudio");
+  if(!sec || !v) return;
+  let i = 0;
+  const tentar = ()=>{
+    if(i >= VIDEO_EXTENSOES.length){ sec.hidden = true; return; }
+    v.src = IMAGENS.pasta + "video." + VIDEO_EXTENSOES[i++];
+  };
+  v.addEventListener("loadedmetadata", ()=>{ sec.hidden = false; });
+  v.addEventListener("error", tentar);
+  tentar();
+}
+
+// O lightbox e o mesmo das duas galerias: foto que falta nao abre.
+function ligarLightbox(grid){
   grid.querySelectorAll(".g-item").forEach(item=>{
     item.addEventListener("click", ()=>{
       const foto = item.querySelector("img");
-      if(!foto || foto.classList.contains("sem-foto")) return; // quadrado cinza nao abre
+      if(!foto || foto.classList.contains("sem-foto")) return;
       document.getElementById("lightbox-img").src = foto.currentSrc || foto.src;
       document.getElementById("lightbox").classList.add("open");
     });
   });
+}
+
+function renderGallery(){
+  const grid = document.getElementById("gallery-grid");
+  grid.innerHTML = GALLERY.slice(0, IMAGENS.galeriaMax).map((g,i)=>`
+    <div class="g-item" data-img="img${g.n}">
+      ${imgTag("img"+g.n, "", g.cap, i >= 3)}
+      <span class="g-cap">${g.cap}</span>
+    </div>
+  `).join("");
+  ligarLightbox(grid);
 }
 ligar("lightbox-close", "click", ()=> document.getElementById("lightbox").classList.remove("open"));
 ligar("lightbox", "click", (e)=>{ if(e.target.id==="lightbox") e.currentTarget.classList.remove("open"); });
@@ -3953,6 +4191,10 @@ function galleryScrollStep(){
   const item = document.querySelector("#gallery-grid .g-item");
   return item ? item.getBoundingClientRect().width + 18 : 300;
 }
+renderCenarioExtra();
+renderBoxAcrilico();
+renderVideo();
+
 ligar("g-prev", "click", ()=>{
   document.getElementById("gallery-grid").scrollBy({ left: -galleryScrollStep(), behavior:"smooth" });
 });
@@ -3998,7 +4240,7 @@ function openBooking(pkgId, lotLabel){
     // so pre-seleciona se o lote ainda tiver vaga
     if(alvo && getLotRemaining(pkg, alvo)!==0) lot = alvo.label;
   }
-  booking = { packageId: pkgId||null, lotLabel: lot, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[] };
+  booking = { packageId: pkgId||null, lotLabel: lot, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[], addonQtd:{} };
   currentStep = 1;
   calCursor = new Date();
   document.getElementById("vip-step1-note").innerHTML = "";
@@ -4031,7 +4273,7 @@ async function openVipBooking(pkgId){
     return;
   }
   const p = pkgById(pkgId);
-  booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:true, addons:[] };
+  booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:true, addons:[], addonQtd:{} };
   currentStep = 1;
   calCursor = new Date();
   document.getElementById("pkg-choices").innerHTML = "";
@@ -4161,7 +4403,15 @@ function renderAddonChoices(){
         </span>
         <span class="ac-nome">${a.nome}</span>
         <span class="ac-tag">${incluso ? "Incluso" : "Adicional — opcional"}</span>
-        <span class="ac-preco">${incluso ? "—" : "+ " + fmtBRL(a.preco)}</span>
+        <span class="ac-preco">${incluso ? "—" : "+ " + fmtBRL(a.preco) + (a.porPessoa ? " por pessoa" : "")}</span>
+        ${(a.porPessoa && !incluso) ? `
+        <span class="ac-qtd">
+          <button type="button" class="q-btn" data-qtd-menos="${a.id}" aria-label="Menos uma pessoa">−</button>
+          <span class="q-num" data-qtd-num="${a.id}">${qtdAddon(a)}</span>
+          <button type="button" class="q-btn" data-qtd-mais="${a.id}" aria-label="Mais uma pessoa">+</button>
+          <span>pessoa(s) a mais</span>
+          <span class="q-sub" data-qtd-sub="${a.id}">${fmtBRL(subtotalAddon(a))}</span>
+        </span>` : ""}
       </label>`;
     }).join("");
 
@@ -4175,6 +4425,37 @@ function renderAddonChoices(){
       renderTotalResumo();
     });
   });
+
+  // Mais/menos pessoas. O preventDefault e necessario porque os botoes estao
+  // dentro do <label> do checkbox: sem ele, clicar desmarcaria o adicional.
+  wrap.querySelectorAll('[data-qtd-mais],[data-qtd-menos]').forEach(btn=>{
+    btn.addEventListener("click", (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const mais = btn.hasAttribute("data-qtd-mais");
+      const id = mais ? btn.dataset.qtdMais : btn.dataset.qtdMenos;
+      const add = addonPorId(id);
+      if(!add) return;
+      booking.addonQtd = booking.addonQtd || {};
+      booking.addonQtd[id] = qtdAddon(add) + (mais ? 1 : -1);
+      atualizarQtdAddon(add);
+      renderTotalResumo();
+    });
+  });
+  CONFIG.adicionais.filter(a=>a.porPessoa).forEach(atualizarQtdAddon);
+}
+
+// Mantem numero, subtotal e limites dos botoes em dia depois de cada clique.
+function atualizarQtdAddon(a){
+  const n = qtdAddon(a);
+  const num = document.querySelector(`[data-qtd-num="${a.id}"]`);
+  const sub = document.querySelector(`[data-qtd-sub="${a.id}"]`);
+  const menos = document.querySelector(`[data-qtd-menos="${a.id}"]`);
+  const mais = document.querySelector(`[data-qtd-mais="${a.id}"]`);
+  if(num) num.textContent = n;
+  if(sub) sub.textContent = fmtBRL(subtotalAddon(a));
+  if(menos) menos.disabled = n <= 1;
+  if(mais) mais.disabled = n >= (a.maxQtd || 10);
   renderTotalResumo();
 }
 
@@ -4192,7 +4473,7 @@ function renderTotalResumo(){
   const l1 = primeiroLote(p);
   const base = precoBasePacote(p, lot, isVip, booking.date);
   const extras = addonsCobrados(p, booking.addons);
-  const total = base + extras.reduce((s,a)=>s+a.preco,0);
+  const total = base + extras.reduce((s,a)=>s+subtotalAddon(a),0);
 
   // Enquanto a data nao foi escolhida, o aviso e um convite (dourado). Depois
   // que o cliente marca uma data de segunda a sexta, vira confirmacao (verde).
@@ -4203,7 +4484,7 @@ function renderTotalResumo(){
   box.innerHTML = `
     <div class="total-box">
       <div class="tb-linha ${semana?"tb-desconto":""}"><span>${p.name}${isVip ? " <b>· VIP -"+CONFIG.vip.discountPercent+"%</b>" : (lot ? " · "+lot.label : "")}</span><span>${semana?`<s>${lot.price}</s>`:""}${fmtBRL(base)}</span></div>
-      ${extras.map(a=>`<div class="tb-linha tb-extra"><span>+ ${a.nome}</span><span>${fmtBRL(a.preco)}</span></div>`).join("")}
+      ${extras.map(a=>`<div class="tb-linha tb-extra"><span>+ ${a.nome}${qtdAddon(a)>1 ? " × "+qtdAddon(a) : ""}</span><span>${fmtBRL(subtotalAddon(a))}</span></div>`).join("")}
       <div class="tb-linha tb-total"><span>Total</span><span>${fmtBRL(total)}</span></div>
       <p class="tb-pagamento">${textoPagamento(p, total)}</p>
       ${nota}
@@ -4465,8 +4746,8 @@ ligar("confirm-booking", "click", async (e)=>{
     lot: isVip ? "VIP" : (lot ? lot.label : null),
     lotPrice: isVip ? (p ? vipDiscountedPrice(p) : null) : (loteDoPreco ? loteDoPreco.price : (p ? p.price : null)),
     semanaNota: ehValorDeSemana ? NOTA_SEMANA : "",
-    addons: extrasEscolhidos.map(a=>a.nome).join(", "),
-    addonsValor: extrasEscolhidos.length ? fmtBRL(extrasEscolhidos.reduce((x,a)=>x+a.preco,0)) : "",
+    addons: extrasEscolhidos.map(a=>a.nome + (qtdAddon(a)>1 ? " × "+qtdAddon(a) : "")).join(", "),
+    addonsValor: extrasEscolhidos.length ? fmtBRL(extrasEscolhidos.reduce((x,a)=>x+subtotalAddon(a),0)) : "",
     total: fmtBRL(valorTotal),
     pagamento: textoPagamento(p, valorTotal),
     lotVagas: isVip ? null : (lot ? lot.vagas : null),
