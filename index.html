@@ -645,6 +645,10 @@ footer .wrap{position:relative;z-index:1;}
 .vip-reveal{overflow:hidden;max-height:0;opacity:0;transform:translateY(12px);
   transition:max-height .8s cubic-bezier(.22,.61,.36,1), opacity .6s ease .15s, transform .6s ease .15s;}
 .vip-reveal.open{max-height:900px;opacity:1;transform:translateY(0);}
+/* Teto so existe para a animacao de abertura. Depois dela, sai de vez: no
+   celular os tres pacotes ficam em coluna e passam de 1100px de altura,
+   e o limite fixo cortava o Natal Luxo junto com o botao de agendar. */
+.vip-reveal.aberto{max-height:none;}
 .vip-card.unlocking{animation:vipPop .8s cubic-bezier(.22,.61,.36,1);}
 @keyframes vipPop{0%{transform:scale(1);}38%{transform:scale(1.018);}100%{transform:scale(1);}}
 @media (max-width:760px){
@@ -3720,7 +3724,12 @@ function renderVipCardInner(){
         </div>
       </div>`;
     startVipCountdown();
-    if(already) vipRenderTickets();
+    if(already){
+      vipRenderTickets();
+      // Sem animacao aqui, entao o teto de altura nao pode nem existir.
+      const revealJaAberto = document.getElementById("vip-reveal");
+      if(revealJaAberto) revealJaAberto.classList.add("aberto");
+    }
 
     const checkForm = document.getElementById("vip-check-form");
     if(checkForm){
@@ -3857,6 +3866,27 @@ function vipRenderTickets(){
 }
 
 // Bilhete "cresce" e os pacotes aparecem de dentro dele.
+/* A altura dos pacotes VIP muda conforme a tela: em tres colunas no desktop
+   e em coluna unica no celular, onde passa de 1100px. Por isso o teto de
+   max-height e medido na hora e removido assim que a abertura termina —
+   um valor fixo em CSS cortava o ultimo pacote. */
+function abrirRevealVip(reveal){
+  if(!reveal) return;
+  reveal.classList.add("open");
+  reveal.style.maxHeight = reveal.scrollHeight + "px";
+  let pronto = false;
+  const liberar = ()=>{
+    if(pronto) return;
+    pronto = true;
+    reveal.classList.add("aberto");
+    reveal.style.maxHeight = "";       // quem manda agora e a classe .aberto
+    reveal.removeEventListener("transitionend", aoTerminar);
+  };
+  const aoTerminar = (e)=>{ if(e.propertyName === "max-height") liberar(); };
+  reveal.addEventListener("transitionend", aoTerminar);
+  setTimeout(liberar, 1200);           // rede de seguranca se o evento nao vier
+}
+
 function vipUnlockTickets(){
   const card = document.querySelector(".vip-card");
   const gate = document.getElementById("vip-gate");
@@ -3868,7 +3898,13 @@ function vipUnlockTickets(){
     setTimeout(()=> card.classList.remove("unlocking"), 900);
   }
   if(gate) gate.classList.add("hide");
-  requestAnimationFrame(()=>{ if(reveal) reveal.classList.add("open"); });
+  // requestAnimationFrame nao dispara com a aba em segundo plano, e nesse caso
+  // os pacotes nunca apareceriam. O setTimeout e a garantia; o guard impede
+  // que os dois abram duas vezes.
+  let jaAbriu = false;
+  const abrir = ()=>{ if(jaAbriu) return; jaAbriu = true; abrirRevealVip(reveal); };
+  requestAnimationFrame(abrir);
+  setTimeout(abrir, 120);
   setTimeout(()=>{
     const h3 = card ? card.querySelector("h3") : null;
     const desc = card ? card.querySelector(".vip-desc") : null;
