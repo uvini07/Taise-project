@@ -1114,6 +1114,9 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .estudio-end{color:var(--marfim);}
 .estudio-end b{color:var(--gold);}
 .estudio-nota{color:rgba(240,230,215,.6);}
+/* "Conheca o cenario extra" vive numa secao de fundo escuro */
+.cenario-extra h3{color:var(--marfim);}
+.cenario-extra .ce-sub{color:rgba(240,230,215,.72);}
 .packages{background:var(--w-deep);}
 .exp-copy p,.exp-list .item p{color:rgba(240,230,215,.74);}
 .exp-list .item h4{color:var(--creme);}
@@ -1133,7 +1136,6 @@ table.appt-table{width:100%;border-collapse:collapse;}
   border:1px solid rgba(240,230,215,.2);border-radius:4px;
   box-shadow:0 16px 34px -16px rgba(0,0,0,.65);
 }
-.gallery-grid .g-item img{filter:sepia(.18) saturate(.92);}
 .gallery-grid .g-item img.sem-foto{filter:none;}
 .gallery-grid .g-item::after{background:linear-gradient(to top,rgba(46,5,9,.72),transparent 45%);}
 .g-nav{background:var(--creme);color:var(--w-deep);box-shadow:0 10px 24px -8px rgba(0,0,0,.55);}
@@ -1446,8 +1448,8 @@ footer{background:#320508;color:rgba(240,230,215,.72);}
   border-color:rgba(198,161,91,.6);
   box-shadow:0 30px 55px -22px rgba(0,0,0,.85);
 }
-#site-view .gallery-grid .g-item img{transition:transform .8s cubic-bezier(.2,.7,.3,1),filter .6s ease;}
-#site-view .gallery-grid .g-item:hover img{filter:sepia(.06) saturate(1.05) brightness(1.05);}
+/* Fotos sem tratamento de cor: aparecem exatamente como foram entregues. */
+#site-view .gallery-grid .g-item img{transition:transform .8s cubic-bezier(.2,.7,.3,1);}
 #site-view .gallery-grid .g-item::before{
   content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
   background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.22) 48%,transparent 62%);
@@ -2157,13 +2159,6 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       <button class="g-nav g-next" id="g-next" aria-label="Próxima"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
 
-    <div class="cenario-extra reveal">
-      <div class="ce-head">
-        <h3>Cenário Extra</h3>
-        <p class="ce-sub">O cenário de Ano Novo, disponível como adicional para quem quiser levar as duas datas na mesma sessão.</p>
-      </div>
-      <div class="gallery-grid ce-grid" id="cenario-extra-grid"></div>
-    </div>
   </div>
 </section>
 
@@ -2178,6 +2173,14 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     </div>
     <div id="vip-card-slot"></div>
     <div class="pack-grid" id="pack-grid"></div>
+
+    <div class="cenario-extra reveal">
+      <div class="ce-head">
+        <h3>Conheça o cenário extra</h3>
+        <p class="ce-sub">O cenário de Ano Novo, disponível como adicional para quem quiser levar as duas datas na mesma sessão.</p>
+      </div>
+      <div class="gallery-grid ce-grid" id="cenario-extra-grid"></div>
+    </div>
 
     <div class="box-acrilico reveal" id="box-acrilico">
       <div class="ba-foto" id="box-acrilico-foto"></div>
