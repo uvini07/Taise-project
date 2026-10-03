@@ -1032,6 +1032,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .row-actions .a-conf:hover{background:rgba(46,125,79,.12);border-color:var(--verde-status);color:var(--verde-status);}
 .row-actions .a-canc:hover{background:rgba(162,58,58,.12);border-color:var(--vermelho-status);color:var(--vermelho-status);}
 .row-actions .a-view:hover{background:rgba(27,23,18,.06);}
+.row-actions .a-edit:hover:not(:disabled){background:rgba(110,20,35,.1);border-color:var(--vinho);color:var(--vinho);}
 /* Botão "jogar na Google Agenda": laranja = ainda não lancei, verde = já lancei.
    Só aparece em pedido confirmado. */
 .row-actions .a-agenda.pendente{border-color:var(--amarelo-status);color:var(--amarelo-status);background:rgba(199,150,46,.1);}
@@ -1110,6 +1111,108 @@ table.appt-table{width:100%;border-collapse:collapse;}
 }
 .ag-slot .s-remove:hover{background:rgba(162,58,58,.12);color:var(--vermelho-status);}
 .ag-modal-nota{font-size:13px;color:rgba(27,23,18,.6);line-height:1.6;margin:0 0 20px;}
+
+/* ---------- ADMIN: EDITAR PEDIDO ----------
+   Mesma linguagem do agendamento do site: o pacote em cartoes que se
+   selecionam, os adicionais em linhas com caixa de marcar, e o total
+   recalculado embaixo a cada clique. */
+.ed-cliente{
+  background:var(--marfim-escuro);border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:13px;
+}
+.ed-cliente b{display:block;font-weight:600;margin-bottom:2px;}
+.ed-cliente span{color:rgba(27,23,18,.55);font-size:12px;}
+.ed-titulo{font-size:12.5px;font-weight:700;color:rgba(27,23,18,.5);margin:0 0 10px;letter-spacing:.2px;}
+.ed-pacote{
+  border:1.5px solid rgba(27,23,18,.14);border-radius:6px;padding:12px 15px;margin-bottom:9px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;transition:all .2s ease;
+}
+.ed-pacote:hover{border-color:var(--dourado);}
+.ed-pacote.selected{border-color:var(--vinho);background:rgba(110,20,35,.05);}
+.ed-pacote .ep-nome{font-size:14.5px;font-weight:600;}
+.ed-pacote .ep-sub{font-size:11.5px;color:rgba(27,23,18,.5);margin-top:2px;}
+.ed-pacote .ep-preco{font-size:13.5px;color:var(--vinho);font-weight:600;white-space:nowrap;}
+.ed-addon{
+  display:flex;align-items:center;gap:11px;padding:11px 14px;margin-bottom:8px;
+  border:1.5px solid rgba(27,23,18,.12);border-radius:6px;cursor:pointer;transition:all .2s ease;
+}
+.ed-addon:hover{border-color:var(--dourado);}
+.ed-addon.selected{border-color:var(--vinho);background:rgba(110,20,35,.04);}
+.ed-addon.incluso{opacity:.72;cursor:default;border-style:dashed;}
+.ed-addon input[type="checkbox"]{accent-color:var(--vinho);width:16px;height:16px;flex:0 0 auto;}
+.ed-addon .ea-nome{flex:1;font-size:13px;min-width:0;}
+.ed-addon .ea-preco{font-size:12.5px;font-weight:600;color:var(--vinho);white-space:nowrap;}
+.ed-addon .ea-tag{
+  font-size:10.5px;font-weight:700;background:rgba(46,125,79,.14);color:var(--verde-status);
+  border-radius:4px;padding:3px 7px;white-space:nowrap;
+}
+.ed-addon .ea-qtd{
+  width:58px;padding:6px 8px;font-family:inherit;font-size:12.5px;text-align:center;
+  border:1.5px solid rgba(27,23,18,.18);border-radius:5px;background:#fff;color:inherit;
+}
+.ed-conta{border-top:1px solid rgba(27,23,18,.12);margin-top:18px;padding-top:16px;}
+.ed-linha{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:7px;}
+.ed-linha span:first-child{color:rgba(27,23,18,.6);}
+.ed-linha.total{font-size:15px;font-weight:700;margin-top:10px;}
+.ed-total-campo{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.ed-total-campo label{font-size:12.5px;color:rgba(27,23,18,.55);}
+.ed-total-campo input{
+  width:140px;padding:9px 12px;font-family:inherit;font-size:14px;font-weight:600;
+  border:1.5px solid rgba(27,23,18,.18);border-radius:5px;background:#fff;color:inherit;
+}
+.ed-total-campo input:focus{border-color:var(--vinho);}
+.ed-total-campo .ed-refazer{
+  border:none;background:none;font-family:var(--sans);font-size:12px;font-weight:600;
+  color:var(--vinho);text-decoration:underline;padding:0;
+}
+.ed-aviso{
+  font-size:12px;line-height:1.55;color:#8a6b1f;background:rgba(199,150,46,.12);
+  border-radius:6px;padding:10px 12px;margin-top:14px;
+}
+
+/* ---------- ADMIN: GUIA PAGAMENTOS ----------
+   Uma linha por pedido, com a conta do lado esquerdo e os dois marcos
+   (sinal e quitado) do lado direito. */
+.pg-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.pg-lista{padding:8px 24px 24px;}
+.pg-item{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:16px 0;border-bottom:1px solid rgba(27,23,18,.07);
+}
+.pg-item:last-child{border-bottom:none;}
+.pg-quem{flex:1 1 210px;min-width:0;}
+.pg-quem b{display:block;font-size:14px;font-weight:600;}
+.pg-quem span{display:block;font-size:12px;color:rgba(27,23,18,.5);margin-top:3px;}
+.pg-valores{display:flex;gap:22px;flex-wrap:wrap;flex:0 1 auto;}
+.pg-val{min-width:92px;}
+.pg-val .pv-lbl{font-size:10.5px;font-weight:700;color:rgba(27,23,18,.42);text-transform:uppercase;letter-spacing:.3px;}
+.pg-val .pv-num{font-family:var(--sans);font-size:14px;font-weight:600;margin-top:3px;}
+.pg-val.recebido .pv-num{color:var(--verde-status);}
+.pg-val.falta .pv-num{color:var(--vinho);}
+.pg-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+.pg-btn{
+  border:1.5px solid rgba(27,23,18,.16);background:#fff;border-radius:7px;padding:9px 14px;
+  font-family:var(--sans);font-size:12.5px;font-weight:600;color:rgba(27,23,18,.62);white-space:nowrap;
+  display:flex;align-items:center;gap:7px;transition:all .2s ease;
+}
+.pg-btn:hover{border-color:var(--carvao);color:var(--carvao);}
+.pg-btn.pago{background:rgba(46,125,79,.12);border-color:rgba(46,125,79,.4);color:var(--verde-status);}
+.pg-btn.pago:hover{background:rgba(46,125,79,.2);border-color:var(--verde-status);}
+.pg-btn .pb-ico{width:15px;height:15px;flex:0 0 auto;}
+/* O ".pg-quem span" acima deixa as linhas de texto em bloco; o selo e um
+   span tambem, entao precisa reconquistar o inline-flex. */
+.pg-quem .pg-selo{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px;
+  font-size:11px;font-weight:700;margin-top:6px;width:auto;
+}
+.pg-selo.quitado{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.pg-selo.sinal{background:rgba(199,150,46,.16);color:#8a6b1f;}
+.pg-selo.aberto{background:rgba(27,23,18,.07);color:rgba(27,23,18,.5);}
+.pg-modal-atalhos{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pg-atalho{
+  border:1.5px solid rgba(27,23,18,.16);background:#fff;border-radius:999px;padding:7px 14px;
+  font-family:var(--sans);font-size:12px;font-weight:600;color:rgba(27,23,18,.6);
+}
+.pg-atalho:hover{border-color:var(--vinho);color:var(--vinho);}
 .ag-modal-erro{
   display:none;font-size:12.5px;line-height:1.55;color:var(--vermelho-status);
   background:rgba(162,58,58,.08);border-radius:6px;padding:10px 12px;margin-bottom:16px;
@@ -1210,6 +1313,14 @@ table.appt-table{width:100%;border-collapse:collapse;}
   .ag-dia-head h4{flex:1 1 100%;}
   .ag-dia-tags{margin-left:0;}
   .ag-slots{grid-template-columns:1fr;}
+  .pg-toolbar .tabs{width:100%;justify-content:center;}
+  .pg-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
+  .pg-toolbar .search-input{width:100%;}
+  .pg-item{gap:12px;}
+  .pg-valores{width:100%;gap:16px;}
+  .pg-acoes{width:100%;margin-left:0;}
+  .pg-acoes .pg-btn{flex:1;justify-content:center;}
+  .ed-pacote{flex-wrap:wrap;}
   .fin-toolbar .tabs{width:100%;justify-content:center;}
   .fin-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
   .first-row{flex-wrap:wrap;row-gap:6px;}
@@ -2666,6 +2777,32 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   </div>
 </div>
 
+<!-- ================= EDITAR PEDIDO ================= -->
+<div class="modal-backdrop" id="edit-backdrop">
+  <div class="book-modal" style="max-width:520px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Editar pedido</h3>
+        <button class="book-close" id="edit-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body" id="edit-body"></div>
+  </div>
+</div>
+
+<!-- ================= REGISTRAR PAGAMENTO ================= -->
+<div class="modal-backdrop" id="pay-backdrop">
+  <div class="book-modal" style="max-width:420px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3 id="pay-titulo">Registrar pagamento</h3>
+        <button class="book-close" id="pay-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body" id="pay-body"></div>
+  </div>
+</div>
+
 <!-- ================= CRIAR HORÁRIO (GUIA AGENDA) ================= -->
 <div class="modal-backdrop" id="slot-backdrop">
   <div class="book-modal" style="max-width:430px;">
@@ -2744,6 +2881,10 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <button class="atb-tab" data-view="agenda" role="tab" aria-selected="false" aria-controls="pane-agenda">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           Agenda
+        </button>
+        <button class="atb-tab" data-view="pagamentos" role="tab" aria-selected="false" aria-controls="pane-pagamentos">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.6"/><path d="M6 15h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Pagamentos
         </button>
         <button class="atb-tab" data-view="financeiro" role="tab" aria-selected="false" aria-controls="pane-financeiro">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
@@ -2982,6 +3123,61 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <span id="ag-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
       </div>
       <div class="agenda-list" id="ag-lista"></div>
+    </div>
+  </div>
+
+  <!-- ===================== GUIA PAGAMENTOS =====================
+       Controle de quem ja pagou. Os dois marcos — sinal e quitacao — ficam
+       gravados no proprio pedido, com o valor que entrou de verdade: o sinal
+       combinado pode ser 30% e a cliente mandar 50%. -->
+  <div class="admin-body wrap admin-pane" id="pane-pagamentos" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Pagamentos</h1>
+    <p class="admin-sub">Quem já pagou o sinal, quem já quitou e quanto ainda falta entrar.</p>
+
+    <div class="pg-toolbar">
+      <div class="tabs" id="pg-escopo">
+        <button class="tab-btn active" data-escopo="confirmado">Confirmados</button>
+        <button class="tab-btn" data-escopo="pendente">Pendentes</button>
+        <button class="tab-btn" data-escopo="ativos">Todos (sem cancelados)</button>
+      </div>
+      <div class="tabs" id="pg-situacao">
+        <button class="tab-btn active" data-situacao="">Todos</button>
+        <button class="tab-btn" data-situacao="aberto">Sem pagamento</button>
+        <button class="tab-btn" data-situacao="sinal">Só o sinal</button>
+        <button class="tab-btn" data-situacao="quitado">Quitados</button>
+      </div>
+      <input class="search-input" id="pg-busca" placeholder="Buscar cliente" style="margin-left:auto;">
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card destaque">
+        <div class="fc-label">Já recebido</div>
+        <div class="fc-val" id="pg-recebido">–</div>
+        <div class="fc-hint" id="pg-recebido-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Ainda a receber</div>
+        <div class="fc-val" id="pg-falta">–</div>
+        <div class="fc-hint" id="pg-falta-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Quitados</div>
+        <div class="fc-val" id="pg-quitados">–</div>
+        <div class="fc-hint" id="pg-quitados-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Sem nenhum pagamento</div>
+        <div class="fc-val" id="pg-abertos">–</div>
+        <div class="fc-hint">Reserva ainda não garantida</div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Pedidos</h3>
+        <span id="pg-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+      </div>
+      <div class="pg-lista" id="pg-lista"></div>
     </div>
   </div>
 
@@ -3552,6 +3748,97 @@ async function firebaseApi(payload){
     return { ok:true };
   }
 
+  /* ---- Editar um pedido ja fechado ----
+     Troca de pacote e de adicionais. O que o painel manda ja vem calculado,
+     mas a conta e refeita aqui antes de gravar: o campo de valor do editor e
+     editavel, e nada impede que a tela esteja desatualizada. A colecao
+     "horarios" tambem e atualizada, porque e dela que saem as vagas do lote
+     e a regra da meia hora. */
+  if(acao === "updatePedido"){
+    const id = String(payload.id||"");
+    const snapAg = await db.collection(COL_AGENDAMENTOS).doc(id).get();
+    if(!snapAg.exists) return { ok:false, reason:"not_found" };
+    const atual = snapAg.data() || {};
+
+    const pkg = CONFIG.packages.find(p => p.id === payload.packageId);
+    if(!pkg) return { ok:false, reason:"invalid_package" };
+
+    // Meia hora do Familia: se este pedido e o Familia da hora cheia que
+    // abriu a vaga seguinte, e essa vaga esta ocupada, trocar o pacote
+    // deixaria o outro pedido pendurado num horario que deixou de existir.
+    if(atual.package !== pkg.name && /^\d{2}:00$/.test(String(atual.time||""))){
+      const cfgMeia = CONFIG.meiaHora;
+      const pkgMeia = cfgMeia ? pkgById(cfgMeia.pacoteId) : null;
+      if(pkgMeia && atual.package === pkgMeia.name && String(atual.date||"") >= cfgMeia.inicio){
+        const meia = String(atual.time).slice(0,2) + ":30";
+        const snapMeia = await db.collection(COL_HORARIOS)
+          .where("date", "==", atual.date).where("time", "==", meia).get();
+        const ocupada = snapMeia.docs.some(d => (d.data()||{}).status !== "cancelado");
+        if(ocupada) return { ok:false, reason:"meia_hora_presa", meia };
+      }
+    }
+
+    const isVip = ehAgendamentoVip(atual);
+    const lote = isVip ? null : (pkg.lots||[]).find(l => l.label === atual.lot) || null;
+    const ids = Array.isArray(payload.addonIds) ? payload.addonIds : [];
+    const qtd = payload.addonQtd || {};
+    const extras = addonsGravados(pkg, ids, qtd);
+    const loteDoPreco = loteCobrado(pkg, lote, atual.date, isVip);
+    const ehSemana = temValorDeSemana(pkg, lote, atual.date, isVip);
+    const calculado = precoTotal(pkg, lote, isVip, ids, atual.date, qtd);
+    // Valor digitado a mao vence o calculado — ela pode ter combinado outro
+    // preco com a cliente. Sem valor digitado, vale a conta.
+    const digitado = parseFloat(payload.totalManual);
+    const total = (payload.totalManual !== "" && payload.totalManual != null && !isNaN(digitado) && digitado >= 0)
+      ? digitado : calculado;
+
+    const campos = {
+      package: pkg.name,
+      lotPrice: isVip ? vipDiscountedPrice(pkg) : (loteDoPreco ? loteDoPreco.price : pkg.price),
+      semanaNota: ehSemana ? NOTA_SEMANA : "",
+      addons: extras.texto,
+      addonsValor: extras.valor,
+      addonIds: ids,
+      addonQtd: qtd,
+      total: fmtBRL(total),
+      pagamento: textoPagamento(pkg, total),
+      editadoEm: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const lote2 = db.batch();
+    lote2.update(db.collection(COL_AGENDAMENTOS).doc(id), campos);
+    lote2.update(db.collection(COL_HORARIOS).doc(id), { package: pkg.name });
+    await lote2.commit();
+    return { ok:true, campos };
+  }
+
+  /* ---- Pagamentos: sinal recebido e pedido quitado ----
+     Dois marcos separados, cada um com o valor que entrou de verdade — o
+     sinal combinado pode ser 30% e a cliente mandar 50%. Desmarcar apaga o
+     marco inteiro, para nao sobrar valor de um pagamento que nao houve. */
+  if(acao === "updatePagamento"){
+    const id = String(payload.id||"");
+    const campos = { updatedAt: new Date().toISOString() };
+    const valor = parseFloat(payload.valor);
+    const temValor = !isNaN(valor) && valor >= 0;
+
+    if(payload.marco === "sinal"){
+      campos.pagoSinal = !!payload.pago;
+      campos.pagoSinalValor = payload.pago && temValor ? valor : null;
+      campos.pagoSinalEm = payload.pago ? new Date().toISOString() : null;
+    }else if(payload.marco === "total"){
+      campos.pagoTotal = !!payload.pago;
+      campos.pagoTotalValor = payload.pago && temValor ? valor : null;
+      campos.pagoTotalEm = payload.pago ? new Date().toISOString() : null;
+      // Quitar sem ter marcado o sinal e comum (cliente que pagou tudo de
+      // uma vez): nesse caso o sinal fica como esta, sem inventar valor.
+    }else{
+      return { ok:false, reason:"invalid_marco" };
+    }
+    await db.collection(COL_AGENDAMENTOS).doc(id).update(campos);
+    return { ok:true, campos };
+  }
+
   /* ---- Guia "Agenda": criar e apagar horário ----
      O mapa inteiro é regravado a cada ação (é um documento pequeno e só o
      admin escreve), e a leitura é feita na hora para não gravar em cima de
@@ -3831,16 +4118,48 @@ function addonsCobrados(pkg, escolhidos){
     .filter(Boolean);
 }
 // Quantos "de cada" o cliente pediu. So os adicionais com porPessoa usam isso;
-// os demais contam sempre como 1.
-function qtdAddon(a){
+// os demais contam sempre como 1. O mapa de quantidades vem de fora para a
+// mesma conta servir ao agendamento do site e ao editor do painel; sem mapa,
+// vale o do agendamento em andamento.
+function qtdAddon(a, qtdMap){
   if(!a || !a.porPessoa) return 1;
-  const n = parseInt((booking.addonQtd || {})[a.id], 10);
+  const mapa = qtdMap || booking.addonQtd || {};
+  const n = parseInt(mapa[a.id], 10);
   const teto = a.maxQtd || 10;
   return Math.min(teto, Math.max(1, isNaN(n) ? 1 : n));
 }
-function subtotalAddon(a){ return a.preco * qtdAddon(a); }
-function totalAddons(pkg, escolhidos){
-  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+subtotalAddon(a), 0);
+function subtotalAddon(a, qtdMap){ return a.preco * qtdAddon(a, qtdMap); }
+function totalAddons(pkg, escolhidos, qtdMap){
+  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+subtotalAddon(a, qtdMap), 0);
+}
+// Texto e valor dos adicionais como ficam gravados no pedido. Uma funcao so,
+// para o site e o editor nunca escreverem isso de jeitos diferentes.
+function addonsGravados(pkg, ids, qtdMap){
+  const cobrados = addonsCobrados(pkg, ids);
+  return {
+    texto: cobrados.map(a=>a.nome + (qtdAddon(a, qtdMap) > 1 ? " × " + qtdAddon(a, qtdMap) : "")).join(", "),
+    valor: cobrados.length ? fmtBRL(cobrados.reduce((x,a)=>x + subtotalAddon(a, qtdMap), 0)) : ""
+  };
+}
+// Le de volta o que foi escolhido. Pedido novo traz addonIds/addonQtd prontos;
+// pedido antigo so tem o texto, entao os nomes sao reconhecidos de volta — e o
+// texto foi gerado a partir desses mesmos nomes, entao bate.
+function addonsDoPedido(a){
+  if(a && Array.isArray(a.addonIds)){
+    return { ids: a.addonIds.slice(), qtd: Object.assign({}, a.addonQtd || {}) };
+  }
+  const texto = String(a && a.addons || "");
+  const ids = [], qtd = {};
+  if(texto){
+    texto.split(",").map(t=>t.trim()).filter(Boolean).forEach(parte=>{
+      const item = CONFIG.adicionais.find(ad => parte.indexOf(ad.nome) === 0);
+      if(!item) return;
+      ids.push(item.id);
+      const m = parte.match(/×\s*(\d+)/);
+      if(m) qtd[item.id] = parseInt(m[1], 10);
+    });
+  }
+  return { ids, qtd };
 }
 
 /* ---- Valor de 1o lote nas datas de segunda a sexta ----
@@ -3876,8 +4195,8 @@ function precoBasePacote(pkg, lot, isVip, dateISO){
   const n = parseBRL(txt);
   return isNaN(n) ? 0 : n;
 }
-function precoTotal(pkg, lot, isVip, escolhidos, dateISO){
-  return precoBasePacote(pkg, lot, isVip, dateISO) + totalAddons(pkg, escolhidos);
+function precoTotal(pkg, lot, isVip, escolhidos, dateISO, qtdMap){
+  return precoBasePacote(pkg, lot, isVip, dateISO) + totalAddons(pkg, escolhidos, qtdMap);
 }
 // Texto da condição de pagamento do pacote (entrada + saldo no dia).
 function textoPagamento(pkg, total){
@@ -5268,6 +5587,10 @@ ligar("confirm-booking", "click", async (e)=>{
     semanaNota: ehValorDeSemana ? NOTA_SEMANA : "",
     addons: extrasEscolhidos.map(a=>a.nome + (qtdAddon(a)>1 ? " × "+qtdAddon(a) : "")).join(", "),
     addonsValor: extrasEscolhidos.length ? fmtBRL(extrasEscolhidos.reduce((x,a)=>x+subtotalAddon(a),0)) : "",
+    // A mesma escolha em formato de dados, para o painel conseguir reabrir e
+    // editar o pedido sem ter que adivinhar pelo texto acima.
+    addonIds: extrasEscolhidos.map(a=>a.id),
+    addonQtd: Object.assign({}, booking.addonQtd || {}),
     total: fmtBRL(valorTotal),
     pagamento: textoPagamento(p, valorTotal),
     lotVagas: isVip ? null : (lot ? lot.vagas : null),
@@ -5509,6 +5832,7 @@ async function refreshAdminData(){
   renderStats();
   renderTable();
   renderAgendaGuia();
+  renderPagamentos();
   renderVipAdmin();
   renderFinanceiro();
   // O painel de mensagens so se liga uma vez; depois so refaz a lista.
@@ -5961,6 +6285,9 @@ function renderTable(){
           <button class="a-canc" title="Cancelar" data-id="${a.id}" ${a.status==="cancelado"?"disabled style='opacity:.3'":""}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"/></svg>
           </button>
+          <button class="a-edit" title="Editar pacote e adicionais" data-id="${a.id}" ${a.status==="cancelado"?"disabled style='opacity:.3'":""}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </button>
           <button class="a-view" title="Ver detalhes" data-id="${a.id}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
@@ -5978,6 +6305,7 @@ function renderTable(){
 
   tbody.querySelectorAll(".a-conf:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> confirmAppointment(b.dataset.id)));
   tbody.querySelectorAll(".a-canc:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> openCancelConfirm(b.dataset.id)));
+  tbody.querySelectorAll(".a-edit:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> edAbrir(b.dataset.id)));
   tbody.querySelectorAll(".a-view").forEach(b=> b.addEventListener("click", ()=> openDetail(b.dataset.id)));
   tbody.querySelectorAll(".a-phone").forEach(b=> b.addEventListener("click", ()=> openWhatsappTo(b.dataset.phone)));
   tbody.querySelectorAll(".a-agenda").forEach(b=> b.addEventListener("click", async ()=>{
@@ -6209,6 +6537,7 @@ function trocarGuiaAdmin(nome){
     p.classList.toggle("active", p.id === "pane-" + nome);
   });
   if(nome === "agenda") renderAgendaGuia();
+  if(nome === "pagamentos") renderPagamentos();
   if(nome === "financeiro") renderFinanceiro();
   window.scrollTo(0,0);
 }
@@ -6527,9 +6856,13 @@ function renderFinPrimeiras(lista){
 
 function exportAppointmentsCSV(){
   const list = getFilteredAppointments();
-  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status","Observações","Criado em"];
+  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status",
+                   "Total","Pagamento","Recebido","Falta","Observações","Criado em"];
   const rows = list.map(a => [
     a.name, a.phone, a.email, a.package, a.lot||"", fmtDateBR(a.date), a.time, a.status,
+    totalDoPedido(a),
+    pgSituacaoDe(a) === "quitado" ? "Quitado" : (pgSituacaoDe(a) === "sinal" ? "Sinal pago" : "Sem pagamento"),
+    pgValor(pgRecebido(a)), pgValor(Math.max(0, pgTotalDe(a) - pgRecebido(a))),
     (a.notes||"").replace(/[\r\n]+/g," "), new Date(a.createdAt).toLocaleString("pt-BR")
   ]);
   const escapeCsv = (v) => `"${String(v).replace(/"/g,'""')}"`;
@@ -6647,7 +6980,8 @@ function openDetail(id){
     ${a.semanaNota?`<div class="d-row"><span class="lbl">Valor de semana</span><span class="val">${escapeHtml(a.semanaNota)}</span></div>`:""}
     <div class="d-row"><span class="lbl">Adicionais</span><span class="val">${a.addons ? escapeHtml(a.addons)+(a.addonsValor?" ("+escapeHtml(a.addonsValor)+")":"") : "Nenhum"}</span></div>
     <div class="d-row"><span class="lbl">Valor total</span><span class="val"><b>${escapeHtml(totalDoPedido(a))}</b></span></div>
-    ${a.pagamento?`<div class="d-row"><span class="lbl">Pagamento</span><span class="val">${escapeHtml(a.pagamento)}</span></div>`:""}
+    ${a.pagamento?`<div class="d-row"><span class="lbl">Condição</span><span class="val">${escapeHtml(a.pagamento)}</span></div>`:""}
+    <div class="d-row"><span class="lbl">Pagamento</span><span class="val">${pgResumoDoPedido(a)}</span></div>
     <div class="d-row"><span class="lbl">Data</span><span class="val">${fmtDateBR(a.date)}</span></div>
     <div class="d-row"><span class="lbl">Horário</span><span class="val">${a.time}</span></div>
     <div class="d-row"><span class="lbl">Status</span><span class="val"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span></span></div>
@@ -6657,9 +6991,16 @@ function openDetail(id){
       <button class="btn-solid btn-success" id="detail-confirm" ${a.status!=="pendente"?"disabled style='opacity:.4'":""}>Confirmar</button>
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
     </div>
+    ${a.status!=="cancelado" ? `<button class="btn-outline" id="detail-editar" style="width:100%;justify-content:center;margin-top:10px;">Editar pedido (pacote e adicionais)</button>` : ""}
     <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
     ${a.status==="confirmado" ? `<button class="btn-outline" id="detail-agenda" style="width:100%;justify-content:center;margin-top:10px;">${a.naAgenda?"Abrir de novo na Google Agenda":"Adicionar à Google Agenda"}</button>` : ""}
   `;
+  // Editar sai do detalhe e entra no editor, para a tela nao ficar com dois
+  // modais abertos um atras do outro.
+  ligar("detail-editar", "click", ()=>{
+    document.getElementById("detail-backdrop").classList.remove("open");
+    edAbrir(a.id);
+  });
   ligar("detail-whatsapp", "click", ()=> openWhatsappTo(a.phone));
   // Abre o Google Agenda em outra aba com o evento pronto — só falta salvar.
   // Mesma marcação do botão da tabela, pra as duas telas contarem a mesma história.
@@ -6677,6 +7018,470 @@ function openDetail(id){
 ligar("detail-close", "click", ()=> document.getElementById("detail-backdrop").classList.remove("open"));
 ligar("detail-backdrop", "click",(e)=>{ if(e.target.id==="detail-backdrop") e.currentTarget.classList.remove("open"); });
 ligar("cancel-backdrop", "click",(e)=>{ if(e.target.id==="cancel-backdrop") e.currentTarget.classList.remove("open"); });
+
+/* =========================================================
+   EDITAR PEDIDO
+   Troca o pacote e os adicionais de um pedido ja fechado, refazendo a conta.
+   Lote, data e horario nao mudam aqui: remarcar e outra conversa, e mexer no
+   horario tem que passar pela checagem de vaga livre.
+========================================================= */
+let edPedidoId = null;
+let edEscolha = { packageId:null, addons:[], qtd:{}, totalManual:null };
+
+function edFechar(){
+  document.getElementById("edit-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+  edPedidoId = null;
+}
+// Pacote do pedido pelo nome gravado; sem achar, cai no primeiro da lista
+// para a tela ter sempre algo selecionado.
+function edPacoteInicial(a){
+  const p = CONFIG.packages.find(x => x.name === String(a && a.package || "").trim());
+  return p ? p.id : (CONFIG.packages[0] || {}).id;
+}
+// Lote do pedido dentro do pacote escolhido agora. VIP nao usa lote.
+function edLoteDe(pkg, pedido){
+  if(ehAgendamentoVip(pedido)) return null;
+  return (pkg.lots || []).find(l => l.label === pedido.lot) || null;
+}
+function edConta(pedido, pkgId, ids, qtd){
+  const pkg = pkgById(pkgId);
+  const isVip = ehAgendamentoVip(pedido);
+  const lote = edLoteDe(pkg, pedido);
+  return {
+    pkg, isVip, lote,
+    base: precoBasePacote(pkg, lote, isVip, pedido.date),
+    extras: totalAddons(pkg, ids, qtd),
+    total: precoTotal(pkg, lote, isVip, ids, pedido.date, qtd)
+  };
+}
+
+function edRender(){
+  const pedido = appointmentsCache.find(x => x.id === edPedidoId);
+  if(!pedido) return;
+  const conta = edConta(pedido, edEscolha.packageId, edEscolha.addons, edEscolha.qtd);
+  const totalAtual = parseBRL(totalDoPedido(pedido));
+  const mostrado = edEscolha.totalManual != null ? edEscolha.totalManual : conta.total;
+  const mudouPacote = conta.pkg && conta.pkg.name !== pedido.package;
+
+  const pacotes = CONFIG.packages.map(p=>{
+    const lote = edLoteDe(p, pedido);
+    const preco = precoBasePacote(p, lote, conta.isVip, pedido.date);
+    const sub = conta.isVip ? "Valor VIP" : (lote ? lote.label : "Valor de tabela");
+    return `<div class="ed-pacote ${p.id === edEscolha.packageId ? "selected" : ""}" data-edpkg="${p.id}">
+      <div><div class="ep-nome">${escapeHtml(p.name)}</div><div class="ep-sub">${escapeHtml(sub)}</div></div>
+      <div class="ep-preco">${fmtBRL(preco)}</div>
+    </div>`;
+  }).join("");
+
+  const adicionais = CONFIG.adicionais.map(ad=>{
+    const incluso = pacoteInclui(conta.pkg, ad.id);
+    const marcado = incluso || edEscolha.addons.indexOf(ad.id) !== -1;
+    const qtd = qtdAddon(ad, edEscolha.qtd);
+    const campoQtd = (ad.porPessoa && marcado && !incluso)
+      ? `<input class="ea-qtd" type="number" min="1" max="${ad.maxQtd||10}" value="${qtd}" data-edqtd="${ad.id}" aria-label="Quantidade de ${escapeHtml(ad.nome)}">`
+      : "";
+    const direita = incluso
+      ? '<span class="ea-tag">Incluso</span>'
+      : `<span class="ea-preco">${fmtBRL(ad.preco)}${ad.porPessoa ? " cada" : ""}</span>`;
+    return `<label class="ed-addon ${marcado ? "selected" : ""} ${incluso ? "incluso" : ""}">
+      <input type="checkbox" data-edaddon="${ad.id}" ${marcado ? "checked" : ""} ${incluso ? "disabled" : ""}>
+      <span class="ea-nome">${escapeHtml(ad.nome)}</span>
+      ${campoQtd}
+      ${direita}
+    </label>`;
+  }).join("");
+
+  document.getElementById("edit-body").innerHTML = `
+    <div class="ed-cliente">
+      <b>${escapeHtml(pedido.name || "Cliente")}</b>
+      <span>${fmtDateBR(pedido.date)} às ${pedido.time}${pedido.lot ? " · " + escapeHtml(pedido.lot) : ""}</span>
+    </div>
+
+    <p class="ed-titulo">PACOTE</p>
+    ${pacotes}
+
+    <p class="ed-titulo" style="margin-top:22px;">ITENS ADICIONAIS</p>
+    ${adicionais}
+
+    <div class="ed-conta">
+      <div class="ed-linha"><span>Pacote</span><span>${fmtBRL(conta.base)}</span></div>
+      <div class="ed-linha"><span>Adicionais</span><span>${conta.extras ? fmtBRL(conta.extras) : "—"}</span></div>
+      <div class="ed-linha total"><span>Novo total</span><span>${fmtBRL(conta.total)}</span></div>
+      <div class="ed-linha"><span>Valor de antes</span><span>${escapeHtml(totalDoPedido(pedido))}</span></div>
+
+      <div class="ed-total-campo">
+        <label for="ed-total">Cobrar</label>
+        <input type="text" id="ed-total" inputmode="decimal" value="${String(mostrado.toFixed(2)).replace(".", ",")}">
+        ${edEscolha.totalManual != null ? '<button type="button" class="ed-refazer" id="ed-refazer">voltar ao valor calculado</button>' : ""}
+      </div>
+      <p style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:8px;line-height:1.5;">
+        O valor vem calculado pelo pacote e pelos adicionais. Se vocês combinaram outro preço, é só digitar por cima.
+      </p>
+
+      ${mudouPacote ? `<div class="ed-aviso">O pacote muda de <b>${escapeHtml(pedido.package)}</b> para <b>${escapeHtml(conta.pkg.name)}</b>. Isso conta nas vagas do lote e aparece na agenda e no financeiro. Avise a cliente do novo valor.</div>` : ""}
+      ${!isNaN(totalAtual) && Math.abs(mostrado - totalAtual) > 0.009 ? `<div class="ed-aviso">O pagamento já registrado para este pedido não é recalculado sozinho — confira na guia Pagamentos depois de salvar.</div>` : ""}
+    </div>
+
+    <div class="c-actions" style="display:flex;gap:10px;margin-top:22px;">
+      <button class="btn-outline" id="ed-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+      <button class="btn-solid" id="ed-salvar" style="flex:1;justify-content:center;">Salvar alterações</button>
+    </div>`;
+
+  const body = document.getElementById("edit-body");
+  body.querySelectorAll("[data-edpkg]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      edEscolha.packageId = el.dataset.edpkg;
+      // O que o novo pacote ja inclui sai da lista de cobrados.
+      const novo = pkgById(edEscolha.packageId);
+      edEscolha.addons = edEscolha.addons.filter(id => !pacoteInclui(novo, id));
+      edEscolha.totalManual = null;   // trocou de pacote: a conta recomeça
+      edRender();
+    });
+  });
+  body.querySelectorAll("[data-edaddon]").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const id = el.dataset.edaddon;
+      if(el.checked){ if(edEscolha.addons.indexOf(id) === -1) edEscolha.addons.push(id); }
+      else edEscolha.addons = edEscolha.addons.filter(x => x !== id);
+      edEscolha.totalManual = null;
+      edRender();
+    });
+  });
+  body.querySelectorAll("[data-edqtd]").forEach(el=>{
+    el.addEventListener("click", e=> e.preventDefault());   // nao marca/desmarca o item
+    el.addEventListener("change", ()=>{
+      edEscolha.qtd[el.dataset.edqtd] = parseInt(el.value, 10) || 1;
+      edEscolha.totalManual = null;
+      edRender();
+    });
+  });
+  ligar("ed-total", "change", (e)=>{
+    const n = parseFloat(String(e.target.value).replace(/\./g, "").replace(",", "."));
+    edEscolha.totalManual = isNaN(n) || n < 0 ? null : n;
+    edRender();
+  });
+  ligar("ed-refazer", "click", ()=>{ edEscolha.totalManual = null; edRender(); });
+  ligar("ed-cancelar", "click", edFechar);
+  ligar("ed-salvar", "click", edSalvar);
+}
+
+function edAbrir(id){
+  const pedido = appointmentsCache.find(x => x.id === id);
+  if(!pedido) return;
+  if(pedido.status === "cancelado"){
+    showToast("Esse pedido está cancelado. Reative antes de editar.", "error");
+    return;
+  }
+  edPedidoId = id;
+  const escolhidos = addonsDoPedido(pedido);
+  edEscolha = {
+    packageId: edPacoteInicial(pedido),
+    addons: escolhidos.ids,
+    qtd: escolhidos.qtd,
+    totalManual: null
+  };
+  edRender();
+  document.getElementById("edit-backdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+async function edSalvar(){
+  const btn = document.getElementById("ed-salvar");
+  btn.disabled = true;
+  const data = await apiPost({
+    action: "updatePedido",
+    id: edPedidoId,
+    packageId: edEscolha.packageId,
+    addonIds: edEscolha.addons,
+    addonQtd: edEscolha.qtd,
+    totalManual: edEscolha.totalManual
+  }, true);
+  btn.disabled = false;
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(data && data.reason === "meia_hora_presa"){
+    showToast("Tem um Pacote Família marcado às " + data.meia + ", que só existe por causa deste pedido. Cancele aquele antes de trocar o pacote.", "error");
+    return;
+  }
+  if(!data || !data.ok){ showToast("Não foi possível salvar as alterações.", "error"); return; }
+  edFechar();
+  showToast("Pedido atualizado.", "success");
+  await refreshAdminData();
+}
+
+ligar("edit-close", "click", edFechar);
+ligar("edit-backdrop", "click", (e)=>{ if(e.target.id === "edit-backdrop") edFechar(); });
+
+/* =========================================================
+   GUIA PAGAMENTOS
+   Dois marcos por pedido: o sinal e a quitacao. Cada um guarda o valor que
+   entrou de verdade, porque o sinal pedido (30% ou 50%) nem sempre e o que a
+   cliente manda. A guia nao busca nada no servidor: le o appointmentsCache.
+========================================================= */
+let pgEscopo = "confirmado";   // confirmado | pendente | ativos
+let pgSituacao = "";           // "" | aberto | sinal | quitado
+let pgBusca = "";
+let pgAlvo = null;             // { id, marco } enquanto o modal esta aberto
+
+function pgValor(n){
+  const v = isNaN(n) ? 0 : n;
+  return "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function pgTotalDe(a){
+  const n = parseBRL(totalDoPedido(a));
+  return isNaN(n) ? 0 : n;
+}
+// % de sinal do pacote do pedido; sem pacote reconhecido, 30% (regra dos demais).
+function pgEntradaPct(a){
+  const p = CONFIG.packages.find(x => x.name === String(a && a.package || "").trim());
+  return p && p.entrada ? p.entrada : 30;
+}
+function pgSinalEsperado(a){ return pgTotalDe(a) * pgEntradaPct(a) / 100; }
+// Quanto ja entrou. Quitado vale pelo total do pedido: o campo de valor do
+// marco guarda quanto foi pago naquele momento, mas o pedido esta fechado.
+function pgRecebido(a){
+  if(a && a.pagoTotal) return pgTotalDe(a);
+  if(a && a.pagoSinal){
+    const n = parseFloat(a.pagoSinalValor);
+    return isNaN(n) ? pgSinalEsperado(a) : n;
+  }
+  return 0;
+}
+// Frase curta do estado do pagamento, para o modal de detalhe.
+function pgResumoDoPedido(a){
+  const sit = pgSituacaoDe(a);
+  if(sit === "quitado") return '<span class="status-pill confirmado"><span class="dot"></span>quitado</span>';
+  if(sit === "sinal"){
+    return '<span class="status-pill pendente"><span class="dot"></span>sinal pago</span> '
+         + pgValor(pgRecebido(a)) + " de " + pgValor(pgTotalDe(a));
+  }
+  return '<span class="status-pill cancelado"><span class="dot"></span>sem pagamento</span>';
+}
+function pgSituacaoDe(a){
+  if(a && a.pagoTotal) return "quitado";
+  if(a && a.pagoSinal) return "sinal";
+  return "aberto";
+}
+function pgTexto(id, valor){
+  const el = document.getElementById(id);
+  if(el) el.textContent = valor;
+}
+function pgPlural(n, um, muitos){ return n + " " + (n === 1 ? um : muitos); }
+
+function pgPedidos(){
+  return (appointmentsCache || []).filter(a=>{
+    if(a.status === "cancelado") return false;
+    if(pgEscopo !== "ativos" && a.status !== pgEscopo) return false;
+    if(pgSituacao && pgSituacaoDe(a) !== pgSituacao) return false;
+    if(pgBusca){
+      const alvo = (String(a.name||"") + " " + String(a.phone||"") + " " + String(a.email||"")).toLowerCase();
+      if(alvo.indexOf(pgBusca.toLowerCase()) === -1) return false;
+    }
+    return true;
+  }).sort((a,b)=> (a.date + a.time).localeCompare(b.date + b.time));
+}
+
+function renderPagamentos(){
+  const wrap = document.getElementById("pg-lista");
+  if(!wrap) return;
+
+  // Os numeros de cima seguem o escopo (confirmados/pendentes), mas ignoram
+  // o filtro de situacao e a busca — senao "Quitados" mostraria 100% recebido.
+  const doEscopo = (appointmentsCache || []).filter(a=>{
+    if(a.status === "cancelado") return false;
+    return pgEscopo === "ativos" || a.status === pgEscopo;
+  });
+  const recebido = doEscopo.reduce((soma,a)=> soma + pgRecebido(a), 0);
+  const totalGeral = doEscopo.reduce((soma,a)=> soma + pgTotalDe(a), 0);
+  const quitados = doEscopo.filter(a => pgSituacaoDe(a) === "quitado").length;
+  const abertos = doEscopo.filter(a => pgSituacaoDe(a) === "aberto").length;
+
+  pgTexto("pg-recebido", pgValor(recebido));
+  pgTexto("pg-recebido-hint", totalGeral
+    ? Math.round(recebido / totalGeral * 100) + "% de " + pgValor(totalGeral)
+    : "Nenhum pedido no filtro");
+  pgTexto("pg-falta", pgValor(Math.max(0, totalGeral - recebido)));
+  pgTexto("pg-falta-hint", pgPlural(doEscopo.length - quitados, "pedido em aberto", "pedidos em aberto"));
+  pgTexto("pg-quitados", String(quitados));
+  pgTexto("pg-quitados-hint", "de " + pgPlural(doEscopo.length, "pedido", "pedidos"));
+  pgTexto("pg-abertos", String(abertos));
+
+  const lista = pgPedidos();
+  pgTexto("pg-resumo", lista.length ? pgPlural(lista.length, "pedido", "pedidos") : "");
+
+  if(!lista.length){
+    wrap.innerHTML = `<div class="empty-state">
+      <div class="e-ico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.3"/></svg></div>
+      <h4>Nenhum pedido neste filtro</h4>
+    </div>`;
+    return;
+  }
+
+  const icoCheck = '<svg class="pb-ico" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const icoVazio = '<svg class="pb-ico" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/></svg>';
+
+  wrap.innerHTML = lista.map(a=>{
+    const total = pgTotalDe(a);
+    const recebidoDele = pgRecebido(a);
+    const situacao = pgSituacaoDe(a);
+    const esperado = pgSinalEsperado(a);
+    const selo = situacao === "quitado" ? '<span class="pg-selo quitado">Quitado</span>'
+               : situacao === "sinal"   ? '<span class="pg-selo sinal">Sinal pago</span>'
+               : '<span class="pg-selo aberto">Sem pagamento</span>';
+    return `<div class="pg-item">
+      <div class="pg-quem">
+        <b>${ehAgendamentoVip(a) ? '<span class="vip-star">&#9733;</span> ' : ""}${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}${a.status === "pendente" ? " · pendente" : ""}</span>
+        ${selo}
+      </div>
+      <div class="pg-valores">
+        <div class="pg-val"><div class="pv-lbl">Total</div><div class="pv-num">${pgValor(total)}</div></div>
+        <div class="pg-val"><div class="pv-lbl">Sinal ${pgEntradaPct(a)}%</div><div class="pv-num">${pgValor(esperado)}</div></div>
+        <div class="pg-val recebido"><div class="pv-lbl">Recebido</div><div class="pv-num">${pgValor(recebidoDele)}</div></div>
+        <div class="pg-val falta"><div class="pv-lbl">Falta</div><div class="pv-num">${pgValor(Math.max(0, total - recebidoDele))}</div></div>
+      </div>
+      <div class="pg-acoes">
+        <button class="pg-btn ${a.pagoSinal ? "pago" : ""}" data-marco="sinal" data-id="${a.id}">
+          ${a.pagoSinal ? icoCheck : icoVazio}${a.pagoSinal ? "Sinal pago" : "Marcar sinal"}
+        </button>
+        <button class="pg-btn ${a.pagoTotal ? "pago" : ""}" data-marco="total" data-id="${a.id}">
+          ${a.pagoTotal ? icoCheck : icoVazio}${a.pagoTotal ? "Quitado" : "Marcar quitado"}
+        </button>
+        <button class="pg-btn" data-ver="${a.id}" title="Ver o pedido">Ver</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+ligar("pg-lista", "click", (e)=>{
+  const ver = e.target.closest("[data-ver]");
+  if(ver){ openDetail(ver.dataset.ver); return; }
+  const btn = e.target.closest("[data-marco]");
+  if(btn) pgAbrirModal(btn.dataset.id, btn.dataset.marco);
+});
+document.querySelectorAll("#pg-escopo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#pg-escopo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    pgEscopo = btn.dataset.escopo;
+    renderPagamentos();
+  });
+});
+document.querySelectorAll("#pg-situacao .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#pg-situacao .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    pgSituacao = btn.dataset.situacao;
+    renderPagamentos();
+  });
+});
+ligar("pg-busca", "input", (e)=>{ pgBusca = e.target.value.trim(); renderPagamentos(); });
+
+/* ---- modal de registrar/desfazer pagamento ---- */
+function pgFecharModal(){
+  document.getElementById("pay-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+  pgAlvo = null;
+}
+function pgAbrirModal(id, marco){
+  const a = appointmentsCache.find(x => x.id === id);
+  if(!a) return;
+  pgAlvo = { id, marco };
+  const ehSinal = marco === "sinal";
+  const jaPago = ehSinal ? !!a.pagoSinal : !!a.pagoTotal;
+  const total = pgTotalDe(a);
+  const esperado = pgSinalEsperado(a);
+  const recebidoAntes = pgRecebido(a);
+  const sugerido = ehSinal ? esperado : Math.max(0, total - (a.pagoSinal ? recebidoAntes : 0));
+  const quando = ehSinal ? a.pagoSinalEm : a.pagoTotalEm;
+
+  document.getElementById("pay-titulo").textContent = ehSinal ? "Sinal da reserva" : "Pagamento final";
+
+  if(jaPago){
+    document.getElementById("pay-body").innerHTML = `
+      <div class="ed-cliente">
+        <b>${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}</span>
+      </div>
+      <p class="ag-modal-nota">
+        ${ehSinal ? "Sinal" : "Pagamento final"} marcado como recebido${quando ? " em " + new Date(quando).toLocaleString("pt-BR") : ""}.
+        ${ehSinal && a.pagoSinalValor != null ? "Valor registrado: <b>" + pgValor(parseFloat(a.pagoSinalValor)) + "</b>." : ""}
+      </p>
+      <div class="c-actions" style="display:flex;gap:10px;">
+        <button class="btn-outline" id="pay-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid btn-danger" id="pay-desfazer" style="flex:1;justify-content:center;">Desmarcar</button>
+      </div>`;
+    ligar("pay-cancelar", "click", pgFecharModal);
+    ligar("pay-desfazer", "click", ()=> pgGravar(false));
+  }else{
+    const atalhos = ehSinal
+      ? [["30%", total*0.3], ["50%", total*0.5], ["Valor cheio", total]]
+      : [["Saldo", sugerido], ["Valor cheio", total]];
+    document.getElementById("pay-body").innerHTML = `
+      <div class="ed-cliente">
+        <b>${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}</span>
+      </div>
+      <p class="ag-modal-nota">
+        Total do pedido: <b>${pgValor(total)}</b>. O sinal combinado para este pacote é de
+        <b>${pgEntradaPct(a)}%</b> (${pgValor(esperado)}).
+        ${ehSinal ? "Se a cliente mandou outro valor, é só digitar o que entrou de verdade." : ""}
+      </p>
+      <div class="pg-modal-atalhos">
+        ${atalhos.map(([rotulo, v])=>`<button type="button" class="pg-atalho" data-atalho="${v.toFixed(2)}">${rotulo} — ${pgValor(v)}</button>`).join("")}
+      </div>
+      <div class="field">
+        <label for="pay-valor">Valor recebido</label>
+        <input type="text" id="pay-valor" inputmode="decimal" value="${sugerido.toFixed(2).replace(".", ",")}">
+      </div>
+      <div class="c-actions" style="display:flex;gap:10px;">
+        <button class="btn-outline" id="pay-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid" id="pay-salvar" style="flex:1;justify-content:center;">Marcar como pago</button>
+      </div>`;
+    document.querySelectorAll("#pay-body [data-atalho]").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        document.getElementById("pay-valor").value = parseFloat(b.dataset.atalho).toFixed(2).replace(".", ",");
+      });
+    });
+    ligar("pay-cancelar", "click", pgFecharModal);
+    ligar("pay-salvar", "click", ()=> pgGravar(true));
+  }
+
+  document.getElementById("pay-backdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+async function pgGravar(pago){
+  if(!pgAlvo) return;
+  let valor = null;
+  if(pago){
+    const campo = document.getElementById("pay-valor");
+    const n = parseFloat(String(campo.value).replace(/\./g, "").replace(",", "."));
+    if(isNaN(n) || n < 0){
+      campo.focus();
+      showToast("Digite o valor recebido.", "error");
+      return;
+    }
+    valor = n;
+  }
+  const data = await apiPost({
+    action: "updatePagamento", id: pgAlvo.id, marco: pgAlvo.marco, pago, valor
+  }, true);
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(!data || !data.ok){ showToast("Não foi possível registrar o pagamento.", "error"); return; }
+
+  const idx = appointmentsCache.findIndex(x => x.id === pgAlvo.id);
+  if(idx > -1) Object.assign(appointmentsCache[idx], data.campos);
+  const marco = pgAlvo.marco;
+  pgFecharModal();
+  showToast(pago
+    ? (marco === "sinal" ? "Sinal registrado." : "Pedido marcado como quitado.")
+    : "Marcação desfeita.", "success");
+  renderPagamentos();
+}
+
+ligar("pay-close", "click", pgFecharModal);
+ligar("pay-backdrop", "click", (e)=>{ if(e.target.id === "pay-backdrop") pgFecharModal(); });
 
 /* =========================================================
    GUIA AGENDA
