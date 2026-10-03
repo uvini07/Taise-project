@@ -14,10 +14,13 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Admin é quem tem um documento em "admins" com o próprio UID.
+    // Contas autorizadas a administrar o site. Para liberar outra pessoa,
+    // acrescente o identificador dela nesta lista e publique de novo.
     function ehAdmin() {
       return request.auth != null
-          && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+          && request.auth.uid in [
+               'PIyrdiQ5DXVJuRQFSSJ84yLtl7A2'
+             ];
     }
 
     // Cada pessoa só enxerga o próprio registro de admin, e ninguém cria
