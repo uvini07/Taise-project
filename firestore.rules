@@ -66,6 +66,14 @@ service cloud.firestore {
       allow write: if ehAdmin();
     }
 
+    // Horários criados à mão pela guia "Agenda" do painel. O site inteiro
+    // precisa ler: é isso que faz a vaga extra aparecer no agendamento. Nunca
+    // guarde dado pessoal aqui — só data e hora.
+    match /config/agenda {
+      allow read: if true;
+      allow write: if ehAdmin();
+    }
+
     // Contador de vagas VIP. Leitura livre para mostrar "x vagas restantes".
     // Uma inscrição só pode somar 1 e não pode tocar em nenhum outro campo,
     // então ninguém zera nem adultera o contador pelo navegador.
