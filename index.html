@@ -917,6 +917,97 @@ footer .wrap{position:relative;z-index:1;}
 .tabs{display:flex;gap:6px;background:var(--marfim-escuro);padding:4px;border-radius:999px;}
 .tab-btn{padding:8px 16px;border-radius:999px;border:none;background:none;font-size:13px;color:rgba(27,23,18,.6);font-weight:600;}
 .tab-btn.active{background:var(--verde-noturno);color:var(--marfim);}
+
+/* ---------- ADMIN: GUIAS (abas estilo navegador) ----------
+   A barra fica encaixada na topbar escura: a guia ativa assume a cor do fundo
+   do painel, então ela "continua" na tela de baixo, igual a uma aba de
+   navegador. Cada guia mostra um .admin-pane diferente. */
+.admin-tabsbar{background:var(--verde-noturno);}
+.atb-row{
+  display:flex;gap:4px;align-items:flex-end;padding-top:7px;
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+}
+.atb-row::-webkit-scrollbar{display:none;}
+.atb-tab{
+  display:flex;align-items:center;gap:8px;flex:0 0 auto;
+  padding:11px 20px;border:none;border-radius:9px 9px 0 0;
+  background:rgba(246,241,231,.08);color:rgba(246,241,231,.62);
+  font-family:var(--sans);font-size:13px;font-weight:600;white-space:nowrap;
+  transition:background .2s ease,color .2s ease;
+}
+.atb-tab:hover{background:rgba(246,241,231,.16);color:var(--marfim);}
+.atb-tab.active{background:var(--marfim-escuro);color:var(--carvao);}
+.atb-tab.active:hover{background:var(--marfim-escuro);color:var(--carvao);}
+.admin-pane{display:none;}
+.admin-pane.active{display:block;}
+
+/* ---------- ADMIN: DASHBOARD FINANCEIRO ---------- */
+.fin-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.fin-toolbar .tabs{flex-wrap:wrap;}
+.fin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px;}
+.fin-card{
+  background:#fff;border-radius:8px;border:1px solid rgba(27,23,18,.06);
+  box-shadow:0 4px 16px rgba(27,23,18,.04);padding:20px 22px;
+}
+.fin-card .fc-label{font-size:12px;color:rgba(27,23,18,.5);font-weight:600;letter-spacing:.2px;}
+.fin-card .fc-val{font-family:var(--sans);font-size:25px;margin-top:12px;line-height:1.15;word-break:break-word;}
+.fin-card .fc-hint{font-size:11.5px;color:rgba(27,23,18,.45);margin-top:7px;}
+.fin-card.destaque{background:var(--verde-noturno);border-color:var(--verde-noturno);}
+.fin-card.destaque .fc-label{color:rgba(246,241,231,.6);}
+.fin-card.destaque .fc-val{color:var(--marfim);}
+.fin-card.destaque .fc-hint{color:rgba(246,241,231,.5);}
+
+/* valor por categoria (Família / Premium / Luxo) */
+.cat-list{padding:22px 24px;display:flex;flex-direction:column;gap:22px;}
+.cat-row .cr-top{display:flex;align-items:baseline;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
+.cat-row .cr-nome{font-family:var(--sans);font-size:14px;font-weight:600;}
+.cat-row .cr-tag{
+  font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;background:rgba(198,161,91,.2);color:#8a6b1f;
+}
+.cat-row .cr-tag.qtd{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.cat-row .cr-val{margin-left:auto;font-family:var(--sans);font-size:15px;font-weight:600;}
+.cat-row .cr-sub{font-size:12px;color:rgba(27,23,18,.5);margin-top:8px;}
+.cat-bar{height:12px;border-radius:999px;background:rgba(27,23,18,.07);overflow:hidden;}
+.cat-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--vinho),var(--dourado));transition:width .55s ease;}
+.cat-row.c-familia .cat-bar i{background:linear-gradient(90deg,#1C3728,#51876a);}
+.cat-row.c-premium .cat-bar i{background:linear-gradient(90deg,#6E1423,#bb4e61);}
+.cat-row.c-luxo    .cat-bar i{background:linear-gradient(90deg,#8a6b1f,#E3CD9B);}
+
+/* gráfico de linha — histórico de compras */
+.fin-chart{padding:20px 20px 8px;}
+.fin-chart svg{width:100%;height:auto;display:block;}
+.fin-chart .gx-grid{stroke:rgba(27,23,18,.08);stroke-width:1;}
+.fin-chart .gx-axis{stroke:rgba(27,23,18,.16);stroke-width:1;}
+.fin-chart .gx-lbl{font-family:var(--sans);font-size:10px;fill:rgba(27,23,18,.45);}
+.fin-chart .gx-line{fill:none;stroke:var(--vinho);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;}
+.fin-chart .gx-dot{fill:#fff;stroke:var(--vinho);stroke-width:2;cursor:pointer;}
+.fin-chart .gx-dot:hover{fill:var(--dourado);stroke:var(--dourado);}
+.fin-legend{padding:0 24px 20px;font-size:12px;color:rgba(27,23,18,.5);}
+
+/* primeiras clientes a comprar */
+.first-list{padding:6px 24px 22px;}
+.first-row{
+  display:flex;align-items:center;gap:14px;padding:13px 0;
+  border-bottom:1px solid rgba(27,23,18,.06);font-size:13.5px;
+}
+.first-row:last-child{border-bottom:none;}
+.first-row .fr-pos{
+  width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:12px;font-weight:700;
+  background:rgba(27,23,18,.07);color:rgba(27,23,18,.55);
+}
+.first-row.top1 .fr-pos{background:var(--dourado);color:#fff;}
+.first-row.top2 .fr-pos{background:rgba(198,161,91,.5);color:#6b5223;}
+.first-row.top3 .fr-pos{background:rgba(198,161,91,.26);color:#6b5223;}
+.first-row .fr-nome{flex:1 1 170px;min-width:0;font-weight:600;}
+.first-row .fr-nome span{display:block;font-size:11.5px;font-weight:400;color:rgba(27,23,18,.5);}
+.first-row .fr-quando{font-size:12px;color:rgba(27,23,18,.5);flex:0 0 auto;}
+.first-row .fr-val{font-family:var(--sans);font-size:14px;font-weight:600;flex:0 0 auto;min-width:96px;text-align:right;}
+@media (max-width:980px){
+  .fin-grid{grid-template-columns:1fr 1fr;}
+}
 .search-input{
   padding:10px 14px 10px 36px;border-radius:999px;border:1.5px solid rgba(27,23,18,.14);font-size:13.5px;
   width:220px;background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="%23999" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat 13px center;
@@ -1052,6 +1143,19 @@ table.appt-table{width:100%;border-collapse:collapse;}
   .book-footer{flex-direction:column-reverse;}
   .book-footer button{width:100%;justify-content:center;}
   .detail-actions{flex-direction:column;}
+  .fin-grid{grid-template-columns:1fr;}
+  .atb-tab{padding:10px 14px;font-size:12px;}
+  .fin-toolbar .tabs{width:100%;justify-content:center;}
+  .fin-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
+  .first-row{flex-wrap:wrap;row-gap:6px;}
+  .first-row .fr-nome{flex:1 1 calc(100% - 42px);}
+  .first-row .fr-quando{order:2;flex:1 1 auto;margin-left:42px;}
+  .first-row .fr-val{order:3;margin-left:auto;min-width:0;}
+  .cat-row .cr-val{margin-left:0;flex:1 1 100%;}
+  .fin-chart{padding:16px 6px 4px;}
+  /* o SVG encolhe junto com a tela: os rótulos sobem de tamanho para
+     continuarem legíveis depois da redução */
+  .fin-chart .gx-lbl{font-size:13px;}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001s !important;transition-duration:.001s !important;}
@@ -2531,8 +2635,24 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
     </div>
   </div>
-  <div class="admin-body wrap">
-    <h1 class="admin-h1">Dashboard</h1>
+  <!-- GUIAS DO PAINEL — funcionam como abas de navegador: a de cima continua
+       sendo a tela de sempre; "Financeiro" abre o dashboard de vendas. -->
+  <div class="admin-tabsbar">
+    <div class="wrap">
+      <div class="atb-row" id="admin-tabsbar" role="tablist" aria-label="Guias do painel">
+        <button class="atb-tab active" data-view="operacao" role="tab" aria-selected="true" aria-controls="pane-operacao">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Agendamentos
+        </button>
+        <button class="atb-tab" data-view="financeiro" role="tab" aria-selected="false" aria-controls="pane-financeiro">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Financeiro
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="admin-body wrap admin-pane active" id="pane-operacao" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Agendamentos</h1>
     <p class="admin-sub">Visão geral dos agendamentos de Natal.</p>
 
     <div class="stat-grid" id="stat-grid">
@@ -2717,6 +2837,96 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         </div>
       </div>
       <div class="agenda-list" id="agenda-list"></div>
+    </div>
+  </div>
+
+  <!-- ====================== GUIA FINANCEIRO ======================
+       Tudo aqui é calculado na hora, a partir dos mesmos pedidos que a guia
+       "Agendamentos" já carregou — não existe segunda fonte de dados. -->
+  <div class="admin-body wrap admin-pane" id="pane-financeiro" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Financeiro</h1>
+    <p class="admin-sub">Quanto a temporada já vendeu — no total, por pacote e ao longo do tempo.</p>
+
+    <div class="fin-toolbar">
+      <div class="tabs" id="fin-escopo">
+        <button class="tab-btn active" data-escopo="ativos">Confirmados + pendentes</button>
+        <button class="tab-btn" data-escopo="confirmado">Só confirmados</button>
+        <button class="tab-btn" data-escopo="tudo">Tudo, com cancelados</button>
+      </div>
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card destaque">
+        <div class="fc-label">Total de pedidos</div>
+        <div class="fc-val" id="fin-total">–</div>
+        <div class="fc-hint" id="fin-total-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Ticket médio</div>
+        <div class="fc-val" id="fin-ticket">–</div>
+        <div class="fc-hint">Valor médio por pedido</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Confirmado</div>
+        <div class="fc-val" id="fin-confirmado">–</div>
+        <div class="fc-hint" id="fin-confirmado-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Aguardando confirmação</div>
+        <div class="fc-val" id="fin-pendente">–</div>
+        <div class="fc-hint" id="fin-pendente-hint">–</div>
+      </div>
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card">
+        <div class="fc-label">Sinal da reserva</div>
+        <div class="fc-val" id="fin-sinal">–</div>
+        <div class="fc-hint">50% no Família, 30% nos outros</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Saldo a receber</div>
+        <div class="fc-val" id="fin-saldo">–</div>
+        <div class="fc-hint">O que fica para o dia do ensaio</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Itens adicionais</div>
+        <div class="fc-val" id="fin-addons">–</div>
+        <div class="fc-hint" id="fin-addons-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Vendas pela Lista VIP</div>
+        <div class="fc-val" id="fin-vip">–</div>
+        <div class="fc-hint" id="fin-vip-hint">–</div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Valor por pacote</h3>
+        <span id="fin-cat-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+      </div>
+      <div class="cat-list" id="fin-cat-list"></div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Histórico de compras</h3>
+        <div class="tabs" id="fin-modo">
+          <button class="tab-btn active" data-modo="acumulado">Acumulado</button>
+          <button class="tab-btn" data-modo="dia">Por dia</button>
+        </div>
+      </div>
+      <div class="fin-chart" id="fin-chart"></div>
+      <div class="fin-legend" id="fin-chart-legend"></div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Primeiras clientes a comprar</h3>
+        <span style="font-size:12.5px;color:rgba(27,23,18,.55);">Pela ordem em que o pedido entrou</span>
+      </div>
+      <div class="first-list" id="fin-primeiras"></div>
     </div>
   </div>
 </div>
@@ -5018,6 +5228,7 @@ async function enterAdmin(){
   // admin-view está aberto.
   aplicarBloqueioSite();
   window.scrollTo(0,0);
+  trocarGuiaAdmin("operacao");
   await garantirDocumentosIniciais();
   await refreshAdminData();
 }
@@ -5071,6 +5282,7 @@ async function refreshAdminData(){
   renderTable();
   renderAgenda();
   renderVipAdmin();
+  renderFinanceiro();
   // O painel de mensagens so se liga uma vez; depois so refaz a lista.
   if(!msgIniciado){ msgIniciado = true; initMensagens(); } else { renderMensagens(); }
 }
@@ -5749,6 +5961,341 @@ function openWhatsappTo(phone){
 
 // Exporta os pedidos filtrados como CSV (abre direto no Excel/Google Sheets).
 // Não substitui o armazenamento local — é uma cópia para você manter em Excel/planilha.
+
+/* =========================================================
+   GUIAS DO PAINEL + DASHBOARD FINANCEIRO
+   As guias de cima trocam qual .admin-pane fica visível, como abas de
+   navegador. O financeiro não busca nada no servidor: ele recalcula tudo a
+   partir do appointmentsCache que o painel já tem em mãos.
+========================================================= */
+let finEscopo = "ativos";    // ativos | confirmado | tudo
+let finModo = "acumulado";   // acumulado | dia
+
+function trocarGuiaAdmin(nome){
+  document.querySelectorAll("#admin-tabsbar .atb-tab").forEach(b=>{
+    const ativa = b.dataset.view === nome;
+    b.classList.toggle("active", ativa);
+    b.setAttribute("aria-selected", ativa ? "true" : "false");
+  });
+  document.querySelectorAll("#admin-view .admin-pane").forEach(p=>{
+    p.classList.toggle("active", p.id === "pane-" + nome);
+  });
+  if(nome === "financeiro") renderFinanceiro();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("#admin-tabsbar .atb-tab").forEach(btn=>{
+  btn.addEventListener("click", ()=> trocarGuiaAdmin(btn.dataset.view));
+});
+document.querySelectorAll("#fin-escopo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#fin-escopo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    finEscopo = btn.dataset.escopo;
+    renderFinanceiro();
+  });
+});
+document.querySelectorAll("#fin-modo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#fin-modo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    finModo = btn.dataset.modo;
+    renderFinanceiro();
+  });
+});
+
+/* ---- leitura dos pedidos ---- */
+function finPedidos(){
+  const lista = appointmentsCache || [];
+  if(finEscopo === "tudo") return lista.slice();
+  if(finEscopo === "confirmado") return lista.filter(a=>a.status === "confirmado");
+  return lista.filter(a=>a.status !== "cancelado");
+}
+function finPacoteDoPedido(a){
+  const nome = String(a && a.package || "").trim();
+  return CONFIG.packages.find(p=>p.name === nome) || null;
+}
+// Valor fechado do pedido, em número. Usa o mesmo total que aparece na tabela
+// (totalDoPedido já cobre os pedidos antigos, somando lote + adicionais).
+function finValor(a){
+  const n = parseBRL(totalDoPedido(a));
+  return isNaN(n) ? 0 : n;
+}
+function finValorAddons(a){
+  const n = parseBRL(a && a.addonsValor);
+  return isNaN(n) ? 0 : n;
+}
+// % de sinal do pacote; sem pacote reconhecido, usa 30% (regra dos demais).
+function finEntradaPct(a){
+  const p = finPacoteDoPedido(a);
+  return p && p.entrada ? p.entrada : 30;
+}
+// Quando a compra entrou. Pedido antigo sem createdAt cai na data do ensaio,
+// para não ficar de fora do histórico.
+function finQuando(a){
+  const bruto = a && (a.createdAt || a.updatedAt);
+  if(bruto){
+    const d = new Date(bruto);
+    if(!isNaN(d.getTime())) return d;
+  }
+  if(a && a.date){
+    const d = new Date(a.date + "T12:00:00");
+    if(!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+function finPlural(n, um, muitos){ return n + " " + (n === 1 ? um : muitos); }
+// Valor curto para os rótulos do gráfico (eixo estreito não cabe o valor cheio).
+function finBRLCurto(n){
+  if(n >= 1000){
+    const mil = n / 1000;
+    const txt = (mil % 1 === 0) ? String(mil)
+              : (mil >= 10 ? String(Math.round(mil)) : mil.toFixed(1).replace(".", ","));
+    return "R$ " + txt + " mil";
+  }
+  return "R$ " + Math.round(n);
+}
+// Teto do eixo Y em número redondo, para os rótulos caírem em valores limpos
+// (0 / 4 mil / 8 mil…) em vez de 3,8 mil / 7,5 mil.
+function finTetoEixo(maxVal, linhas){
+  const bruto = maxVal / linhas;
+  const exp = Math.pow(10, Math.floor(Math.log10(bruto || 1)));
+  const passos = [1, 1.5, 2, 2.5, 3, 4, 5, 7.5, 10];
+  let passo = exp * 10;
+  for(const n of passos){ if(n * exp >= bruto){ passo = n * exp; break; } }
+  return passo * linhas;
+}
+// O fmtBRL do site não separa milhar (os preços de pacote não precisam). No
+// financeiro os totais passam de mil fácil, então aqui usamos o formato cheio.
+function finBRL(n){
+  const v = isNaN(n) ? 0 : n;
+  return "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function finTexto(id, valor){
+  const el = document.getElementById(id);
+  if(el) el.textContent = valor;
+}
+
+/* ---- render principal ---- */
+function renderFinanceiro(){
+  if(!document.getElementById("pane-financeiro")) return;
+  const lista = finPedidos();
+
+  const total = lista.reduce((s,a)=>s + finValor(a), 0);
+  const qtd = lista.length;
+  const confirmados = lista.filter(a=>a.status === "confirmado");
+  const pendentes = lista.filter(a=>a.status === "pendente");
+  const totalConf = confirmados.reduce((s,a)=>s + finValor(a), 0);
+  const totalPend = pendentes.reduce((s,a)=>s + finValor(a), 0);
+  const sinal = lista.reduce((s,a)=>s + finValor(a) * finEntradaPct(a) / 100, 0);
+  const addons = lista.reduce((s,a)=>s + finValorAddons(a), 0);
+  const comAddons = lista.filter(a=>finValorAddons(a) > 0).length;
+  const vips = lista.filter(ehAgendamentoVip);
+  const totalVip = vips.reduce((s,a)=>s + finValor(a), 0);
+
+  finTexto("fin-total", finBRL(total));
+  finTexto("fin-total-hint", finPlural(qtd, "pedido", "pedidos") + " no filtro atual");
+  finTexto("fin-ticket", qtd ? finBRL(total / qtd) : "R$ 0,00");
+  finTexto("fin-confirmado", finBRL(totalConf));
+  finTexto("fin-confirmado-hint", finPlural(confirmados.length, "pedido confirmado", "pedidos confirmados"));
+  finTexto("fin-pendente", finBRL(totalPend));
+  finTexto("fin-pendente-hint", finPlural(pendentes.length, "pedido pendente", "pedidos pendentes"));
+  finTexto("fin-sinal", finBRL(sinal));
+  finTexto("fin-saldo", finBRL(Math.max(0, total - sinal)));
+  finTexto("fin-addons", finBRL(addons));
+  finTexto("fin-addons-hint", comAddons ? finPlural(comAddons, "pedido levou extra", "pedidos levaram extras") : "Nenhum extra vendido ainda");
+  finTexto("fin-vip", finBRL(totalVip));
+  finTexto("fin-vip-hint", vips.length ? finPlural(vips.length, "pedido VIP", "pedidos VIP") : "Nenhuma venda VIP ainda");
+
+  renderFinCategorias(lista, total);
+  renderFinHistorico(lista);
+  renderFinPrimeiras(lista);
+}
+
+/* ---- valor por pacote: Família, Premium, Luxo (+ outros, se houver) ---- */
+function renderFinCategorias(lista, total){
+  const alvo = document.getElementById("fin-cat-list");
+  if(!alvo) return;
+
+  const cats = CONFIG.packages.map(p=>({
+    id: p.id, nome: p.name,
+    valor: lista.filter(a=>finPacoteDoPedido(a) && finPacoteDoPedido(a).id === p.id).reduce((s,a)=>s + finValor(a), 0),
+    qtd: lista.filter(a=>finPacoteDoPedido(a) && finPacoteDoPedido(a).id === p.id).length
+  }));
+  // Pedido de um pacote que não existe mais no CONFIG não some do total.
+  const soltos = lista.filter(a=>!finPacoteDoPedido(a));
+  if(soltos.length){
+    cats.push({
+      id: "outros", nome: "Outros pacotes",
+      valor: soltos.reduce((s,a)=>s + finValor(a), 0),
+      qtd: soltos.length
+    });
+  }
+
+  if(!lista.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);margin:0;">Nenhum pedido no filtro atual.</p>';
+    finTexto("fin-cat-resumo", "");
+    return;
+  }
+
+  const maiorValor = Math.max(1, ...cats.map(c=>c.valor));
+  const campeaoValor = cats.slice().sort((a,b)=>b.valor - a.valor)[0];
+  const campeaoQtd = cats.slice().sort((a,b)=>b.qtd - a.qtd)[0];
+
+  alvo.innerHTML = cats.map(c=>{
+    const fatia = total > 0 ? (c.valor / total * 100) : 0;
+    const tags = [];
+    if(campeaoValor && c.id === campeaoValor.id && c.valor > 0) tags.push('<span class="cr-tag">Mais faturou</span>');
+    if(campeaoQtd && c.id === campeaoQtd.id && c.qtd > 0) tags.push('<span class="cr-tag qtd">Mais vendeu</span>');
+    return `
+      <div class="cat-row c-${escapeHtml(c.id)}">
+        <div class="cr-top">
+          <span class="cr-nome">${escapeHtml(c.nome)}</span>
+          ${tags.join("")}
+          <span class="cr-val">${finBRL(c.valor)}</span>
+        </div>
+        <div class="cat-bar"><i style="width:${(c.valor / maiorValor * 100).toFixed(1)}%"></i></div>
+        <div class="cr-sub">${finPlural(c.qtd, "pedido", "pedidos")} · ${fatia.toFixed(1).replace(".", ",")}% do faturamento${c.qtd ? " · ticket " + finBRL(c.valor / c.qtd) : ""}</div>
+      </div>`;
+  }).join("");
+
+  const resumo = [];
+  if(campeaoQtd && campeaoQtd.qtd > 0) resumo.push("Mais vendeu: " + campeaoQtd.nome + " (" + finPlural(campeaoQtd.qtd, "pedido", "pedidos") + ")");
+  if(campeaoValor && campeaoValor.valor > 0 && (!campeaoQtd || campeaoValor.id !== campeaoQtd.id)) resumo.push("Mais faturou: " + campeaoValor.nome);
+  finTexto("fin-cat-resumo", resumo.join(" · "));
+}
+
+/* ---- histórico de compras (gráfico de linha, SVG puro) ---- */
+function renderFinHistorico(lista){
+  const alvo = document.getElementById("fin-chart");
+  if(!alvo) return;
+
+  // Agrupa por dia da compra.
+  const porDia = new Map();
+  lista.forEach(a=>{
+    const d = finQuando(a);
+    if(!d) return;
+    const chave = toISODate(d);
+    const atual = porDia.get(chave) || { valor: 0, qtd: 0 };
+    atual.valor += finValor(a);
+    atual.qtd += 1;
+    porDia.set(chave, atual);
+  });
+
+  const dias = Array.from(porDia.keys()).sort();
+  if(!dias.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);padding:30px 4px;margin:0;text-align:center;">Sem compras registradas para montar o histórico.</p>';
+    finTexto("fin-chart-legend", "");
+    return;
+  }
+
+  let acumulado = 0;
+  const pontos = dias.map(dia=>{
+    const d = porDia.get(dia);
+    acumulado += d.valor;
+    return { dia, valor: finModo === "dia" ? d.valor : acumulado, qtd: d.qtd, doDia: d.valor };
+  });
+
+  alvo.innerHTML = finChartSVG(pontos);
+  finTexto("fin-chart-legend",
+    finModo === "dia"
+      ? "Cada ponto é quanto foi vendido naquele dia. Passe o mouse para ver o valor."
+      : "Linha do faturamento somado desde a primeira compra. Passe o mouse para ver o valor do dia.");
+}
+
+function finChartSVG(pontos){
+  // Numa tela estreita o SVG encolhe junto com a largura: se a caixa fosse a
+  // mesma do desktop (820x280), a altura cairia para uns 120px e os rótulos
+  // ficariam ilegíveis. Por isso o celular usa uma caixa mais quadrada.
+  const estreito = window.innerWidth < 760;
+  const W = estreito ? 440 : 820, H = estreito ? 300 : 280;
+  const L = estreito ? 54 : 70, R = estreito ? 12 : 18, T = 20, B = 40;
+  const iw = W - L - R, ih = H - T - B;
+  const maxVal = Math.max(1, ...pontos.map(p=>p.valor));
+  const linhas = 4;
+  const teto = finTetoEixo(maxVal, linhas);
+  const x = i => pontos.length === 1 ? L + iw / 2 : L + (i / (pontos.length - 1)) * iw;
+  const y = v => T + ih - (v / teto) * ih;
+
+  let grid = "", eixoY = "";
+  for(let i = 0; i <= linhas; i++){
+    const v = teto / linhas * i;
+    const py = y(v);
+    grid += `<line class="gx-grid" x1="${L}" y1="${py.toFixed(1)}" x2="${L + iw}" y2="${py.toFixed(1)}"/>`;
+    eixoY += `<text class="gx-lbl" x="${L - 10}" y="${(py + 3.5).toFixed(1)}" text-anchor="end">${finBRLCurto(v)}</text>`;
+  }
+
+  // No máximo 7 rótulos no eixo X, para não embolar.
+  const salto = Math.max(1, Math.ceil(pontos.length / (estreito ? 4 : 7)));
+  let eixoX = "";
+  pontos.forEach((p, i)=>{
+    if(i % salto !== 0 && i !== pontos.length - 1) return;
+    eixoX += `<text class="gx-lbl" x="${x(i).toFixed(1)}" y="${H - B + 20}" text-anchor="middle">${fmtDateBR(p.dia).slice(0,5)}</text>`;
+  });
+
+  const d = pontos.map((p, i)=> (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.valor).toFixed(1)).join(" ");
+  const area = pontos.length > 1
+    ? `<path fill="url(#finGrad)" d="${d} L${x(pontos.length - 1).toFixed(1)} ${T + ih} L${x(0).toFixed(1)} ${T + ih} Z"/>`
+    : "";
+
+  const dots = pontos.map((p, i)=>
+    `<circle class="gx-dot" cx="${x(i).toFixed(1)}" cy="${y(p.valor).toFixed(1)}" r="4.5">`
+    + `<title>${escapeHtml(fmtDateBR(p.dia))} — ${escapeHtml(finBRL(p.doDia))} em ${escapeHtml(finPlural(p.qtd, "pedido", "pedidos"))}`
+    + (finModo === "dia" ? "" : " (acumulado: " + escapeHtml(finBRL(p.valor)) + ")") + `</title></circle>`
+  ).join("");
+
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de linha do histórico de compras">
+    <defs><linearGradient id="finGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(110,20,35,.22)"/><stop offset="100%" stop-color="rgba(110,20,35,0)"/>
+    </linearGradient></defs>
+    ${grid}${area}
+    <path class="gx-line" d="${d}"/>
+    ${dots}
+    <line class="gx-axis" x1="${L}" y1="${T + ih}" x2="${L + iw}" y2="${T + ih}"/>
+    ${eixoY}${eixoX}
+  </svg>`;
+}
+
+// Girar o celular troca a faixa de largura do gráfico, então o painel é
+// redesenhado (com folga, para não redesenhar a cada pixel do arrasto).
+let finResizeTimer = null;
+window.addEventListener("resize", ()=>{
+  const pane = document.getElementById("pane-financeiro");
+  if(!pane || !pane.classList.contains("active")) return;
+  clearTimeout(finResizeTimer);
+  finResizeTimer = setTimeout(renderFinanceiro, 200);
+});
+
+/* ---- primeiras clientes a comprar ---- */
+function renderFinPrimeiras(lista){
+  const alvo = document.getElementById("fin-primeiras");
+  if(!alvo) return;
+
+  const comData = lista
+    .map(a=>({ a, quando: finQuando(a) }))
+    .filter(x=>!!x.quando)
+    .sort((x,y)=> x.quando - y.quando)
+    .slice(0, 10);
+
+  if(!comData.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);padding:14px 0;margin:0;">Nenhuma compra registrada ainda.</p>';
+    return;
+  }
+
+  alvo.innerHTML = comData.map((x, i)=>{
+    const a = x.a;
+    const lote = a.lot ? " · " + a.lot : "";
+    return `
+      <div class="first-row ${i < 3 ? "top" + (i + 1) : ""}">
+        <span class="fr-pos">${i + 1}</span>
+        <span class="fr-nome">${escapeHtml(a.name || "—")}
+          <span>${escapeHtml((a.package || "—") + lote)}</span>
+        </span>
+        <span class="fr-quando">${escapeHtml(x.quando.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" }))}</span>
+        <span class="fr-val">${escapeHtml(finBRL(finValor(a)))}</span>
+      </div>`;
+  }).join("");
+}
+
 function exportAppointmentsCSV(){
   const list = getFilteredAppointments();
   const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status","Observações","Criado em"];
