@@ -1225,6 +1225,27 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .detail-panel .d-row .val{font-weight:600;text-align:right;max-width:60%;}
 .detail-actions{display:flex;gap:10px;margin-top:22px;}
 .detail-actions button{flex:1;justify-content:center;}
+/* ---------- REMANEJAR DATA/HORÁRIO ---------- */
+.rm-cliente{font-size:13px;color:rgba(27,23,18,.55);margin-top:6px;}
+.rm-atual{
+  background:var(--marfim-escuro);border-radius:6px;padding:13px 16px;margin-bottom:18px;
+  font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.rm-atual .rm-seta{color:var(--vinho);font-weight:700;}
+.rm-atual b{font-family:var(--sans);}
+.rm-atual .rm-novo{color:rgba(27,23,18,.35);}
+.rm-atual.pronto .rm-novo{color:var(--vinho);}
+.rm-dica{font-size:11.5px;color:rgba(27,23,18,.45);line-height:1.55;margin-top:14px;}
+.rm-sub{font-size:12.5px;color:rgba(27,23,18,.55);margin:18px 0 10px;}
+.rm-aviso{
+  margin-top:18px;border-left:3px solid var(--amarelo-status);background:rgba(199,150,46,.08);
+  border-radius:0 6px 6px 0;padding:12px 14px;font-size:12.5px;color:rgba(27,23,18,.7);line-height:1.6;
+}
+.rm-aviso p{margin:0 0 7px;}
+.rm-aviso p:last-child{margin-bottom:0;}
+/* Impedimento, não recado: o botão de salvar fica travado enquanto ele valer. */
+.rm-aviso.trava{border-left-color:var(--vermelho-status);background:rgba(162,58,58,.08);}
+
 .btn-danger{background:var(--vermelho-status);}
 .btn-danger:hover{background:#8a2f2f;}
 .btn-success{background:var(--verde-status);}
@@ -2762,6 +2783,43 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   </div>
 </div>
 
+<!-- ================= REMANEJAR DATA/HORÁRIO ================= -->
+<div class="modal-backdrop" id="remanejar-backdrop">
+  <div class="book-modal" style="max-width:470px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Remanejar ensaio</h3>
+        <button class="book-close" id="rm-close">&times;</button>
+      </div>
+      <p class="rm-cliente" id="rm-cliente"></p>
+    </div>
+    <div class="book-body">
+      <div class="rm-atual" id="rm-atual"></div>
+
+      <div class="cal-nav">
+        <button id="rm-prev" aria-label="Mês anterior">&#8249;</button>
+        <span class="cal-month" id="rm-month-label"></span>
+        <button id="rm-next" aria-label="Próximo mês">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="rm-cal-grid"></div>
+      <p class="rm-dica">Só aparecem as datas com horário aberto. Para abrir uma data nova,
+        crie o horário na guia <b>Agenda</b> e volte aqui.</p>
+
+      <div id="rm-bloco-horas" hidden>
+        <p class="rm-sub">Horário de <b id="rm-data-escolhida"></b></p>
+        <div class="time-grid" id="rm-time-grid"></div>
+      </div>
+
+      <div class="rm-aviso" id="rm-aviso" hidden></div>
+
+      <div class="book-footer">
+        <button class="btn-outline" id="rm-voltar">Voltar</button>
+        <button class="btn-solid" id="rm-salvar" disabled>Salvar novo horário</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= CONFIRM CANCEL MODAL ================= -->
 <div class="modal-backdrop" id="cancel-backdrop">
   <div class="book-modal confirm-dialog">
@@ -3873,6 +3931,68 @@ async function firebaseApi(payload){
     await DOC_CONFIG_AGENDA.set({ extras: atual });
     agendaExtras = atual;
     return { ok:true, extras: atual };
+  }
+
+  // Remanejar: muda data/hora do pedido nas duas colecoes de uma vez. As
+  // conferencias acontecem aqui, imediatamente antes de gravar, porque o
+  // painel pode estar aberto ha um tempo e a agenda ter andado nesse meio.
+  if(acao === "reschedule"){
+    const id = String(payload.id || "");
+    const date = String(payload.date || "");
+    const time = String(payload.time || "");
+    if(!id || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !ehHoraValida(time)){
+      return { ok:false, reason:"invalid_slot" };
+    }
+    if(date < CONFIG.seasonStart || date > CONFIG.seasonEnd) return { ok:false, reason:"out_of_season" };
+
+    const snapAtual = await db.collection(COL_AGENDAMENTOS).doc(id).get();
+    if(!snapAtual.exists) return { ok:false, reason:"not_found" };
+    const a = snapAtual.data() || {};
+    const de = (a.date || "") + " " + (a.time || "");
+
+    // Mesma trava do "Editar pedido": o Familia da hora cheia e o que faz a
+    // meia hora seguinte existir. Com alguem marcado nela, ele nao sai daqui.
+    if(a.date !== date || a.time !== time){
+      const cfgMeia = CONFIG.meiaHora;
+      const pkgMeia = cfgMeia ? pkgById(cfgMeia.pacoteId) : null;
+      if(pkgMeia && a.package === pkgMeia.name && /^\d{2}:00$/.test(String(a.time||""))
+         && String(a.date||"") >= cfgMeia.inicio){
+        const meia = String(a.time).slice(0,2) + ":30";
+        const snapMeia = await db.collection(COL_HORARIOS)
+          .where("date", "==", a.date).where("time", "==", meia).get();
+        const ocupada = snapMeia.docs.some(d => d.id !== id && (d.data()||{}).status !== "cancelado");
+        if(ocupada) return { ok:false, reason:"meia_hora_presa", meia };
+      }
+    }
+
+    const snapDestino = await db.collection(COL_HORARIOS)
+      .where("date", "==", date).where("time", "==", time).get();
+    const ocupado = snapDestino.docs.some(function(doc){
+      return doc.id !== id && (doc.data() || {}).status !== "cancelado";
+    });
+    if(ocupado) return { ok:false, reason:"slot_taken" };
+
+    const lote = db.batch();
+    lote.update(db.collection(COL_AGENDAMENTOS).doc(id), {
+      date, time,
+      remanejadoDe: de,
+      remanejadoEm: new Date().toISOString(),
+      // O evento ja lancado na Google Agenda ficou no horario velho: a marca
+      // volta para "nao lancado", para o admin lancar de novo.
+      naAgenda: false,
+      naAgendaAt: null,
+      updatedAt: new Date().toISOString()
+    });
+    // set+merge, e nao update: pedido antigo pode nao ter documento em
+    // "horarios", e assim ele e criado no formato que as regras aceitam.
+    lote.set(db.collection(COL_HORARIOS).doc(id), {
+      date, time,
+      package: a.package || "",
+      lot: a.lot || "",
+      status: a.status || "pendente"
+    }, { merge:true });
+    await lote.commit();
+    return { ok:true, de };
   }
 
   if(acao === "vipToggle"){
@@ -6967,6 +7087,281 @@ function googleAgendaUrl(a){
   return "https://calendar.google.com/calendar/render?" + q.toString();
 }
 
+
+/* =========================================================
+   REMANEJAR DATA E HORÁRIO DE UM PEDIDO
+   Abre pelo botão "Remanejar data/horário" dos detalhes. Usa exatamente a
+   mesma grade do site — inclusive os horários criados na guia "Agenda" —
+   já sem o que outra cliente ocupa. Para abrir uma data que não existe na
+   grade, o caminho é criar o horário na guia "Agenda": assim o site e o
+   painel continuam contando a mesma história.
+========================================================= */
+let rmPedidoId = null;
+let rmCursor = new Date();
+let rmSel = { date:null, time:null };
+
+// "2026-12-05 10:00" (como fica gravado) vira "05/12/2026 às 10:00".
+function rmTextoOrigem(bruto){
+  const partes = String(bruto || "").trim().split(/\s+/);
+  if(!partes[0]) return "—";
+  const data = /^\d{4}-\d{2}-\d{2}$/.test(partes[0]) ? fmtDateBR(partes[0]) : partes[0];
+  return partes[1] ? data + " às " + partes[1] : data;
+}
+function rmPedido(){
+  return appointmentsCache.find(a=>a.id === rmPedidoId) || null;
+}
+function rmPacote(a){
+  return CONFIG.packages.find(p=>p.name === String(a && a.package || "").trim()) || null;
+}
+// Horários que este pedido pode ocupar na data — mesma regra do site.
+function rmHorariosDaData(iso){
+  const a = rmPedido();
+  const p = rmPacote(a);
+  return horariosDoPacote(appointmentsCache || [], iso, p ? p.id : null);
+}
+// Quem já ocupa cada horário do dia. O próprio pedido nunca bloqueia a si mesmo,
+// e pedido cancelado devolve o horário para a grade.
+function rmOcupados(iso){
+  return new Set((appointmentsCache || [])
+    .filter(a => a.id !== rmPedidoId && a.date === iso && a.status !== "cancelado")
+    .map(a => a.time));
+}
+// Lote cujo período de realização cobre a data — serve só para avisar quando a
+// nova data cai num lote diferente do que a cliente comprou.
+function rmLoteDaData(pkg, iso){
+  if(!pkg || !pkg.lots) return null;
+  return pkg.lots.find(l => iso >= l.start && iso <= l.end) || null;
+}
+// Meia hora do Família: se este pedido é o Família da hora cheia que abriu a
+// vaga seguinte, e alguém já pegou essa vaga, tirá-lo daqui deixaria a outra
+// cliente num horário que deixa de existir. Mesma trava do "Editar pedido".
+function rmMeiaHoraPresa(a){
+  const cfg = CONFIG.meiaHora;
+  const pkgMeia = cfg ? pkgById(cfg.pacoteId) : null;
+  if(!pkgMeia || !a || a.package !== pkgMeia.name) return null;
+  if(!/^\d{2}:00$/.test(String(a.time || ""))) return null;
+  if(String(a.date || "") < cfg.inicio) return null;
+  const meia = String(a.time).slice(0,2) + ":30";
+  const ocupada = (appointmentsCache || []).some(x =>
+    x.id !== a.id && x.date === a.date && x.time === meia && x.status !== "cancelado");
+  return ocupada ? meia : null;
+}
+
+function abrirRemanejar(id){
+  const a = appointmentsCache.find(x=>x.id === id);
+  if(!a) return;
+  rmPedidoId = id;
+  rmSel = { date:null, time:null };
+  rmCursor = new Date((a.date || toISODate(new Date())) + "T12:00:00");
+  document.getElementById("rm-cliente").textContent =
+    a.name + " · " + a.package + (a.lot ? " · " + a.lot : "");
+  document.getElementById("detail-backdrop").classList.remove("open");
+  document.getElementById("remanejar-backdrop").classList.add("open");
+  rmRenderTudo();
+}
+
+function rmRenderTudo(){
+  rmRenderResumo();
+  rmRenderCalendario();
+  rmRenderHorarios();
+  const travado = rmRenderAvisos();
+  const btn = document.getElementById("rm-salvar");
+  if(btn) btn.disabled = travado || !(rmSel.date && rmSel.time);
+}
+
+function rmRenderResumo(){
+  const a = rmPedido();
+  if(!a) return;
+  const caixa = document.getElementById("rm-atual");
+  const novo = rmSel.date
+    ? fmtDateBR(rmSel.date) + (rmSel.time ? " às " + rmSel.time : " · escolha o horário")
+    : "escolha a nova data";
+  caixa.classList.toggle("pronto", !!(rmSel.date && rmSel.time));
+  caixa.innerHTML = `<b>${escapeHtml(fmtDateBR(a.date))} às ${escapeHtml(a.time)}</b>`
+    + `<span class="rm-seta">&rarr;</span>`
+    + `<b class="rm-novo">${escapeHtml(novo)}</b>`;
+}
+
+function rmRenderCalendario(){
+  const grid = document.getElementById("rm-cal-grid");
+  const label = document.getElementById("rm-month-label");
+  label.textContent = rmCursor.toLocaleDateString("pt-BR", { month:"long", year:"numeric" });
+
+  const year = rmCursor.getFullYear(), month = rmCursor.getMonth();
+  const startOffset = new Date(year, month, 1).getDay();
+  const diasNoMes = new Date(year, month+1, 0).getDate();
+  const hoje = toISODate(new Date());
+
+  let html = WEEKDAYS.map(w=>`<div class="wd">${w}</div>`).join("");
+  for(let i=0;i<startOffset;i++) html += `<div class="cal-day empty"></div>`;
+  for(let d=1; d<=diasNoMes; d++){
+    const iso = toISODate(new Date(year, month, d));
+    const livre = iso >= hoje && rmHorariosDaData(iso).length > 0;
+    html += `<div class="cal-day ${livre?"":"disabled"} ${iso===hoje?"today":""} ${rmSel.date===iso?"selected":""}"
+      data-iso="${livre?iso:""}">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll(".cal-day:not(.disabled):not(.empty)").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      rmSel.date = el.dataset.iso;
+      rmSel.time = null;
+      rmRenderTudo();
+    });
+  });
+
+  // Navegação: do mês de hoje até o último mês da temporada.
+  const idx = year*12 + month;
+  const hojeObj = new Date();
+  const mesInicio = hojeObj.getFullYear()*12 + hojeObj.getMonth();
+  const fimTemporada = new Date(CONFIG.seasonEnd + "T12:00:00");
+  const mesFim = fimTemporada.getFullYear()*12 + fimTemporada.getMonth();
+  document.getElementById("rm-prev").disabled = idx <= mesInicio;
+  document.getElementById("rm-next").disabled = idx >= mesFim;
+}
+
+function rmRenderHorarios(){
+  const bloco = document.getElementById("rm-bloco-horas");
+  const grid = document.getElementById("rm-time-grid");
+  if(!rmSel.date){ bloco.hidden = true; grid.innerHTML = ""; return; }
+  bloco.hidden = false;
+  document.getElementById("rm-data-escolhida").textContent = fmtDateBR(rmSel.date);
+
+  const horas = rmHorariosDaData(rmSel.date);
+  if(!horas.length){
+    grid.innerHTML = '<div class="time-slot locked" style="grid-column:1/-1">Sem horários nesta data</div>';
+    return;
+  }
+  const ocupados = rmOcupados(rmSel.date);
+  const a = rmPedido();
+  grid.innerHTML = horas.map(t=>{
+    const preso = ocupados.has(t);
+    const atual = a && a.date === rmSel.date && a.time === t;
+    return `<div class="time-slot ${preso?"locked":""} ${rmSel.time===t?"selected":""}"
+      data-time="${preso?"":t}"${atual?' title="Horário atual deste pedido"':""}>
+      ${preso ? "🔒 Ocupado" : t}</div>`;
+  }).join("");
+  grid.querySelectorAll(".time-slot:not(.locked)").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      rmSel.time = el.dataset.time;
+      rmRenderTudo();
+    });
+  });
+}
+
+// Devolve true quando algo impede de salvar. O resto é recado: não trava, só
+// conta o que muda fora da data em si.
+function rmRenderAvisos(){
+  const caixa = document.getElementById("rm-aviso");
+  const a = rmPedido();
+  if(!a){ caixa.hidden = true; caixa.innerHTML = ""; return false; }
+
+  const mudou = rmSel.date && (rmSel.date !== a.date || rmSel.time !== a.time);
+  const meiaPresa = mudou ? rmMeiaHoraPresa(a) : null;
+  if(meiaPresa){
+    caixa.className = "rm-aviso trava";
+    caixa.hidden = false;
+    caixa.innerHTML = `<p>Tem um Pacote Família marcado às <b>${escapeHtml(meiaPresa)}</b> de
+      ${escapeHtml(fmtDateBR(a.date))}, que só existe porque este pedido ocupa a hora cheia.
+      Remaneje aquele primeiro — ou cancele — para poder mexer neste.</p>`;
+    return true;
+  }
+
+  const avisos = [];
+  const p = rmPacote(a);
+  if(rmSel.date && !ehAgendamentoVip(a) && p){
+    const loteNovo = rmLoteDaData(p, rmSel.date);
+    if(loteNovo && a.lot && loteNovo.label !== a.lot){
+      avisos.push(`A nova data cai no período do <b>${escapeHtml(loteNovo.label)}</b> (${escapeHtml(loteNovo.price)}), e o pedido foi fechado no <b>${escapeHtml(a.lot)}</b>. O valor gravado <b>não muda</b> — continua ${escapeHtml(totalDoPedido(a))}. Para cobrar outro valor, use "Editar pedido".`);
+    }
+    if(!loteNovo){
+      avisos.push("A nova data está fora dos períodos dos lotes cadastrados. O valor do pedido continua o mesmo.");
+    }
+  }
+  if(rmSel.date && a.naAgenda){
+    avisos.push("Este pedido já foi lançado na Google Agenda. O evento lá <b>continua no horário antigo</b>: depois de salvar, o botão volta a ficar laranja para você lançar de novo e apagar o evento velho na mão.");
+  }
+
+  caixa.className = "rm-aviso";
+  caixa.innerHTML = avisos.map(t=>`<p>${t}</p>`).join("");
+  caixa.hidden = !avisos.length;
+  return false;
+}
+
+/* ---- gravação ---- */
+async function reagendarPedido(id, date, time){
+  if(usingSheets()){
+    const data = await apiPost({ action:"reschedule", id, date, time }, true);
+    if(data && data.reason === "unauthorized"){ handleUnauthorized(); return { ok:false, reason:"unauthorized" }; }
+    if(data && data.ok){
+      const idx = appointmentsCache.findIndex(a=>a.id === id);
+      if(idx > -1) Object.assign(appointmentsCache[idx], {
+        date, time, naAgenda:false, naAgendaAt:null,
+        remanejadoDe: data.de, remanejadoEm: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+    return data || { ok:false, reason:"network" };
+  }
+  // Sem Firebase, o painel trabalha no localStorage deste navegador.
+  const fresh = await loadAppointments();
+  const idx = fresh.findIndex(a=>a.id === id);
+  if(idx === -1) return { ok:false, reason:"not_found" };
+  const ocupado = fresh.some(a=>a.id !== id && a.date === date && a.time === time && a.status !== "cancelado");
+  if(ocupado) return { ok:false, reason:"slot_taken" };
+  const de = (fresh[idx].date || "") + " " + (fresh[idx].time || "");
+  Object.assign(fresh[idx], {
+    date, time, naAgenda:false, naAgendaAt:null,
+    remanejadoDe: de, remanejadoEm: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+  await saveAppointments(fresh);
+  return { ok:true, de };
+}
+
+function fecharRemanejar(){
+  document.getElementById("remanejar-backdrop").classList.remove("open");
+  rmPedidoId = null;
+}
+ligar("rm-close", "click", fecharRemanejar);
+ligar("rm-voltar", "click", fecharRemanejar);
+ligar("remanejar-backdrop", "click", (e)=>{ if(e.target.id === "remanejar-backdrop") fecharRemanejar(); });
+ligar("rm-prev", "click", ()=>{ rmCursor = new Date(rmCursor.getFullYear(), rmCursor.getMonth()-1, 1); rmRenderCalendario(); });
+ligar("rm-next", "click", ()=>{ rmCursor = new Date(rmCursor.getFullYear(), rmCursor.getMonth()+1, 1); rmRenderCalendario(); });
+
+ligar("rm-salvar", "click", async (e)=>{
+  const btn = e.currentTarget;
+  const id = rmPedidoId;
+  const destino = { date: rmSel.date, time: rmSel.time };
+  if(!id || !destino.date || !destino.time) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Salvando…';
+
+  const r = await reagendarPedido(id, destino.date, destino.time);
+
+  btn.innerHTML = "Salvar novo horário";
+  btn.disabled = false;
+  if(!r.ok){
+    if(r.reason === "unauthorized") return;
+    if(r.reason === "slot_taken"){
+      showToast("Esse horário acabou de ser ocupado. Escolha outro.", "error");
+      await refreshAdminData();
+      rmSel.time = null;
+      rmRenderTudo();
+      return;
+    }
+    if(r.reason === "meia_hora_presa"){
+      showToast("Tem um Pacote Família marcado às " + r.meia + ", que só existe por causa deste pedido. Remaneje aquele antes.", "error");
+      return;
+    }
+    showToast("Não foi possível remanejar o ensaio. Tente de novo.", "error");
+    return;
+  }
+  fecharRemanejar();
+  showToast("Ensaio remanejado para " + fmtDateBR(destino.date) + " às " + destino.time + ".", "success");
+  await refreshAdminData();
+  openDetail(id);   // volta aos detalhes já com a data nova, pronto pro WhatsApp
+});
+
 function openDetail(id){
   const a = appointmentsCache.find(x=>x.id===id);
   if(!a) return;
@@ -6984,6 +7379,7 @@ function openDetail(id){
     <div class="d-row"><span class="lbl">Pagamento</span><span class="val">${pgResumoDoPedido(a)}</span></div>
     <div class="d-row"><span class="lbl">Data</span><span class="val">${fmtDateBR(a.date)}</span></div>
     <div class="d-row"><span class="lbl">Horário</span><span class="val">${a.time}</span></div>
+    ${a.remanejadoDe?`<div class="d-row"><span class="lbl">Remanejado</span><span class="val">de ${escapeHtml(rmTextoOrigem(a.remanejadoDe))}${a.remanejadoEm?" em "+escapeHtml(new Date(a.remanejadoEm).toLocaleString("pt-BR")):""}</span></div>`:""}
     <div class="d-row"><span class="lbl">Status</span><span class="val"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span></span></div>
     <div class="d-row"><span class="lbl">Observações</span><span class="val">${a.notes ? escapeHtml(a.notes) : "—"}</span></div>
     <div class="d-row"><span class="lbl">Criado em</span><span class="val">${new Date(a.createdAt).toLocaleString("pt-BR")}</span></div>
@@ -6992,6 +7388,7 @@ function openDetail(id){
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
     </div>
     ${a.status!=="cancelado" ? `<button class="btn-outline" id="detail-editar" style="width:100%;justify-content:center;margin-top:10px;">Editar pedido (pacote e adicionais)</button>` : ""}
+    ${a.status!=="cancelado" ? `<button class="btn-outline" id="detail-remanejar" style="width:100%;justify-content:center;margin-top:10px;">Remanejar data/horário</button>` : ""}
     <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
     ${a.status==="confirmado" ? `<button class="btn-outline" id="detail-agenda" style="width:100%;justify-content:center;margin-top:10px;">${a.naAgenda?"Abrir de novo na Google Agenda":"Adicionar à Google Agenda"}</button>` : ""}
   `;
@@ -7001,6 +7398,7 @@ function openDetail(id){
     document.getElementById("detail-backdrop").classList.remove("open");
     edAbrir(a.id);
   });
+  ligar("detail-remanejar", "click", ()=> abrirRemanejar(a.id));
   ligar("detail-whatsapp", "click", ()=> openWhatsappTo(a.phone));
   // Abre o Google Agenda em outra aba com o evento pronto — só falta salvar.
   // Mesma marcação do botão da tabela, pra as duas telas contarem a mesma história.
