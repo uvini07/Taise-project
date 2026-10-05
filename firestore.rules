@@ -14,13 +14,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Contas autorizadas a administrar o site. Para liberar outra pessoa,
-    // acrescente o identificador dela nesta lista e publique de novo.
+    // Admin é quem tem um documento em "admins" com o próprio UID.
     function ehAdmin() {
       return request.auth != null
-          && request.auth.uid in [
-               'PIyrdiQ5DXVJuRQFSSJ84yLtl7A2'
-             ];
+          && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     // Cada pessoa só enxerga o próprio registro de admin, e ninguém cria
@@ -65,14 +62,6 @@ service cloud.firestore {
     // Estado do VIP (ligado, lançamento, cadastro aberto). O site precisa ler
     // para saber o que mostrar; só o admin muda.
     match /config/vip {
-      allow read: if true;
-      allow write: if ehAdmin();
-    }
-
-    // Horários criados à mão pela guia "Agenda" do painel. O site inteiro
-    // precisa ler: é isso que faz a vaga extra aparecer no agendamento. Nunca
-    // guarde dado pessoal aqui — só data e hora.
-    match /config/agenda {
       allow read: if true;
       allow write: if ehAdmin();
     }
