@@ -917,6 +917,97 @@ footer .wrap{position:relative;z-index:1;}
 .tabs{display:flex;gap:6px;background:var(--marfim-escuro);padding:4px;border-radius:999px;}
 .tab-btn{padding:8px 16px;border-radius:999px;border:none;background:none;font-size:13px;color:rgba(27,23,18,.6);font-weight:600;}
 .tab-btn.active{background:var(--verde-noturno);color:var(--marfim);}
+
+/* ---------- ADMIN: GUIAS (abas estilo navegador) ----------
+   A barra fica encaixada na topbar escura: a guia ativa assume a cor do fundo
+   do painel, então ela "continua" na tela de baixo, igual a uma aba de
+   navegador. Cada guia mostra um .admin-pane diferente. */
+.admin-tabsbar{background:var(--verde-noturno);}
+.atb-row{
+  display:flex;gap:4px;align-items:flex-end;padding-top:7px;
+  overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+}
+.atb-row::-webkit-scrollbar{display:none;}
+.atb-tab{
+  display:flex;align-items:center;gap:8px;flex:0 0 auto;
+  padding:11px 20px;border:none;border-radius:9px 9px 0 0;
+  background:rgba(246,241,231,.08);color:rgba(246,241,231,.62);
+  font-family:var(--sans);font-size:13px;font-weight:600;white-space:nowrap;
+  transition:background .2s ease,color .2s ease;
+}
+.atb-tab:hover{background:rgba(246,241,231,.16);color:var(--marfim);}
+.atb-tab.active{background:var(--marfim-escuro);color:var(--carvao);}
+.atb-tab.active:hover{background:var(--marfim-escuro);color:var(--carvao);}
+.admin-pane{display:none;}
+.admin-pane.active{display:block;}
+
+/* ---------- ADMIN: DASHBOARD FINANCEIRO ---------- */
+.fin-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.fin-toolbar .tabs{flex-wrap:wrap;}
+.fin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px;}
+.fin-card{
+  background:#fff;border-radius:8px;border:1px solid rgba(27,23,18,.06);
+  box-shadow:0 4px 16px rgba(27,23,18,.04);padding:20px 22px;
+}
+.fin-card .fc-label{font-size:12px;color:rgba(27,23,18,.5);font-weight:600;letter-spacing:.2px;}
+.fin-card .fc-val{font-family:var(--sans);font-size:25px;margin-top:12px;line-height:1.15;word-break:break-word;}
+.fin-card .fc-hint{font-size:11.5px;color:rgba(27,23,18,.45);margin-top:7px;}
+.fin-card.destaque{background:var(--verde-noturno);border-color:var(--verde-noturno);}
+.fin-card.destaque .fc-label{color:rgba(246,241,231,.6);}
+.fin-card.destaque .fc-val{color:var(--marfim);}
+.fin-card.destaque .fc-hint{color:rgba(246,241,231,.5);}
+
+/* valor por categoria (Família / Premium / Luxo) */
+.cat-list{padding:22px 24px;display:flex;flex-direction:column;gap:22px;}
+.cat-row .cr-top{display:flex;align-items:baseline;gap:10px;margin-bottom:9px;flex-wrap:wrap;}
+.cat-row .cr-nome{font-family:var(--sans);font-size:14px;font-weight:600;}
+.cat-row .cr-tag{
+  font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  padding:3px 9px;border-radius:999px;background:rgba(198,161,91,.2);color:#8a6b1f;
+}
+.cat-row .cr-tag.qtd{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.cat-row .cr-val{margin-left:auto;font-family:var(--sans);font-size:15px;font-weight:600;}
+.cat-row .cr-sub{font-size:12px;color:rgba(27,23,18,.5);margin-top:8px;}
+.cat-bar{height:12px;border-radius:999px;background:rgba(27,23,18,.07);overflow:hidden;}
+.cat-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--vinho),var(--dourado));transition:width .55s ease;}
+.cat-row.c-familia .cat-bar i{background:linear-gradient(90deg,#1C3728,#51876a);}
+.cat-row.c-premium .cat-bar i{background:linear-gradient(90deg,#6E1423,#bb4e61);}
+.cat-row.c-luxo    .cat-bar i{background:linear-gradient(90deg,#8a6b1f,#E3CD9B);}
+
+/* gráfico de linha — histórico de compras */
+.fin-chart{padding:20px 20px 8px;}
+.fin-chart svg{width:100%;height:auto;display:block;}
+.fin-chart .gx-grid{stroke:rgba(27,23,18,.08);stroke-width:1;}
+.fin-chart .gx-axis{stroke:rgba(27,23,18,.16);stroke-width:1;}
+.fin-chart .gx-lbl{font-family:var(--sans);font-size:10px;fill:rgba(27,23,18,.45);}
+.fin-chart .gx-line{fill:none;stroke:var(--vinho);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;}
+.fin-chart .gx-dot{fill:#fff;stroke:var(--vinho);stroke-width:2;cursor:pointer;}
+.fin-chart .gx-dot:hover{fill:var(--dourado);stroke:var(--dourado);}
+.fin-legend{padding:0 24px 20px;font-size:12px;color:rgba(27,23,18,.5);}
+
+/* primeiras clientes a comprar */
+.first-list{padding:6px 24px 22px;}
+.first-row{
+  display:flex;align-items:center;gap:14px;padding:13px 0;
+  border-bottom:1px solid rgba(27,23,18,.06);font-size:13.5px;
+}
+.first-row:last-child{border-bottom:none;}
+.first-row .fr-pos{
+  width:28px;height:28px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--sans);font-size:12px;font-weight:700;
+  background:rgba(27,23,18,.07);color:rgba(27,23,18,.55);
+}
+.first-row.top1 .fr-pos{background:var(--dourado);color:#fff;}
+.first-row.top2 .fr-pos{background:rgba(198,161,91,.5);color:#6b5223;}
+.first-row.top3 .fr-pos{background:rgba(198,161,91,.26);color:#6b5223;}
+.first-row .fr-nome{flex:1 1 170px;min-width:0;font-weight:600;}
+.first-row .fr-nome span{display:block;font-size:11.5px;font-weight:400;color:rgba(27,23,18,.5);}
+.first-row .fr-quando{font-size:12px;color:rgba(27,23,18,.5);flex:0 0 auto;}
+.first-row .fr-val{font-family:var(--sans);font-size:14px;font-weight:600;flex:0 0 auto;min-width:96px;text-align:right;}
+@media (max-width:980px){
+  .fin-grid{grid-template-columns:1fr 1fr;}
+}
 .search-input{
   padding:10px 14px 10px 36px;border-radius:999px;border:1.5px solid rgba(27,23,18,.14);font-size:13.5px;
   width:220px;background:#fff url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" stroke="%23999" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>') no-repeat 13px center;
@@ -941,6 +1032,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .row-actions .a-conf:hover{background:rgba(46,125,79,.12);border-color:var(--verde-status);color:var(--verde-status);}
 .row-actions .a-canc:hover{background:rgba(162,58,58,.12);border-color:var(--vermelho-status);color:var(--vermelho-status);}
 .row-actions .a-view:hover{background:rgba(27,23,18,.06);}
+.row-actions .a-edit:hover:not(:disabled){background:rgba(110,20,35,.1);border-color:var(--vinho);color:var(--vinho);}
 /* Botão "jogar na Google Agenda": laranja = ainda não lancei, verde = já lancei.
    Só aparece em pedido confirmado. */
 .row-actions .a-agenda.pendente{border-color:var(--amarelo-status);color:var(--amarelo-status);background:rgba(199,150,46,.1);}
@@ -953,17 +1045,179 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .empty-state p{font-size:13.5px;color:rgba(27,23,18,.42);margin-top:6px;}
 
 .agenda-list{padding:8px 24px 24px;}
-.agenda-day{padding:16px 0;border-bottom:1px solid rgba(27,23,18,.07);}
-.agenda-day:last-child{border-bottom:none;}
-.agenda-day h4{font-family:var(--sans);font-size:15px;text-transform:capitalize;margin-bottom:12px;}
-.agenda-slot{display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:6px;margin-bottom:8px;border-left:3px solid;}
-.agenda-slot.pendente{background:rgba(199,150,46,.06);border-color:var(--amarelo-status);}
-.agenda-slot.confirmado{background:rgba(46,125,79,.06);border-color:var(--verde-status);}
-.agenda-slot.cancelado{background:rgba(162,58,58,.06);border-color:var(--vermelho-status);opacity:.6;}
-.agenda-slot .a-time{font-weight:700;font-size:13px;width:52px;flex:0 0 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.agenda-slot .a-info{flex:1;font-size:13.5px;}
-.agenda-slot .a-info b{display:block;}
-.agenda-slot .a-info span{color:rgba(27,23,18,.5);font-size:12px;}
+
+/* ---------- ADMIN: GUIA AGENDA ----------
+   Um cartao por dia da temporada, e dentro dele um quadrinho por horario.
+   Horario ocupado leva o nome de quem marcou e abre o pedido no clique;
+   horario livre fica claro e, quando foi criado a mao aqui no painel, ganha
+   o "x" para apagar. */
+.ag-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.ag-navmes{display:flex;align-items:center;gap:4px;background:#fff;border:1px solid rgba(27,23,18,.12);border-radius:999px;padding:4px;}
+.ag-nav{
+  width:30px;height:30px;border:none;border-radius:50%;background:none;
+  font-size:17px;line-height:1;color:rgba(27,23,18,.6);display:flex;align-items:center;justify-content:center;
+}
+.ag-nav:hover:not(:disabled){background:var(--marfim-escuro);color:var(--carvao);}
+.ag-nav:disabled{opacity:.28;cursor:not-allowed;}
+.ag-mes-lbl{
+  font-family:var(--sans);font-size:13.5px;font-weight:600;
+  min-width:124px;text-align:center;
+}
+/* "novembro de 2026" e "segunda-feira, 02 de novembro" vem em minusculas do
+   toLocaleDateString. Subir so a primeira letra evita o "De" no meio. */
+.ag-mes-lbl::first-letter,.ag-dia-head h4::first-letter{text-transform:uppercase;}
+.ag-dia{padding:18px 0;border-bottom:1px solid rgba(27,23,18,.07);}
+.ag-dia:last-child{border-bottom:none;}
+.ag-dia.hoje{background:rgba(198,161,91,.07);border-radius:8px;padding:18px 14px;margin:0 -14px;}
+.ag-dia-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.ag-dia-head h4{font-family:var(--sans);font-size:15px;margin:0;}
+.ag-hoje{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  background:var(--dourado);color:#fff;border-radius:999px;padding:3px 8px;vertical-align:middle;
+}
+.ag-dia-tags{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto;}
+.ag-tag{font-size:11.5px;font-weight:700;border-radius:999px;padding:4px 10px;white-space:nowrap;}
+.ag-tag.conf{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.ag-tag.pend{background:rgba(199,150,46,.16);color:#8a6b1f;}
+.ag-tag.livre{background:rgba(27,23,18,.07);color:rgba(27,23,18,.55);}
+.ag-add-dia{
+  border:1px dashed rgba(27,23,18,.3);background:none;border-radius:999px;padding:4px 11px;
+  font-family:var(--sans);font-size:11.5px;font-weight:600;color:rgba(27,23,18,.55);white-space:nowrap;
+}
+.ag-add-dia:hover{border-color:var(--vinho);color:var(--vinho);border-style:solid;}
+.ag-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px;}
+.ag-slot{
+  display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:7px;
+  border:1px solid rgba(27,23,18,.1);border-left:3px solid rgba(27,23,18,.14);background:#fff;min-width:0;
+}
+.ag-slot.pendente{background:rgba(199,150,46,.07);border-left-color:var(--amarelo-status);cursor:pointer;}
+.ag-slot.confirmado{background:rgba(46,125,79,.07);border-left-color:var(--verde-status);cursor:pointer;}
+.ag-slot.pendente:hover,.ag-slot.confirmado:hover{box-shadow:0 4px 14px rgba(27,23,18,.1);}
+.ag-slot.livre{border-style:dashed;border-left-style:solid;background:var(--marfim);}
+.ag-slot .s-hora{font-family:var(--sans);font-weight:700;font-size:13.5px;flex:0 0 auto;}
+.ag-slot .s-quem{flex:1;min-width:0;font-size:13px;}
+.ag-slot .s-quem b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ag-slot .s-quem span{display:block;color:rgba(27,23,18,.5);font-size:11.5px;margin-top:2px;}
+.ag-slot.livre .s-quem b{color:rgba(27,23,18,.45);font-weight:600;}
+.ag-slot .status-pill{flex:0 0 auto;}
+.ag-mini{
+  display:inline-block;font-size:10.5px;font-weight:700;border-radius:4px;padding:2px 6px;margin-right:4px;
+}
+.ag-mini.extra{background:rgba(110,20,35,.1);color:var(--vinho);}
+.ag-mini.meia{background:rgba(28,55,40,.12);color:var(--verde-musgo);}
+.ag-slot .s-remove{
+  flex:0 0 auto;width:24px;height:24px;border:none;border-radius:50%;background:none;
+  font-size:17px;line-height:1;color:rgba(27,23,18,.35);display:flex;align-items:center;justify-content:center;
+}
+.ag-slot .s-remove:hover{background:rgba(162,58,58,.12);color:var(--vermelho-status);}
+.ag-modal-nota{font-size:13px;color:rgba(27,23,18,.6);line-height:1.6;margin:0 0 20px;}
+
+/* ---------- ADMIN: EDITAR PEDIDO ----------
+   Mesma linguagem do agendamento do site: o pacote em cartoes que se
+   selecionam, os adicionais em linhas com caixa de marcar, e o total
+   recalculado embaixo a cada clique. */
+.ed-cliente{
+  background:var(--marfim-escuro);border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:13px;
+}
+.ed-cliente b{display:block;font-weight:600;margin-bottom:2px;}
+.ed-cliente span{color:rgba(27,23,18,.55);font-size:12px;}
+.ed-titulo{font-size:12.5px;font-weight:700;color:rgba(27,23,18,.5);margin:0 0 10px;letter-spacing:.2px;}
+.ed-pacote{
+  border:1.5px solid rgba(27,23,18,.14);border-radius:6px;padding:12px 15px;margin-bottom:9px;
+  display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;transition:all .2s ease;
+}
+.ed-pacote:hover{border-color:var(--dourado);}
+.ed-pacote.selected{border-color:var(--vinho);background:rgba(110,20,35,.05);}
+.ed-pacote .ep-nome{font-size:14.5px;font-weight:600;}
+.ed-pacote .ep-sub{font-size:11.5px;color:rgba(27,23,18,.5);margin-top:2px;}
+.ed-pacote .ep-preco{font-size:13.5px;color:var(--vinho);font-weight:600;white-space:nowrap;}
+.ed-addon{
+  display:flex;align-items:center;gap:11px;padding:11px 14px;margin-bottom:8px;
+  border:1.5px solid rgba(27,23,18,.12);border-radius:6px;cursor:pointer;transition:all .2s ease;
+}
+.ed-addon:hover{border-color:var(--dourado);}
+.ed-addon.selected{border-color:var(--vinho);background:rgba(110,20,35,.04);}
+.ed-addon.incluso{opacity:.72;cursor:default;border-style:dashed;}
+.ed-addon input[type="checkbox"]{accent-color:var(--vinho);width:16px;height:16px;flex:0 0 auto;}
+.ed-addon .ea-nome{flex:1;font-size:13px;min-width:0;}
+.ed-addon .ea-preco{font-size:12.5px;font-weight:600;color:var(--vinho);white-space:nowrap;}
+.ed-addon .ea-tag{
+  font-size:10.5px;font-weight:700;background:rgba(46,125,79,.14);color:var(--verde-status);
+  border-radius:4px;padding:3px 7px;white-space:nowrap;
+}
+.ed-addon .ea-qtd{
+  width:58px;padding:6px 8px;font-family:inherit;font-size:12.5px;text-align:center;
+  border:1.5px solid rgba(27,23,18,.18);border-radius:5px;background:#fff;color:inherit;
+}
+.ed-conta{border-top:1px solid rgba(27,23,18,.12);margin-top:18px;padding-top:16px;}
+.ed-linha{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:7px;}
+.ed-linha span:first-child{color:rgba(27,23,18,.6);}
+.ed-linha.total{font-size:15px;font-weight:700;margin-top:10px;}
+.ed-total-campo{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;}
+.ed-total-campo label{font-size:12.5px;color:rgba(27,23,18,.55);}
+.ed-total-campo input{
+  width:140px;padding:9px 12px;font-family:inherit;font-size:14px;font-weight:600;
+  border:1.5px solid rgba(27,23,18,.18);border-radius:5px;background:#fff;color:inherit;
+}
+.ed-total-campo input:focus{border-color:var(--vinho);}
+.ed-total-campo .ed-refazer{
+  border:none;background:none;font-family:var(--sans);font-size:12px;font-weight:600;
+  color:var(--vinho);text-decoration:underline;padding:0;
+}
+.ed-aviso{
+  font-size:12px;line-height:1.55;color:#8a6b1f;background:rgba(199,150,46,.12);
+  border-radius:6px;padding:10px 12px;margin-top:14px;
+}
+
+/* ---------- ADMIN: GUIA PAGAMENTOS ----------
+   Uma linha por pedido, com a conta do lado esquerdo e os dois marcos
+   (sinal e quitado) do lado direito. */
+.pg-toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px;}
+.pg-lista{padding:8px 24px 24px;}
+.pg-item{
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:16px 0;border-bottom:1px solid rgba(27,23,18,.07);
+}
+.pg-item:last-child{border-bottom:none;}
+.pg-quem{flex:1 1 210px;min-width:0;}
+.pg-quem b{display:block;font-size:14px;font-weight:600;}
+.pg-quem span{display:block;font-size:12px;color:rgba(27,23,18,.5);margin-top:3px;}
+.pg-valores{display:flex;gap:22px;flex-wrap:wrap;flex:0 1 auto;}
+.pg-val{min-width:92px;}
+.pg-val .pv-lbl{font-size:10.5px;font-weight:700;color:rgba(27,23,18,.42);text-transform:uppercase;letter-spacing:.3px;}
+.pg-val .pv-num{font-family:var(--sans);font-size:14px;font-weight:600;margin-top:3px;}
+.pg-val.recebido .pv-num{color:var(--verde-status);}
+.pg-val.falta .pv-num{color:var(--vinho);}
+.pg-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto;}
+.pg-btn{
+  border:1.5px solid rgba(27,23,18,.16);background:#fff;border-radius:7px;padding:9px 14px;
+  font-family:var(--sans);font-size:12.5px;font-weight:600;color:rgba(27,23,18,.62);white-space:nowrap;
+  display:flex;align-items:center;gap:7px;transition:all .2s ease;
+}
+.pg-btn:hover{border-color:var(--carvao);color:var(--carvao);}
+.pg-btn.pago{background:rgba(46,125,79,.12);border-color:rgba(46,125,79,.4);color:var(--verde-status);}
+.pg-btn.pago:hover{background:rgba(46,125,79,.2);border-color:var(--verde-status);}
+.pg-btn .pb-ico{width:15px;height:15px;flex:0 0 auto;}
+/* O ".pg-quem span" acima deixa as linhas de texto em bloco; o selo e um
+   span tambem, entao precisa reconquistar o inline-flex. */
+.pg-quem .pg-selo{
+  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 11px;
+  font-size:11px;font-weight:700;margin-top:6px;width:auto;
+}
+.pg-selo.quitado{background:rgba(46,125,79,.14);color:var(--verde-status);}
+.pg-selo.sinal{background:rgba(199,150,46,.16);color:#8a6b1f;}
+.pg-selo.aberto{background:rgba(27,23,18,.07);color:rgba(27,23,18,.5);}
+.pg-modal-atalhos{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.pg-atalho{
+  border:1.5px solid rgba(27,23,18,.16);background:#fff;border-radius:999px;padding:7px 14px;
+  font-family:var(--sans);font-size:12px;font-weight:600;color:rgba(27,23,18,.6);
+}
+.pg-atalho:hover{border-color:var(--vinho);color:var(--vinho);}
+.ag-modal-erro{
+  display:none;font-size:12.5px;line-height:1.55;color:var(--vermelho-status);
+  background:rgba(162,58,58,.08);border-radius:6px;padding:10px 12px;margin-bottom:16px;
+}
+.ag-modal-erro.visivel{display:block;}
 
 .detail-panel .d-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(27,23,18,.08);font-size:14px;}
 .detail-panel .d-row:last-child{border-bottom:none;}
@@ -971,6 +1225,27 @@ table.appt-table{width:100%;border-collapse:collapse;}
 .detail-panel .d-row .val{font-weight:600;text-align:right;max-width:60%;}
 .detail-actions{display:flex;gap:10px;margin-top:22px;}
 .detail-actions button{flex:1;justify-content:center;}
+/* ---------- REMANEJAR DATA/HORÁRIO ---------- */
+.rm-cliente{font-size:13px;color:rgba(27,23,18,.55);margin-top:6px;}
+.rm-atual{
+  background:var(--marfim-escuro);border-radius:6px;padding:13px 16px;margin-bottom:18px;
+  font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.rm-atual .rm-seta{color:var(--vinho);font-weight:700;}
+.rm-atual b{font-family:var(--sans);}
+.rm-atual .rm-novo{color:rgba(27,23,18,.35);}
+.rm-atual.pronto .rm-novo{color:var(--vinho);}
+.rm-dica{font-size:11.5px;color:rgba(27,23,18,.45);line-height:1.55;margin-top:14px;}
+.rm-sub{font-size:12.5px;color:rgba(27,23,18,.55);margin:18px 0 10px;}
+.rm-aviso{
+  margin-top:18px;border-left:3px solid var(--amarelo-status);background:rgba(199,150,46,.08);
+  border-radius:0 6px 6px 0;padding:12px 14px;font-size:12.5px;color:rgba(27,23,18,.7);line-height:1.6;
+}
+.rm-aviso p{margin:0 0 7px;}
+.rm-aviso p:last-child{margin-bottom:0;}
+/* Impedimento, não recado: o botão de salvar fica travado enquanto ele valer. */
+.rm-aviso.trava{border-left-color:var(--vermelho-status);background:rgba(162,58,58,.08);}
+
 .btn-danger{background:var(--vermelho-status);}
 .btn-danger:hover{background:#8a2f2f;}
 .btn-success{background:var(--verde-status);}
@@ -1045,13 +1320,39 @@ table.appt-table{width:100%;border-collapse:collapse;}
   .appt-table td[data-label="Cliente"]{text-align:left;}
   .appt-table td[data-label="Cliente"]::before{display:none;}
   .appt-table .row-actions{justify-content:flex-end;}
-  .agenda-slot{flex-wrap:wrap;row-gap:6px;}
-  .agenda-slot .status-pill{margin-left:auto;}
   .book-modal{max-height:94vh;}
   .time-grid{grid-template-columns:repeat(2,1fr);}
   .book-footer{flex-direction:column-reverse;}
   .book-footer button{width:100%;justify-content:center;}
   .detail-actions{flex-direction:column;}
+  .fin-grid{grid-template-columns:1fr;}
+  .atb-tab{padding:10px 14px;font-size:12px;}
+  .ag-toolbar #ag-novo{width:100%;margin-left:0 !important;justify-content:center;}
+  .ag-toolbar .tabs{width:100%;justify-content:center;}
+  .ag-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
+  .ag-navmes{width:100%;justify-content:space-between;}
+  .ag-dia-head h4{flex:1 1 100%;}
+  .ag-dia-tags{margin-left:0;}
+  .ag-slots{grid-template-columns:1fr;}
+  .pg-toolbar .tabs{width:100%;justify-content:center;}
+  .pg-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
+  .pg-toolbar .search-input{width:100%;}
+  .pg-item{gap:12px;}
+  .pg-valores{width:100%;gap:16px;}
+  .pg-acoes{width:100%;margin-left:0;}
+  .pg-acoes .pg-btn{flex:1;justify-content:center;}
+  .ed-pacote{flex-wrap:wrap;}
+  .fin-toolbar .tabs{width:100%;justify-content:center;}
+  .fin-toolbar .tabs .tab-btn{font-size:12px;padding:8px 12px;}
+  .first-row{flex-wrap:wrap;row-gap:6px;}
+  .first-row .fr-nome{flex:1 1 calc(100% - 42px);}
+  .first-row .fr-quando{order:2;flex:1 1 auto;margin-left:42px;}
+  .first-row .fr-val{order:3;margin-left:auto;min-width:0;}
+  .cat-row .cr-val{margin-left:0;flex:1 1 100%;}
+  .fin-chart{padding:16px 6px 4px;}
+  /* o SVG encolhe junto com a tela: os rótulos sobem de tamanho para
+     continuarem legíveis depois da redução */
+  .fin-chart .gx-lbl{font-size:13px;}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001s !important;transition-duration:.001s !important;}
@@ -2482,6 +2783,43 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   </div>
 </div>
 
+<!-- ================= REMANEJAR DATA/HORÁRIO ================= -->
+<div class="modal-backdrop" id="remanejar-backdrop">
+  <div class="book-modal" style="max-width:470px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Remanejar ensaio</h3>
+        <button class="book-close" id="rm-close">&times;</button>
+      </div>
+      <p class="rm-cliente" id="rm-cliente"></p>
+    </div>
+    <div class="book-body">
+      <div class="rm-atual" id="rm-atual"></div>
+
+      <div class="cal-nav">
+        <button id="rm-prev" aria-label="Mês anterior">&#8249;</button>
+        <span class="cal-month" id="rm-month-label"></span>
+        <button id="rm-next" aria-label="Próximo mês">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="rm-cal-grid"></div>
+      <p class="rm-dica">Só aparecem as datas com horário aberto. Para abrir uma data nova,
+        crie o horário na guia <b>Agenda</b> e volte aqui.</p>
+
+      <div id="rm-bloco-horas" hidden>
+        <p class="rm-sub">Horário de <b id="rm-data-escolhida"></b></p>
+        <div class="time-grid" id="rm-time-grid"></div>
+      </div>
+
+      <div class="rm-aviso" id="rm-aviso" hidden></div>
+
+      <div class="book-footer">
+        <button class="btn-outline" id="rm-voltar">Voltar</button>
+        <button class="btn-solid" id="rm-salvar" disabled>Salvar novo horário</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= CONFIRM CANCEL MODAL ================= -->
 <div class="modal-backdrop" id="cancel-backdrop">
   <div class="book-modal confirm-dialog">
@@ -2492,6 +2830,63 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       <div class="c-actions">
         <button class="btn-outline" id="cancel-no">Voltar</button>
         <button class="btn-solid btn-danger" id="cancel-yes">Sim, cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EDITAR PEDIDO ================= -->
+<div class="modal-backdrop" id="edit-backdrop">
+  <div class="book-modal" style="max-width:520px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Editar pedido</h3>
+        <button class="book-close" id="edit-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body" id="edit-body"></div>
+  </div>
+</div>
+
+<!-- ================= REGISTRAR PAGAMENTO ================= -->
+<div class="modal-backdrop" id="pay-backdrop">
+  <div class="book-modal" style="max-width:420px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3 id="pay-titulo">Registrar pagamento</h3>
+        <button class="book-close" id="pay-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body" id="pay-body"></div>
+  </div>
+</div>
+
+<!-- ================= CRIAR HORÁRIO (GUIA AGENDA) ================= -->
+<div class="modal-backdrop" id="slot-backdrop">
+  <div class="book-modal" style="max-width:430px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Criar horário</h3>
+        <button class="book-close" id="slot-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body">
+      <p class="ag-modal-nota">
+        A vaga entra no site <b>na hora</b> e vale para qualquer pacote. Serve para abrir um
+        encaixe fora da grade — inclusive num sábado ou domingo que estaria fechado.
+      </p>
+      <div class="ag-modal-erro" id="slot-erro"></div>
+      <div class="field">
+        <label for="slot-data">Data do ensaio</label>
+        <input type="date" id="slot-data">
+      </div>
+      <div class="field">
+        <label for="slot-hora">Horário</label>
+        <input type="time" id="slot-hora" step="900">
+      </div>
+      <div class="c-actions" style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-outline" id="slot-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid" id="slot-salvar" style="flex:1;justify-content:center;">Criar horário</button>
       </div>
     </div>
   </div>
@@ -2531,8 +2926,33 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
     </div>
   </div>
-  <div class="admin-body wrap">
-    <h1 class="admin-h1">Dashboard</h1>
+  <!-- GUIAS DO PAINEL — funcionam como abas de navegador: "Agendamentos"
+       continua sendo a tela de sempre, "Agenda" mostra os horários da
+       temporada (marcados e livres) e "Financeiro" o dashboard de vendas. -->
+  <div class="admin-tabsbar">
+    <div class="wrap">
+      <div class="atb-row" id="admin-tabsbar" role="tablist" aria-label="Guias do painel">
+        <button class="atb-tab active" data-view="operacao" role="tab" aria-selected="true" aria-controls="pane-operacao">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Agendamentos
+        </button>
+        <button class="atb-tab" data-view="agenda" role="tab" aria-selected="false" aria-controls="pane-agenda">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7.5V12l3.2 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Agenda
+        </button>
+        <button class="atb-tab" data-view="pagamentos" role="tab" aria-selected="false" aria-controls="pane-pagamentos">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.6"/><path d="M6 15h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Pagamentos
+        </button>
+        <button class="atb-tab" data-view="financeiro" role="tab" aria-selected="false" aria-controls="pane-financeiro">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Financeiro
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="admin-body wrap admin-pane active" id="pane-operacao" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Agendamentos</h1>
     <p class="admin-sub">Visão geral dos agendamentos de Natal.</p>
 
     <div class="stat-grid" id="stat-grid">
@@ -2707,16 +3127,205 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
     </div>
 
+  </div>
+
+  <!-- ======================== GUIA AGENDA ========================
+       A agenda da temporada: cruza os horários que o site oferece (os de
+       CONFIG mais os criados aqui) com os pedidos já carregados. O que é
+       criado aqui vai para config/agenda no Firebase e aparece no site na
+       hora — é a única parte da guia que grava algo. -->
+  <div class="admin-body wrap admin-pane" id="pane-agenda" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Agenda</h1>
+    <p class="admin-sub">Mês a mês: quem já está marcado, o que continua livre e os horários que você abrir à mão.</p>
+
+    <div class="ag-toolbar">
+      <div class="ag-navmes">
+        <button class="ag-nav" id="ag-prev" aria-label="Mês anterior">&lsaquo;</button>
+        <span class="ag-mes-lbl" id="ag-mes-lbl">–</span>
+        <button class="ag-nav" id="ag-next" aria-label="Mês seguinte">&rsaquo;</button>
+      </div>
+      <div class="tabs" id="ag-filtro">
+        <button class="tab-btn active" data-filtro="tudo">Tudo</button>
+        <button class="tab-btn" data-filtro="ocupados">Só marcados</button>
+        <button class="tab-btn" data-filtro="livres">Só livres</button>
+      </div>
+      <button class="btn-solid" id="ag-novo" style="padding:11px 20px;font-size:13px;margin-left:auto;">+ Criar horário</button>
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card destaque">
+        <div class="fc-label">Confirmados no mês</div>
+        <div class="fc-val" id="ag-conf">–</div>
+        <div class="fc-hint" id="ag-conf-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Aguardando confirmação</div>
+        <div class="fc-val" id="ag-pend">–</div>
+        <div class="fc-hint">Pendentes que já ocupam o horário</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Horários livres</div>
+        <div class="fc-val" id="ag-livres">–</div>
+        <div class="fc-hint" id="ag-livres-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Dias com agenda aberta</div>
+        <div class="fc-val" id="ag-dias">–</div>
+        <div class="fc-hint" id="ag-dias-hint">–</div>
+      </div>
+    </div>
+
     <div class="admin-panel">
       <div class="ap-head">
-        <h3>Agenda</h3>
-        <div class="tabs" id="agenda-tabs">
-          <button class="tab-btn active" data-range="week">Semana</button>
-          <button class="tab-btn" data-range="month">Mês</button>
-          <button class="tab-btn" data-range="all">Tudo</button>
+        <h3>Horários do mês</h3>
+        <span id="ag-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+      </div>
+      <div class="agenda-list" id="ag-lista"></div>
+    </div>
+  </div>
+
+  <!-- ===================== GUIA PAGAMENTOS =====================
+       Controle de quem ja pagou. Os dois marcos — sinal e quitacao — ficam
+       gravados no proprio pedido, com o valor que entrou de verdade: o sinal
+       combinado pode ser 30% e a cliente mandar 50%. -->
+  <div class="admin-body wrap admin-pane" id="pane-pagamentos" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Pagamentos</h1>
+    <p class="admin-sub">Quem já pagou o sinal, quem já quitou e quanto ainda falta entrar.</p>
+
+    <div class="pg-toolbar">
+      <div class="tabs" id="pg-escopo">
+        <button class="tab-btn active" data-escopo="confirmado">Confirmados</button>
+        <button class="tab-btn" data-escopo="pendente">Pendentes</button>
+        <button class="tab-btn" data-escopo="ativos">Todos (sem cancelados)</button>
+      </div>
+      <div class="tabs" id="pg-situacao">
+        <button class="tab-btn active" data-situacao="">Todos</button>
+        <button class="tab-btn" data-situacao="aberto">Sem pagamento</button>
+        <button class="tab-btn" data-situacao="sinal">Só o sinal</button>
+        <button class="tab-btn" data-situacao="quitado">Quitados</button>
+      </div>
+      <input class="search-input" id="pg-busca" placeholder="Buscar cliente" style="margin-left:auto;">
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card destaque">
+        <div class="fc-label">Já recebido</div>
+        <div class="fc-val" id="pg-recebido">–</div>
+        <div class="fc-hint" id="pg-recebido-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Ainda a receber</div>
+        <div class="fc-val" id="pg-falta">–</div>
+        <div class="fc-hint" id="pg-falta-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Quitados</div>
+        <div class="fc-val" id="pg-quitados">–</div>
+        <div class="fc-hint" id="pg-quitados-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Sem nenhum pagamento</div>
+        <div class="fc-val" id="pg-abertos">–</div>
+        <div class="fc-hint">Reserva ainda não garantida</div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Pedidos</h3>
+        <span id="pg-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+      </div>
+      <div class="pg-lista" id="pg-lista"></div>
+    </div>
+  </div>
+
+  <!-- ====================== GUIA FINANCEIRO ======================
+       Tudo aqui é calculado na hora, a partir dos mesmos pedidos que a guia
+       "Agendamentos" já carregou — não existe segunda fonte de dados. -->
+  <div class="admin-body wrap admin-pane" id="pane-financeiro" role="tabpanel" aria-labelledby="admin-tabsbar">
+    <h1 class="admin-h1">Financeiro</h1>
+    <p class="admin-sub">Quanto a temporada já vendeu — no total, por pacote e ao longo do tempo.</p>
+
+    <div class="fin-toolbar">
+      <div class="tabs" id="fin-escopo">
+        <button class="tab-btn active" data-escopo="ativos">Confirmados + pendentes</button>
+        <button class="tab-btn" data-escopo="confirmado">Só confirmados</button>
+        <button class="tab-btn" data-escopo="tudo">Tudo, com cancelados</button>
+      </div>
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card destaque">
+        <div class="fc-label">Total de pedidos</div>
+        <div class="fc-val" id="fin-total">–</div>
+        <div class="fc-hint" id="fin-total-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Ticket médio</div>
+        <div class="fc-val" id="fin-ticket">–</div>
+        <div class="fc-hint">Valor médio por pedido</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Confirmado</div>
+        <div class="fc-val" id="fin-confirmado">–</div>
+        <div class="fc-hint" id="fin-confirmado-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Aguardando confirmação</div>
+        <div class="fc-val" id="fin-pendente">–</div>
+        <div class="fc-hint" id="fin-pendente-hint">–</div>
+      </div>
+    </div>
+
+    <div class="fin-grid">
+      <div class="fin-card">
+        <div class="fc-label">Sinal da reserva</div>
+        <div class="fc-val" id="fin-sinal">–</div>
+        <div class="fc-hint">50% no Família, 30% nos outros</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Saldo a receber</div>
+        <div class="fc-val" id="fin-saldo">–</div>
+        <div class="fc-hint">O que fica para o dia do ensaio</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Itens adicionais</div>
+        <div class="fc-val" id="fin-addons">–</div>
+        <div class="fc-hint" id="fin-addons-hint">–</div>
+      </div>
+      <div class="fin-card">
+        <div class="fc-label">Vendas pela Lista VIP</div>
+        <div class="fc-val" id="fin-vip">–</div>
+        <div class="fc-hint" id="fin-vip-hint">–</div>
+      </div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Valor por pacote</h3>
+        <span id="fin-cat-resumo" style="font-size:12.5px;color:rgba(27,23,18,.55);"></span>
+      </div>
+      <div class="cat-list" id="fin-cat-list"></div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Histórico de compras</h3>
+        <div class="tabs" id="fin-modo">
+          <button class="tab-btn active" data-modo="acumulado">Acumulado</button>
+          <button class="tab-btn" data-modo="dia">Por dia</button>
         </div>
       </div>
-      <div class="agenda-list" id="agenda-list"></div>
+      <div class="fin-chart" id="fin-chart"></div>
+      <div class="fin-legend" id="fin-chart-legend"></div>
+    </div>
+
+    <div class="admin-panel">
+      <div class="ap-head">
+        <h3>Primeiras clientes a comprar</h3>
+        <span style="font-size:12.5px;color:rgba(27,23,18,.55);">Pela ordem em que o pedido entrou</span>
+      </div>
+      <div class="first-list" id="fin-primeiras"></div>
     </div>
   </div>
 </div>
@@ -2969,6 +3578,37 @@ const COL_VIP_MEMBROS = "vipMembros";    // público por consulta pontual
 const COL_VIP_CADASTROS = "vipCadastros";// privado: dados do cliente
 const DOC_CONFIG_VIP = db.collection("config").doc("vip");
 const DOC_CONTADOR_VIP = db.collection("config").doc("contadorVip");
+const DOC_CONFIG_AGENDA = db.collection("config").doc("agenda");
+
+/* ---- Horários criados à mão na guia "Agenda" do painel ----
+   Formato: { "2026-11-05": ["18:00"], "2026-12-06": ["12:00","18:00"] }.
+   Mora em config/agenda porque o site inteiro precisa ler — é isso que faz a
+   vaga aparecer no agendamento de quem está comprando. Só data e hora: nada
+   de dado pessoal, igual à coleção "horarios". */
+let agendaExtras = {};
+const AGENDA_EXTRAS_KEY = "christmas-agenda-extras";
+function ehHoraValida(t){ return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(t||"")); }
+// Joga fora qualquer coisa fora do formato esperado: o painel grava o mapa
+// inteiro de uma vez, então uma entrada estranha no banco não pode virar um
+// horário quebrado no site.
+function normalizarExtras(bruto){
+  const limpo = {};
+  Object.keys(bruto || {}).forEach(iso=>{
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return;
+    const horas = (Array.isArray(bruto[iso]) ? bruto[iso] : [])
+      .map(t=>String(t||"").trim())
+      .filter(ehHoraValida);
+    const unicas = Array.from(new Set(horas)).sort();
+    if(unicas.length) limpo[iso] = unicas;
+  });
+  return limpo;
+}
+function extrasDaData(iso){ return agendaExtras[iso] || []; }
+function ehHorarioExtra(iso, hora){ return extrasDaData(iso).indexOf(String(hora||"")) !== -1; }
+async function lerAgendaExtras(){
+  const doc = await DOC_CONFIG_AGENDA.get();
+  return normalizarExtras(doc.exists ? doc.data().extras : null);
+}
 
 // Chave de busca de um contato na lista VIP. E-mail vira minúsculo; telefone
 // vira só dígitos, sem o 55 do país — assim "+55 (11) 9…" e "11 9…" batem.
@@ -3035,7 +3675,9 @@ async function firebaseApi(payload){
     // Meia hora extra: so existe para o Pacote Familia, so a partir da data
     // de inicio e so quando ha um Familia marcado na hora cheia anterior que
     // nao foi cancelado. Conferido aqui porque e o ponto mais perto da escrita.
-    if(/^\d{2}:30$/.test(String(a.time||""))){
+    // Um :30 criado à mão na guia "Agenda" é um horário comum — a regra da
+    // meia hora do Família vale só para as vagas que ela mesma abre.
+    if(/^\d{2}:30$/.test(String(a.time||"")) && !ehHorarioExtra(a.date, a.time)){
       const cfgMeia = CONFIG.meiaHora;
       const pkgMeia = cfgMeia ? pkgById(cfgMeia.pacoteId) : null;
       if(!cfgMeia || !pkgMeia) return { ok:false, reason:"invalid_slot" };
@@ -3164,6 +3806,195 @@ async function firebaseApi(payload){
     return { ok:true };
   }
 
+  /* ---- Editar um pedido ja fechado ----
+     Troca de pacote e de adicionais. O que o painel manda ja vem calculado,
+     mas a conta e refeita aqui antes de gravar: o campo de valor do editor e
+     editavel, e nada impede que a tela esteja desatualizada. A colecao
+     "horarios" tambem e atualizada, porque e dela que saem as vagas do lote
+     e a regra da meia hora. */
+  if(acao === "updatePedido"){
+    const id = String(payload.id||"");
+    const snapAg = await db.collection(COL_AGENDAMENTOS).doc(id).get();
+    if(!snapAg.exists) return { ok:false, reason:"not_found" };
+    const atual = snapAg.data() || {};
+
+    const pkg = CONFIG.packages.find(p => p.id === payload.packageId);
+    if(!pkg) return { ok:false, reason:"invalid_package" };
+
+    // Meia hora do Familia: se este pedido e o Familia da hora cheia que
+    // abriu a vaga seguinte, e essa vaga esta ocupada, trocar o pacote
+    // deixaria o outro pedido pendurado num horario que deixou de existir.
+    if(atual.package !== pkg.name && /^\d{2}:00$/.test(String(atual.time||""))){
+      const cfgMeia = CONFIG.meiaHora;
+      const pkgMeia = cfgMeia ? pkgById(cfgMeia.pacoteId) : null;
+      if(pkgMeia && atual.package === pkgMeia.name && String(atual.date||"") >= cfgMeia.inicio){
+        const meia = String(atual.time).slice(0,2) + ":30";
+        const snapMeia = await db.collection(COL_HORARIOS)
+          .where("date", "==", atual.date).where("time", "==", meia).get();
+        const ocupada = snapMeia.docs.some(d => (d.data()||{}).status !== "cancelado");
+        if(ocupada) return { ok:false, reason:"meia_hora_presa", meia };
+      }
+    }
+
+    const isVip = ehAgendamentoVip(atual);
+    const lote = isVip ? null : (pkg.lots||[]).find(l => l.label === atual.lot) || null;
+    const ids = Array.isArray(payload.addonIds) ? payload.addonIds : [];
+    const qtd = payload.addonQtd || {};
+    const extras = addonsGravados(pkg, ids, qtd);
+    const loteDoPreco = loteCobrado(pkg, lote, atual.date, isVip);
+    const ehSemana = temValorDeSemana(pkg, lote, atual.date, isVip);
+    const calculado = precoTotal(pkg, lote, isVip, ids, atual.date, qtd);
+    // Valor digitado a mao vence o calculado — ela pode ter combinado outro
+    // preco com a cliente. Sem valor digitado, vale a conta.
+    const digitado = parseFloat(payload.totalManual);
+    const total = (payload.totalManual !== "" && payload.totalManual != null && !isNaN(digitado) && digitado >= 0)
+      ? digitado : calculado;
+
+    const campos = {
+      package: pkg.name,
+      lotPrice: isVip ? vipDiscountedPrice(pkg) : (loteDoPreco ? loteDoPreco.price : pkg.price),
+      semanaNota: ehSemana ? NOTA_SEMANA : "",
+      addons: extras.texto,
+      addonsValor: extras.valor,
+      addonIds: ids,
+      addonQtd: qtd,
+      total: fmtBRL(total),
+      pagamento: textoPagamento(pkg, total),
+      editadoEm: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    const lote2 = db.batch();
+    lote2.update(db.collection(COL_AGENDAMENTOS).doc(id), campos);
+    lote2.update(db.collection(COL_HORARIOS).doc(id), { package: pkg.name });
+    await lote2.commit();
+    return { ok:true, campos };
+  }
+
+  /* ---- Pagamentos: sinal recebido e pedido quitado ----
+     Dois marcos separados, cada um com o valor que entrou de verdade — o
+     sinal combinado pode ser 30% e a cliente mandar 50%. Desmarcar apaga o
+     marco inteiro, para nao sobrar valor de um pagamento que nao houve. */
+  if(acao === "updatePagamento"){
+    const id = String(payload.id||"");
+    const campos = { updatedAt: new Date().toISOString() };
+    const valor = parseFloat(payload.valor);
+    const temValor = !isNaN(valor) && valor >= 0;
+
+    if(payload.marco === "sinal"){
+      campos.pagoSinal = !!payload.pago;
+      campos.pagoSinalValor = payload.pago && temValor ? valor : null;
+      campos.pagoSinalEm = payload.pago ? new Date().toISOString() : null;
+    }else if(payload.marco === "total"){
+      campos.pagoTotal = !!payload.pago;
+      campos.pagoTotalValor = payload.pago && temValor ? valor : null;
+      campos.pagoTotalEm = payload.pago ? new Date().toISOString() : null;
+      // Quitar sem ter marcado o sinal e comum (cliente que pagou tudo de
+      // uma vez): nesse caso o sinal fica como esta, sem inventar valor.
+    }else{
+      return { ok:false, reason:"invalid_marco" };
+    }
+    await db.collection(COL_AGENDAMENTOS).doc(id).update(campos);
+    return { ok:true, campos };
+  }
+
+  /* ---- Guia "Agenda": criar e apagar horário ----
+     O mapa inteiro é regravado a cada ação (é um documento pequeno e só o
+     admin escreve), e a leitura é feita na hora para não gravar em cima de
+     uma alteração feita em outra aba. */
+  if(acao === "agendaAddSlot"){
+    const iso = String(payload.date||"");
+    const hora = String(payload.time||"");
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(iso) || !ehHoraValida(hora)) return { ok:false, reason:"invalid_slot" };
+    if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd) return { ok:false, reason:"out_of_season" };
+    const atual = await lerAgendaExtras();
+    const jaExiste = (atual[iso]||[]).indexOf(hora) !== -1 || timesForDate(iso).indexOf(hora) !== -1;
+    if(jaExiste) return { ok:false, reason:"duplicate" };
+    atual[iso] = (atual[iso]||[]).concat([hora]).sort();
+    await DOC_CONFIG_AGENDA.set({ extras: atual });
+    agendaExtras = atual;
+    return { ok:true, extras: atual };
+  }
+
+  if(acao === "agendaRemoveSlot"){
+    const iso = String(payload.date||"");
+    const hora = String(payload.time||"");
+    // Horário com cliente em cima não sai: primeiro o pedido é cancelado na
+    // guia "Agendamentos", depois a vaga pode ser apagada.
+    const snapSlot = await db.collection(COL_HORARIOS)
+      .where("date", "==", iso).where("time", "==", hora).get();
+    const ocupado = snapSlot.docs.some(d => (d.data()||{}).status !== "cancelado");
+    if(ocupado) return { ok:false, reason:"slot_taken" };
+    const atual = await lerAgendaExtras();
+    if((atual[iso]||[]).indexOf(hora) === -1) return { ok:false, reason:"not_extra" };
+    const restantes = atual[iso].filter(t => t !== hora);
+    if(restantes.length) atual[iso] = restantes; else delete atual[iso];
+    await DOC_CONFIG_AGENDA.set({ extras: atual });
+    agendaExtras = atual;
+    return { ok:true, extras: atual };
+  }
+
+  // Remanejar: muda data/hora do pedido nas duas colecoes de uma vez. As
+  // conferencias acontecem aqui, imediatamente antes de gravar, porque o
+  // painel pode estar aberto ha um tempo e a agenda ter andado nesse meio.
+  if(acao === "reschedule"){
+    const id = String(payload.id || "");
+    const date = String(payload.date || "");
+    const time = String(payload.time || "");
+    if(!id || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !ehHoraValida(time)){
+      return { ok:false, reason:"invalid_slot" };
+    }
+    if(date < CONFIG.seasonStart || date > CONFIG.seasonEnd) return { ok:false, reason:"out_of_season" };
+
+    const snapAtual = await db.collection(COL_AGENDAMENTOS).doc(id).get();
+    if(!snapAtual.exists) return { ok:false, reason:"not_found" };
+    const a = snapAtual.data() || {};
+    const de = (a.date || "") + " " + (a.time || "");
+
+    // Mesma trava do "Editar pedido": o Familia da hora cheia e o que faz a
+    // meia hora seguinte existir. Com alguem marcado nela, ele nao sai daqui.
+    if(a.date !== date || a.time !== time){
+      const cfgMeia = CONFIG.meiaHora;
+      const pkgMeia = cfgMeia ? pkgById(cfgMeia.pacoteId) : null;
+      if(pkgMeia && a.package === pkgMeia.name && /^\d{2}:00$/.test(String(a.time||""))
+         && String(a.date||"") >= cfgMeia.inicio){
+        const meia = String(a.time).slice(0,2) + ":30";
+        const snapMeia = await db.collection(COL_HORARIOS)
+          .where("date", "==", a.date).where("time", "==", meia).get();
+        const ocupada = snapMeia.docs.some(d => d.id !== id && (d.data()||{}).status !== "cancelado");
+        if(ocupada) return { ok:false, reason:"meia_hora_presa", meia };
+      }
+    }
+
+    const snapDestino = await db.collection(COL_HORARIOS)
+      .where("date", "==", date).where("time", "==", time).get();
+    const ocupado = snapDestino.docs.some(function(doc){
+      return doc.id !== id && (doc.data() || {}).status !== "cancelado";
+    });
+    if(ocupado) return { ok:false, reason:"slot_taken" };
+
+    const lote = db.batch();
+    lote.update(db.collection(COL_AGENDAMENTOS).doc(id), {
+      date, time,
+      remanejadoDe: de,
+      remanejadoEm: new Date().toISOString(),
+      // O evento ja lancado na Google Agenda ficou no horario velho: a marca
+      // volta para "nao lancado", para o admin lancar de novo.
+      naAgenda: false,
+      naAgendaAt: null,
+      updatedAt: new Date().toISOString()
+    });
+    // set+merge, e nao update: pedido antigo pode nao ter documento em
+    // "horarios", e assim ele e criado no formato que as regras aceitam.
+    lote.set(db.collection(COL_HORARIOS).doc(id), {
+      date, time,
+      package: a.package || "",
+      lot: a.lot || "",
+      status: a.status || "pendente"
+    }, { merge:true });
+    await lote.commit();
+    return { ok:true, de };
+  }
+
   if(acao === "vipToggle"){
     await DOC_CONFIG_VIP.set({ vipEnabled: !!payload.enabled }, { merge:true });
     return { ok:true, settings: await lerConfigVip() };
@@ -3232,7 +4063,8 @@ const VIP_STORAGE_KEY = "christmas-vip-settings";
 const VIP_SIGNUPS_KEY = "christmas-vip-signups";
 let appointmentsCache = [];
 let adminFilters = { status:"", search:"", pkg:"", date:"" };
-let agendaRange = "week";
+let agMesCursor = null;       // 1o dia do mes que a guia "Agenda" mostra
+let agFiltro = "tudo";        // tudo | ocupados | livres
 let pendingCancelId = null;
 let pendingDetailId = null;
 let vipSettings = { vipEnabled:false, vipLaunchAt:null };
@@ -3406,16 +4238,48 @@ function addonsCobrados(pkg, escolhidos){
     .filter(Boolean);
 }
 // Quantos "de cada" o cliente pediu. So os adicionais com porPessoa usam isso;
-// os demais contam sempre como 1.
-function qtdAddon(a){
+// os demais contam sempre como 1. O mapa de quantidades vem de fora para a
+// mesma conta servir ao agendamento do site e ao editor do painel; sem mapa,
+// vale o do agendamento em andamento.
+function qtdAddon(a, qtdMap){
   if(!a || !a.porPessoa) return 1;
-  const n = parseInt((booking.addonQtd || {})[a.id], 10);
+  const mapa = qtdMap || booking.addonQtd || {};
+  const n = parseInt(mapa[a.id], 10);
   const teto = a.maxQtd || 10;
   return Math.min(teto, Math.max(1, isNaN(n) ? 1 : n));
 }
-function subtotalAddon(a){ return a.preco * qtdAddon(a); }
-function totalAddons(pkg, escolhidos){
-  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+subtotalAddon(a), 0);
+function subtotalAddon(a, qtdMap){ return a.preco * qtdAddon(a, qtdMap); }
+function totalAddons(pkg, escolhidos, qtdMap){
+  return addonsCobrados(pkg, escolhidos).reduce((s,a)=>s+subtotalAddon(a, qtdMap), 0);
+}
+// Texto e valor dos adicionais como ficam gravados no pedido. Uma funcao so,
+// para o site e o editor nunca escreverem isso de jeitos diferentes.
+function addonsGravados(pkg, ids, qtdMap){
+  const cobrados = addonsCobrados(pkg, ids);
+  return {
+    texto: cobrados.map(a=>a.nome + (qtdAddon(a, qtdMap) > 1 ? " × " + qtdAddon(a, qtdMap) : "")).join(", "),
+    valor: cobrados.length ? fmtBRL(cobrados.reduce((x,a)=>x + subtotalAddon(a, qtdMap), 0)) : ""
+  };
+}
+// Le de volta o que foi escolhido. Pedido novo traz addonIds/addonQtd prontos;
+// pedido antigo so tem o texto, entao os nomes sao reconhecidos de volta — e o
+// texto foi gerado a partir desses mesmos nomes, entao bate.
+function addonsDoPedido(a){
+  if(a && Array.isArray(a.addonIds)){
+    return { ids: a.addonIds.slice(), qtd: Object.assign({}, a.addonQtd || {}) };
+  }
+  const texto = String(a && a.addons || "");
+  const ids = [], qtd = {};
+  if(texto){
+    texto.split(",").map(t=>t.trim()).filter(Boolean).forEach(parte=>{
+      const item = CONFIG.adicionais.find(ad => parte.indexOf(ad.nome) === 0);
+      if(!item) return;
+      ids.push(item.id);
+      const m = parte.match(/×\s*(\d+)/);
+      if(m) qtd[item.id] = parseInt(m[1], 10);
+    });
+  }
+  return { ids, qtd };
 }
 
 /* ---- Valor de 1o lote nas datas de segunda a sexta ----
@@ -3451,8 +4315,8 @@ function precoBasePacote(pkg, lot, isVip, dateISO){
   const n = parseBRL(txt);
   return isNaN(n) ? 0 : n;
 }
-function precoTotal(pkg, lot, isVip, escolhidos, dateISO){
-  return precoBasePacote(pkg, lot, isVip, dateISO) + totalAddons(pkg, escolhidos);
+function precoTotal(pkg, lot, isVip, escolhidos, dateISO, qtdMap){
+  return precoBasePacote(pkg, lot, isVip, dateISO) + totalAddons(pkg, escolhidos, qtdMap);
 }
 // Texto da condição de pagamento do pacote (entrada + saldo no dia).
 function textoPagamento(pkg, total){
@@ -3488,14 +4352,16 @@ async function loadAppointments(){
       // A coleção "horarios" é a versão pública da agenda: só data, hora,
       // pacote, lote e status. Nome, telefone e e-mail ficam em "agendamentos",
       // que as regras de segurança só liberam para o admin logado.
-      const [snap, cfg, total] = await Promise.all([
+      const [snap, cfg, total, extras] = await Promise.all([
         db.collection(COL_HORARIOS).get(),
         lerConfigVip(),
-        lerContadorVip()
+        lerContadorVip(),
+        lerAgendaExtras().catch(()=>({}))
       ]);
       appointmentsCache = snap.docs.map(d=>Object.assign({ id:d.id }, d.data()));
       vipSettings = cfg;
       vipCount = total;
+      agendaExtras = extras;
     }catch(e){
       showToast("Não foi possível conectar ao servidor. Tente novamente.", "error");
       appointmentsCache = [];
@@ -3509,6 +4375,8 @@ async function loadAppointments(){
     vipSettings = rawVip ? JSON.parse(rawVip) : { vipEnabled:false, vipLaunchAt:null };
     const rawSignups = localStorage.getItem(VIP_SIGNUPS_KEY);
     vipSignups = rawSignups ? JSON.parse(rawSignups) : [];
+    const rawExtras = localStorage.getItem(AGENDA_EXTRAS_KEY);
+    agendaExtras = normalizarExtras(rawExtras ? JSON.parse(rawExtras) : null);
   }catch(e){
     appointmentsCache = [];
   }
@@ -4623,10 +5491,19 @@ function timesForDate(iso){
   if(!iso) return [];
   if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd) return [];
   const map = CONFIG.dateTimes || {};
-  if(Object.prototype.hasOwnProperty.call(map, iso)) return map[iso];
-  const dow = new Date(iso+"T12:00:00").getDay();
-  if(dow===0 || dow===6) return []; // fim de semana sem agenda definida = fechado
-  return CONFIG.weekTimes || CONFIG.availableTimes || [];
+  let base;
+  if(Object.prototype.hasOwnProperty.call(map, iso)){
+    base = map[iso];
+  }else{
+    const dow = new Date(iso+"T12:00:00").getDay();
+    // fim de semana sem agenda definida = fechado
+    base = (dow===0 || dow===6) ? [] : (CONFIG.weekTimes || CONFIG.availableTimes || []);
+  }
+  // Os horários criados na guia "Agenda" valem como qualquer outro. Por isso
+  // um dia fechado (ou um fim de semana sem grade) volta a abrir quando o
+  // painel cria um horário nele.
+  const extras = extrasDaData(iso).filter(t => base.indexOf(t) === -1);
+  return extras.length ? base.concat(extras).sort() : base;
 }
 
 /* ---- STEP 2: CALENDARIO ---- */
@@ -4830,6 +5707,10 @@ ligar("confirm-booking", "click", async (e)=>{
     semanaNota: ehValorDeSemana ? NOTA_SEMANA : "",
     addons: extrasEscolhidos.map(a=>a.nome + (qtdAddon(a)>1 ? " × "+qtdAddon(a) : "")).join(", "),
     addonsValor: extrasEscolhidos.length ? fmtBRL(extrasEscolhidos.reduce((x,a)=>x+subtotalAddon(a),0)) : "",
+    // A mesma escolha em formato de dados, para o painel conseguir reabrir e
+    // editar o pedido sem ter que adivinhar pelo texto acima.
+    addonIds: extrasEscolhidos.map(a=>a.id),
+    addonQtd: Object.assign({}, booking.addonQtd || {}),
     total: fmtBRL(valorTotal),
     pagamento: textoPagamento(p, valorTotal),
     lotVagas: isVip ? null : (lot ? lot.vagas : null),
@@ -5018,6 +5899,7 @@ async function enterAdmin(){
   // admin-view está aberto.
   aplicarBloqueioSite();
   window.scrollTo(0,0);
+  trocarGuiaAdmin("operacao");
   await garantirDocumentosIniciais();
   await refreshAdminData();
 }
@@ -5069,8 +5951,10 @@ async function refreshAdminData(){
   populatePackageFilter();
   renderStats();
   renderTable();
-  renderAgenda();
+  renderAgendaGuia();
+  renderPagamentos();
   renderVipAdmin();
+  renderFinanceiro();
   // O painel de mensagens so se liga uma vez; depois so refaz a lista.
   if(!msgIniciado){ msgIniciado = true; initMensagens(); } else { renderMensagens(); }
 }
@@ -5521,6 +6405,9 @@ function renderTable(){
           <button class="a-canc" title="Cancelar" data-id="${a.id}" ${a.status==="cancelado"?"disabled style='opacity:.3'":""}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2"/></svg>
           </button>
+          <button class="a-edit" title="Editar pacote e adicionais" data-id="${a.id}" ${a.status==="cancelado"?"disabled style='opacity:.3'":""}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+          </button>
           <button class="a-view" title="Ver detalhes" data-id="${a.id}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
           </button>
@@ -5538,6 +6425,7 @@ function renderTable(){
 
   tbody.querySelectorAll(".a-conf:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> confirmAppointment(b.dataset.id)));
   tbody.querySelectorAll(".a-canc:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> openCancelConfirm(b.dataset.id)));
+  tbody.querySelectorAll(".a-edit:not(:disabled)").forEach(b=> b.addEventListener("click", ()=> edAbrir(b.dataset.id)));
   tbody.querySelectorAll(".a-view").forEach(b=> b.addEventListener("click", ()=> openDetail(b.dataset.id)));
   tbody.querySelectorAll(".a-phone").forEach(b=> b.addEventListener("click", ()=> openWhatsappTo(b.dataset.phone)));
   tbody.querySelectorAll(".a-agenda").forEach(b=> b.addEventListener("click", async ()=>{
@@ -5749,11 +6637,352 @@ function openWhatsappTo(phone){
 
 // Exporta os pedidos filtrados como CSV (abre direto no Excel/Google Sheets).
 // Não substitui o armazenamento local — é uma cópia para você manter em Excel/planilha.
+
+/* =========================================================
+   GUIAS DO PAINEL + DASHBOARD FINANCEIRO
+   As guias de cima trocam qual .admin-pane fica visível, como abas de
+   navegador. O financeiro não busca nada no servidor: ele recalcula tudo a
+   partir do appointmentsCache que o painel já tem em mãos.
+========================================================= */
+let finEscopo = "ativos";    // ativos | confirmado | tudo
+let finModo = "acumulado";   // acumulado | dia
+
+function trocarGuiaAdmin(nome){
+  document.querySelectorAll("#admin-tabsbar .atb-tab").forEach(b=>{
+    const ativa = b.dataset.view === nome;
+    b.classList.toggle("active", ativa);
+    b.setAttribute("aria-selected", ativa ? "true" : "false");
+  });
+  document.querySelectorAll("#admin-view .admin-pane").forEach(p=>{
+    p.classList.toggle("active", p.id === "pane-" + nome);
+  });
+  if(nome === "agenda") renderAgendaGuia();
+  if(nome === "pagamentos") renderPagamentos();
+  if(nome === "financeiro") renderFinanceiro();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("#admin-tabsbar .atb-tab").forEach(btn=>{
+  btn.addEventListener("click", ()=> trocarGuiaAdmin(btn.dataset.view));
+});
+document.querySelectorAll("#fin-escopo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#fin-escopo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    finEscopo = btn.dataset.escopo;
+    renderFinanceiro();
+  });
+});
+document.querySelectorAll("#fin-modo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#fin-modo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    finModo = btn.dataset.modo;
+    renderFinanceiro();
+  });
+});
+
+/* ---- leitura dos pedidos ---- */
+function finPedidos(){
+  const lista = appointmentsCache || [];
+  if(finEscopo === "tudo") return lista.slice();
+  if(finEscopo === "confirmado") return lista.filter(a=>a.status === "confirmado");
+  return lista.filter(a=>a.status !== "cancelado");
+}
+function finPacoteDoPedido(a){
+  const nome = String(a && a.package || "").trim();
+  return CONFIG.packages.find(p=>p.name === nome) || null;
+}
+// Valor fechado do pedido, em número. Usa o mesmo total que aparece na tabela
+// (totalDoPedido já cobre os pedidos antigos, somando lote + adicionais).
+function finValor(a){
+  const n = parseBRL(totalDoPedido(a));
+  return isNaN(n) ? 0 : n;
+}
+function finValorAddons(a){
+  const n = parseBRL(a && a.addonsValor);
+  return isNaN(n) ? 0 : n;
+}
+// % de sinal do pacote; sem pacote reconhecido, usa 30% (regra dos demais).
+function finEntradaPct(a){
+  const p = finPacoteDoPedido(a);
+  return p && p.entrada ? p.entrada : 30;
+}
+// Quando a compra entrou. Pedido antigo sem createdAt cai na data do ensaio,
+// para não ficar de fora do histórico.
+function finQuando(a){
+  const bruto = a && (a.createdAt || a.updatedAt);
+  if(bruto){
+    const d = new Date(bruto);
+    if(!isNaN(d.getTime())) return d;
+  }
+  if(a && a.date){
+    const d = new Date(a.date + "T12:00:00");
+    if(!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+function finPlural(n, um, muitos){ return n + " " + (n === 1 ? um : muitos); }
+// Valor curto para os rótulos do gráfico (eixo estreito não cabe o valor cheio).
+function finBRLCurto(n){
+  if(n >= 1000){
+    const mil = n / 1000;
+    const txt = (mil % 1 === 0) ? String(mil)
+              : (mil >= 10 ? String(Math.round(mil)) : mil.toFixed(1).replace(".", ","));
+    return "R$ " + txt + " mil";
+  }
+  return "R$ " + Math.round(n);
+}
+// Teto do eixo Y em número redondo, para os rótulos caírem em valores limpos
+// (0 / 4 mil / 8 mil…) em vez de 3,8 mil / 7,5 mil.
+function finTetoEixo(maxVal, linhas){
+  const bruto = maxVal / linhas;
+  const exp = Math.pow(10, Math.floor(Math.log10(bruto || 1)));
+  const passos = [1, 1.5, 2, 2.5, 3, 4, 5, 7.5, 10];
+  let passo = exp * 10;
+  for(const n of passos){ if(n * exp >= bruto){ passo = n * exp; break; } }
+  return passo * linhas;
+}
+// O fmtBRL do site não separa milhar (os preços de pacote não precisam). No
+// financeiro os totais passam de mil fácil, então aqui usamos o formato cheio.
+function finBRL(n){
+  const v = isNaN(n) ? 0 : n;
+  return "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function finTexto(id, valor){
+  const el = document.getElementById(id);
+  if(el) el.textContent = valor;
+}
+
+/* ---- render principal ---- */
+function renderFinanceiro(){
+  if(!document.getElementById("pane-financeiro")) return;
+  const lista = finPedidos();
+
+  const total = lista.reduce((s,a)=>s + finValor(a), 0);
+  const qtd = lista.length;
+  const confirmados = lista.filter(a=>a.status === "confirmado");
+  const pendentes = lista.filter(a=>a.status === "pendente");
+  const totalConf = confirmados.reduce((s,a)=>s + finValor(a), 0);
+  const totalPend = pendentes.reduce((s,a)=>s + finValor(a), 0);
+  const sinal = lista.reduce((s,a)=>s + finValor(a) * finEntradaPct(a) / 100, 0);
+  const addons = lista.reduce((s,a)=>s + finValorAddons(a), 0);
+  const comAddons = lista.filter(a=>finValorAddons(a) > 0).length;
+  const vips = lista.filter(ehAgendamentoVip);
+  const totalVip = vips.reduce((s,a)=>s + finValor(a), 0);
+
+  finTexto("fin-total", finBRL(total));
+  finTexto("fin-total-hint", finPlural(qtd, "pedido", "pedidos") + " no filtro atual");
+  finTexto("fin-ticket", qtd ? finBRL(total / qtd) : "R$ 0,00");
+  finTexto("fin-confirmado", finBRL(totalConf));
+  finTexto("fin-confirmado-hint", finPlural(confirmados.length, "pedido confirmado", "pedidos confirmados"));
+  finTexto("fin-pendente", finBRL(totalPend));
+  finTexto("fin-pendente-hint", finPlural(pendentes.length, "pedido pendente", "pedidos pendentes"));
+  finTexto("fin-sinal", finBRL(sinal));
+  finTexto("fin-saldo", finBRL(Math.max(0, total - sinal)));
+  finTexto("fin-addons", finBRL(addons));
+  finTexto("fin-addons-hint", comAddons ? finPlural(comAddons, "pedido levou extra", "pedidos levaram extras") : "Nenhum extra vendido ainda");
+  finTexto("fin-vip", finBRL(totalVip));
+  finTexto("fin-vip-hint", vips.length ? finPlural(vips.length, "pedido VIP", "pedidos VIP") : "Nenhuma venda VIP ainda");
+
+  renderFinCategorias(lista, total);
+  renderFinHistorico(lista);
+  renderFinPrimeiras(lista);
+}
+
+/* ---- valor por pacote: Família, Premium, Luxo (+ outros, se houver) ---- */
+function renderFinCategorias(lista, total){
+  const alvo = document.getElementById("fin-cat-list");
+  if(!alvo) return;
+
+  const cats = CONFIG.packages.map(p=>({
+    id: p.id, nome: p.name,
+    valor: lista.filter(a=>finPacoteDoPedido(a) && finPacoteDoPedido(a).id === p.id).reduce((s,a)=>s + finValor(a), 0),
+    qtd: lista.filter(a=>finPacoteDoPedido(a) && finPacoteDoPedido(a).id === p.id).length
+  }));
+  // Pedido de um pacote que não existe mais no CONFIG não some do total.
+  const soltos = lista.filter(a=>!finPacoteDoPedido(a));
+  if(soltos.length){
+    cats.push({
+      id: "outros", nome: "Outros pacotes",
+      valor: soltos.reduce((s,a)=>s + finValor(a), 0),
+      qtd: soltos.length
+    });
+  }
+
+  if(!lista.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);margin:0;">Nenhum pedido no filtro atual.</p>';
+    finTexto("fin-cat-resumo", "");
+    return;
+  }
+
+  const maiorValor = Math.max(1, ...cats.map(c=>c.valor));
+  const campeaoValor = cats.slice().sort((a,b)=>b.valor - a.valor)[0];
+  const campeaoQtd = cats.slice().sort((a,b)=>b.qtd - a.qtd)[0];
+
+  alvo.innerHTML = cats.map(c=>{
+    const fatia = total > 0 ? (c.valor / total * 100) : 0;
+    const tags = [];
+    if(campeaoValor && c.id === campeaoValor.id && c.valor > 0) tags.push('<span class="cr-tag">Mais faturou</span>');
+    if(campeaoQtd && c.id === campeaoQtd.id && c.qtd > 0) tags.push('<span class="cr-tag qtd">Mais vendeu</span>');
+    return `
+      <div class="cat-row c-${escapeHtml(c.id)}">
+        <div class="cr-top">
+          <span class="cr-nome">${escapeHtml(c.nome)}</span>
+          ${tags.join("")}
+          <span class="cr-val">${finBRL(c.valor)}</span>
+        </div>
+        <div class="cat-bar"><i style="width:${(c.valor / maiorValor * 100).toFixed(1)}%"></i></div>
+        <div class="cr-sub">${finPlural(c.qtd, "pedido", "pedidos")} · ${fatia.toFixed(1).replace(".", ",")}% do faturamento${c.qtd ? " · ticket " + finBRL(c.valor / c.qtd) : ""}</div>
+      </div>`;
+  }).join("");
+
+  const resumo = [];
+  if(campeaoQtd && campeaoQtd.qtd > 0) resumo.push("Mais vendeu: " + campeaoQtd.nome + " (" + finPlural(campeaoQtd.qtd, "pedido", "pedidos") + ")");
+  if(campeaoValor && campeaoValor.valor > 0 && (!campeaoQtd || campeaoValor.id !== campeaoQtd.id)) resumo.push("Mais faturou: " + campeaoValor.nome);
+  finTexto("fin-cat-resumo", resumo.join(" · "));
+}
+
+/* ---- histórico de compras (gráfico de linha, SVG puro) ---- */
+function renderFinHistorico(lista){
+  const alvo = document.getElementById("fin-chart");
+  if(!alvo) return;
+
+  // Agrupa por dia da compra.
+  const porDia = new Map();
+  lista.forEach(a=>{
+    const d = finQuando(a);
+    if(!d) return;
+    const chave = toISODate(d);
+    const atual = porDia.get(chave) || { valor: 0, qtd: 0 };
+    atual.valor += finValor(a);
+    atual.qtd += 1;
+    porDia.set(chave, atual);
+  });
+
+  const dias = Array.from(porDia.keys()).sort();
+  if(!dias.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);padding:30px 4px;margin:0;text-align:center;">Sem compras registradas para montar o histórico.</p>';
+    finTexto("fin-chart-legend", "");
+    return;
+  }
+
+  let acumulado = 0;
+  const pontos = dias.map(dia=>{
+    const d = porDia.get(dia);
+    acumulado += d.valor;
+    return { dia, valor: finModo === "dia" ? d.valor : acumulado, qtd: d.qtd, doDia: d.valor };
+  });
+
+  alvo.innerHTML = finChartSVG(pontos);
+  finTexto("fin-chart-legend",
+    finModo === "dia"
+      ? "Cada ponto é quanto foi vendido naquele dia. Passe o mouse para ver o valor."
+      : "Linha do faturamento somado desde a primeira compra. Passe o mouse para ver o valor do dia.");
+}
+
+function finChartSVG(pontos){
+  // Numa tela estreita o SVG encolhe junto com a largura: se a caixa fosse a
+  // mesma do desktop (820x280), a altura cairia para uns 120px e os rótulos
+  // ficariam ilegíveis. Por isso o celular usa uma caixa mais quadrada.
+  const estreito = window.innerWidth < 760;
+  const W = estreito ? 440 : 820, H = estreito ? 300 : 280;
+  const L = estreito ? 54 : 70, R = estreito ? 12 : 18, T = 20, B = 40;
+  const iw = W - L - R, ih = H - T - B;
+  const maxVal = Math.max(1, ...pontos.map(p=>p.valor));
+  const linhas = 4;
+  const teto = finTetoEixo(maxVal, linhas);
+  const x = i => pontos.length === 1 ? L + iw / 2 : L + (i / (pontos.length - 1)) * iw;
+  const y = v => T + ih - (v / teto) * ih;
+
+  let grid = "", eixoY = "";
+  for(let i = 0; i <= linhas; i++){
+    const v = teto / linhas * i;
+    const py = y(v);
+    grid += `<line class="gx-grid" x1="${L}" y1="${py.toFixed(1)}" x2="${L + iw}" y2="${py.toFixed(1)}"/>`;
+    eixoY += `<text class="gx-lbl" x="${L - 10}" y="${(py + 3.5).toFixed(1)}" text-anchor="end">${finBRLCurto(v)}</text>`;
+  }
+
+  // No máximo 7 rótulos no eixo X, para não embolar.
+  const salto = Math.max(1, Math.ceil(pontos.length / (estreito ? 4 : 7)));
+  let eixoX = "";
+  pontos.forEach((p, i)=>{
+    if(i % salto !== 0 && i !== pontos.length - 1) return;
+    eixoX += `<text class="gx-lbl" x="${x(i).toFixed(1)}" y="${H - B + 20}" text-anchor="middle">${fmtDateBR(p.dia).slice(0,5)}</text>`;
+  });
+
+  const d = pontos.map((p, i)=> (i ? "L" : "M") + x(i).toFixed(1) + " " + y(p.valor).toFixed(1)).join(" ");
+  const area = pontos.length > 1
+    ? `<path fill="url(#finGrad)" d="${d} L${x(pontos.length - 1).toFixed(1)} ${T + ih} L${x(0).toFixed(1)} ${T + ih} Z"/>`
+    : "";
+
+  const dots = pontos.map((p, i)=>
+    `<circle class="gx-dot" cx="${x(i).toFixed(1)}" cy="${y(p.valor).toFixed(1)}" r="4.5">`
+    + `<title>${escapeHtml(fmtDateBR(p.dia))} — ${escapeHtml(finBRL(p.doDia))} em ${escapeHtml(finPlural(p.qtd, "pedido", "pedidos"))}`
+    + (finModo === "dia" ? "" : " (acumulado: " + escapeHtml(finBRL(p.valor)) + ")") + `</title></circle>`
+  ).join("");
+
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de linha do histórico de compras">
+    <defs><linearGradient id="finGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(110,20,35,.22)"/><stop offset="100%" stop-color="rgba(110,20,35,0)"/>
+    </linearGradient></defs>
+    ${grid}${area}
+    <path class="gx-line" d="${d}"/>
+    ${dots}
+    <line class="gx-axis" x1="${L}" y1="${T + ih}" x2="${L + iw}" y2="${T + ih}"/>
+    ${eixoY}${eixoX}
+  </svg>`;
+}
+
+// Girar o celular troca a faixa de largura do gráfico, então o painel é
+// redesenhado (com folga, para não redesenhar a cada pixel do arrasto).
+let finResizeTimer = null;
+window.addEventListener("resize", ()=>{
+  const pane = document.getElementById("pane-financeiro");
+  if(!pane || !pane.classList.contains("active")) return;
+  clearTimeout(finResizeTimer);
+  finResizeTimer = setTimeout(renderFinanceiro, 200);
+});
+
+/* ---- primeiras clientes a comprar ---- */
+function renderFinPrimeiras(lista){
+  const alvo = document.getElementById("fin-primeiras");
+  if(!alvo) return;
+
+  const comData = lista
+    .map(a=>({ a, quando: finQuando(a) }))
+    .filter(x=>!!x.quando)
+    .sort((x,y)=> x.quando - y.quando)
+    .slice(0, 10);
+
+  if(!comData.length){
+    alvo.innerHTML = '<p style="font-size:13.5px;color:rgba(27,23,18,.45);padding:14px 0;margin:0;">Nenhuma compra registrada ainda.</p>';
+    return;
+  }
+
+  alvo.innerHTML = comData.map((x, i)=>{
+    const a = x.a;
+    const lote = a.lot ? " · " + a.lot : "";
+    return `
+      <div class="first-row ${i < 3 ? "top" + (i + 1) : ""}">
+        <span class="fr-pos">${i + 1}</span>
+        <span class="fr-nome">${escapeHtml(a.name || "—")}
+          <span>${escapeHtml((a.package || "—") + lote)}</span>
+        </span>
+        <span class="fr-quando">${escapeHtml(x.quando.toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" }))}</span>
+        <span class="fr-val">${escapeHtml(finBRL(finValor(a)))}</span>
+      </div>`;
+  }).join("");
+}
+
 function exportAppointmentsCSV(){
   const list = getFilteredAppointments();
-  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status","Observações","Criado em"];
+  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status",
+                   "Total","Pagamento","Recebido","Falta","Observações","Criado em"];
   const rows = list.map(a => [
     a.name, a.phone, a.email, a.package, a.lot||"", fmtDateBR(a.date), a.time, a.status,
+    totalDoPedido(a),
+    pgSituacaoDe(a) === "quitado" ? "Quitado" : (pgSituacaoDe(a) === "sinal" ? "Sinal pago" : "Sem pagamento"),
+    pgValor(pgRecebido(a)), pgValor(Math.max(0, pgTotalDe(a) - pgRecebido(a))),
     (a.notes||"").replace(/[\r\n]+/g," "), new Date(a.createdAt).toLocaleString("pt-BR")
   ]);
   const escapeCsv = (v) => `"${String(v).replace(/"/g,'""')}"`;
@@ -5858,6 +7087,281 @@ function googleAgendaUrl(a){
   return "https://calendar.google.com/calendar/render?" + q.toString();
 }
 
+
+/* =========================================================
+   REMANEJAR DATA E HORÁRIO DE UM PEDIDO
+   Abre pelo botão "Remanejar data/horário" dos detalhes. Usa exatamente a
+   mesma grade do site — inclusive os horários criados na guia "Agenda" —
+   já sem o que outra cliente ocupa. Para abrir uma data que não existe na
+   grade, o caminho é criar o horário na guia "Agenda": assim o site e o
+   painel continuam contando a mesma história.
+========================================================= */
+let rmPedidoId = null;
+let rmCursor = new Date();
+let rmSel = { date:null, time:null };
+
+// "2026-12-05 10:00" (como fica gravado) vira "05/12/2026 às 10:00".
+function rmTextoOrigem(bruto){
+  const partes = String(bruto || "").trim().split(/\s+/);
+  if(!partes[0]) return "—";
+  const data = /^\d{4}-\d{2}-\d{2}$/.test(partes[0]) ? fmtDateBR(partes[0]) : partes[0];
+  return partes[1] ? data + " às " + partes[1] : data;
+}
+function rmPedido(){
+  return appointmentsCache.find(a=>a.id === rmPedidoId) || null;
+}
+function rmPacote(a){
+  return CONFIG.packages.find(p=>p.name === String(a && a.package || "").trim()) || null;
+}
+// Horários que este pedido pode ocupar na data — mesma regra do site.
+function rmHorariosDaData(iso){
+  const a = rmPedido();
+  const p = rmPacote(a);
+  return horariosDoPacote(appointmentsCache || [], iso, p ? p.id : null);
+}
+// Quem já ocupa cada horário do dia. O próprio pedido nunca bloqueia a si mesmo,
+// e pedido cancelado devolve o horário para a grade.
+function rmOcupados(iso){
+  return new Set((appointmentsCache || [])
+    .filter(a => a.id !== rmPedidoId && a.date === iso && a.status !== "cancelado")
+    .map(a => a.time));
+}
+// Lote cujo período de realização cobre a data — serve só para avisar quando a
+// nova data cai num lote diferente do que a cliente comprou.
+function rmLoteDaData(pkg, iso){
+  if(!pkg || !pkg.lots) return null;
+  return pkg.lots.find(l => iso >= l.start && iso <= l.end) || null;
+}
+// Meia hora do Família: se este pedido é o Família da hora cheia que abriu a
+// vaga seguinte, e alguém já pegou essa vaga, tirá-lo daqui deixaria a outra
+// cliente num horário que deixa de existir. Mesma trava do "Editar pedido".
+function rmMeiaHoraPresa(a){
+  const cfg = CONFIG.meiaHora;
+  const pkgMeia = cfg ? pkgById(cfg.pacoteId) : null;
+  if(!pkgMeia || !a || a.package !== pkgMeia.name) return null;
+  if(!/^\d{2}:00$/.test(String(a.time || ""))) return null;
+  if(String(a.date || "") < cfg.inicio) return null;
+  const meia = String(a.time).slice(0,2) + ":30";
+  const ocupada = (appointmentsCache || []).some(x =>
+    x.id !== a.id && x.date === a.date && x.time === meia && x.status !== "cancelado");
+  return ocupada ? meia : null;
+}
+
+function abrirRemanejar(id){
+  const a = appointmentsCache.find(x=>x.id === id);
+  if(!a) return;
+  rmPedidoId = id;
+  rmSel = { date:null, time:null };
+  rmCursor = new Date((a.date || toISODate(new Date())) + "T12:00:00");
+  document.getElementById("rm-cliente").textContent =
+    a.name + " · " + a.package + (a.lot ? " · " + a.lot : "");
+  document.getElementById("detail-backdrop").classList.remove("open");
+  document.getElementById("remanejar-backdrop").classList.add("open");
+  rmRenderTudo();
+}
+
+function rmRenderTudo(){
+  rmRenderResumo();
+  rmRenderCalendario();
+  rmRenderHorarios();
+  const travado = rmRenderAvisos();
+  const btn = document.getElementById("rm-salvar");
+  if(btn) btn.disabled = travado || !(rmSel.date && rmSel.time);
+}
+
+function rmRenderResumo(){
+  const a = rmPedido();
+  if(!a) return;
+  const caixa = document.getElementById("rm-atual");
+  const novo = rmSel.date
+    ? fmtDateBR(rmSel.date) + (rmSel.time ? " às " + rmSel.time : " · escolha o horário")
+    : "escolha a nova data";
+  caixa.classList.toggle("pronto", !!(rmSel.date && rmSel.time));
+  caixa.innerHTML = `<b>${escapeHtml(fmtDateBR(a.date))} às ${escapeHtml(a.time)}</b>`
+    + `<span class="rm-seta">&rarr;</span>`
+    + `<b class="rm-novo">${escapeHtml(novo)}</b>`;
+}
+
+function rmRenderCalendario(){
+  const grid = document.getElementById("rm-cal-grid");
+  const label = document.getElementById("rm-month-label");
+  label.textContent = rmCursor.toLocaleDateString("pt-BR", { month:"long", year:"numeric" });
+
+  const year = rmCursor.getFullYear(), month = rmCursor.getMonth();
+  const startOffset = new Date(year, month, 1).getDay();
+  const diasNoMes = new Date(year, month+1, 0).getDate();
+  const hoje = toISODate(new Date());
+
+  let html = WEEKDAYS.map(w=>`<div class="wd">${w}</div>`).join("");
+  for(let i=0;i<startOffset;i++) html += `<div class="cal-day empty"></div>`;
+  for(let d=1; d<=diasNoMes; d++){
+    const iso = toISODate(new Date(year, month, d));
+    const livre = iso >= hoje && rmHorariosDaData(iso).length > 0;
+    html += `<div class="cal-day ${livre?"":"disabled"} ${iso===hoje?"today":""} ${rmSel.date===iso?"selected":""}"
+      data-iso="${livre?iso:""}">${d}</div>`;
+  }
+  grid.innerHTML = html;
+  grid.querySelectorAll(".cal-day:not(.disabled):not(.empty)").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      rmSel.date = el.dataset.iso;
+      rmSel.time = null;
+      rmRenderTudo();
+    });
+  });
+
+  // Navegação: do mês de hoje até o último mês da temporada.
+  const idx = year*12 + month;
+  const hojeObj = new Date();
+  const mesInicio = hojeObj.getFullYear()*12 + hojeObj.getMonth();
+  const fimTemporada = new Date(CONFIG.seasonEnd + "T12:00:00");
+  const mesFim = fimTemporada.getFullYear()*12 + fimTemporada.getMonth();
+  document.getElementById("rm-prev").disabled = idx <= mesInicio;
+  document.getElementById("rm-next").disabled = idx >= mesFim;
+}
+
+function rmRenderHorarios(){
+  const bloco = document.getElementById("rm-bloco-horas");
+  const grid = document.getElementById("rm-time-grid");
+  if(!rmSel.date){ bloco.hidden = true; grid.innerHTML = ""; return; }
+  bloco.hidden = false;
+  document.getElementById("rm-data-escolhida").textContent = fmtDateBR(rmSel.date);
+
+  const horas = rmHorariosDaData(rmSel.date);
+  if(!horas.length){
+    grid.innerHTML = '<div class="time-slot locked" style="grid-column:1/-1">Sem horários nesta data</div>';
+    return;
+  }
+  const ocupados = rmOcupados(rmSel.date);
+  const a = rmPedido();
+  grid.innerHTML = horas.map(t=>{
+    const preso = ocupados.has(t);
+    const atual = a && a.date === rmSel.date && a.time === t;
+    return `<div class="time-slot ${preso?"locked":""} ${rmSel.time===t?"selected":""}"
+      data-time="${preso?"":t}"${atual?' title="Horário atual deste pedido"':""}>
+      ${preso ? "🔒 Ocupado" : t}</div>`;
+  }).join("");
+  grid.querySelectorAll(".time-slot:not(.locked)").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      rmSel.time = el.dataset.time;
+      rmRenderTudo();
+    });
+  });
+}
+
+// Devolve true quando algo impede de salvar. O resto é recado: não trava, só
+// conta o que muda fora da data em si.
+function rmRenderAvisos(){
+  const caixa = document.getElementById("rm-aviso");
+  const a = rmPedido();
+  if(!a){ caixa.hidden = true; caixa.innerHTML = ""; return false; }
+
+  const mudou = rmSel.date && (rmSel.date !== a.date || rmSel.time !== a.time);
+  const meiaPresa = mudou ? rmMeiaHoraPresa(a) : null;
+  if(meiaPresa){
+    caixa.className = "rm-aviso trava";
+    caixa.hidden = false;
+    caixa.innerHTML = `<p>Tem um Pacote Família marcado às <b>${escapeHtml(meiaPresa)}</b> de
+      ${escapeHtml(fmtDateBR(a.date))}, que só existe porque este pedido ocupa a hora cheia.
+      Remaneje aquele primeiro — ou cancele — para poder mexer neste.</p>`;
+    return true;
+  }
+
+  const avisos = [];
+  const p = rmPacote(a);
+  if(rmSel.date && !ehAgendamentoVip(a) && p){
+    const loteNovo = rmLoteDaData(p, rmSel.date);
+    if(loteNovo && a.lot && loteNovo.label !== a.lot){
+      avisos.push(`A nova data cai no período do <b>${escapeHtml(loteNovo.label)}</b> (${escapeHtml(loteNovo.price)}), e o pedido foi fechado no <b>${escapeHtml(a.lot)}</b>. O valor gravado <b>não muda</b> — continua ${escapeHtml(totalDoPedido(a))}. Para cobrar outro valor, use "Editar pedido".`);
+    }
+    if(!loteNovo){
+      avisos.push("A nova data está fora dos períodos dos lotes cadastrados. O valor do pedido continua o mesmo.");
+    }
+  }
+  if(rmSel.date && a.naAgenda){
+    avisos.push("Este pedido já foi lançado na Google Agenda. O evento lá <b>continua no horário antigo</b>: depois de salvar, o botão volta a ficar laranja para você lançar de novo e apagar o evento velho na mão.");
+  }
+
+  caixa.className = "rm-aviso";
+  caixa.innerHTML = avisos.map(t=>`<p>${t}</p>`).join("");
+  caixa.hidden = !avisos.length;
+  return false;
+}
+
+/* ---- gravação ---- */
+async function reagendarPedido(id, date, time){
+  if(usingSheets()){
+    const data = await apiPost({ action:"reschedule", id, date, time }, true);
+    if(data && data.reason === "unauthorized"){ handleUnauthorized(); return { ok:false, reason:"unauthorized" }; }
+    if(data && data.ok){
+      const idx = appointmentsCache.findIndex(a=>a.id === id);
+      if(idx > -1) Object.assign(appointmentsCache[idx], {
+        date, time, naAgenda:false, naAgendaAt:null,
+        remanejadoDe: data.de, remanejadoEm: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    }
+    return data || { ok:false, reason:"network" };
+  }
+  // Sem Firebase, o painel trabalha no localStorage deste navegador.
+  const fresh = await loadAppointments();
+  const idx = fresh.findIndex(a=>a.id === id);
+  if(idx === -1) return { ok:false, reason:"not_found" };
+  const ocupado = fresh.some(a=>a.id !== id && a.date === date && a.time === time && a.status !== "cancelado");
+  if(ocupado) return { ok:false, reason:"slot_taken" };
+  const de = (fresh[idx].date || "") + " " + (fresh[idx].time || "");
+  Object.assign(fresh[idx], {
+    date, time, naAgenda:false, naAgendaAt:null,
+    remanejadoDe: de, remanejadoEm: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  });
+  await saveAppointments(fresh);
+  return { ok:true, de };
+}
+
+function fecharRemanejar(){
+  document.getElementById("remanejar-backdrop").classList.remove("open");
+  rmPedidoId = null;
+}
+ligar("rm-close", "click", fecharRemanejar);
+ligar("rm-voltar", "click", fecharRemanejar);
+ligar("remanejar-backdrop", "click", (e)=>{ if(e.target.id === "remanejar-backdrop") fecharRemanejar(); });
+ligar("rm-prev", "click", ()=>{ rmCursor = new Date(rmCursor.getFullYear(), rmCursor.getMonth()-1, 1); rmRenderCalendario(); });
+ligar("rm-next", "click", ()=>{ rmCursor = new Date(rmCursor.getFullYear(), rmCursor.getMonth()+1, 1); rmRenderCalendario(); });
+
+ligar("rm-salvar", "click", async (e)=>{
+  const btn = e.currentTarget;
+  const id = rmPedidoId;
+  const destino = { date: rmSel.date, time: rmSel.time };
+  if(!id || !destino.date || !destino.time) return;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Salvando…';
+
+  const r = await reagendarPedido(id, destino.date, destino.time);
+
+  btn.innerHTML = "Salvar novo horário";
+  btn.disabled = false;
+  if(!r.ok){
+    if(r.reason === "unauthorized") return;
+    if(r.reason === "slot_taken"){
+      showToast("Esse horário acabou de ser ocupado. Escolha outro.", "error");
+      await refreshAdminData();
+      rmSel.time = null;
+      rmRenderTudo();
+      return;
+    }
+    if(r.reason === "meia_hora_presa"){
+      showToast("Tem um Pacote Família marcado às " + r.meia + ", que só existe por causa deste pedido. Remaneje aquele antes.", "error");
+      return;
+    }
+    showToast("Não foi possível remanejar o ensaio. Tente de novo.", "error");
+    return;
+  }
+  fecharRemanejar();
+  showToast("Ensaio remanejado para " + fmtDateBR(destino.date) + " às " + destino.time + ".", "success");
+  await refreshAdminData();
+  openDetail(id);   // volta aos detalhes já com a data nova, pronto pro WhatsApp
+});
+
 function openDetail(id){
   const a = appointmentsCache.find(x=>x.id===id);
   if(!a) return;
@@ -5871,9 +7375,11 @@ function openDetail(id){
     ${a.semanaNota?`<div class="d-row"><span class="lbl">Valor de semana</span><span class="val">${escapeHtml(a.semanaNota)}</span></div>`:""}
     <div class="d-row"><span class="lbl">Adicionais</span><span class="val">${a.addons ? escapeHtml(a.addons)+(a.addonsValor?" ("+escapeHtml(a.addonsValor)+")":"") : "Nenhum"}</span></div>
     <div class="d-row"><span class="lbl">Valor total</span><span class="val"><b>${escapeHtml(totalDoPedido(a))}</b></span></div>
-    ${a.pagamento?`<div class="d-row"><span class="lbl">Pagamento</span><span class="val">${escapeHtml(a.pagamento)}</span></div>`:""}
+    ${a.pagamento?`<div class="d-row"><span class="lbl">Condição</span><span class="val">${escapeHtml(a.pagamento)}</span></div>`:""}
+    <div class="d-row"><span class="lbl">Pagamento</span><span class="val">${pgResumoDoPedido(a)}</span></div>
     <div class="d-row"><span class="lbl">Data</span><span class="val">${fmtDateBR(a.date)}</span></div>
     <div class="d-row"><span class="lbl">Horário</span><span class="val">${a.time}</span></div>
+    ${a.remanejadoDe?`<div class="d-row"><span class="lbl">Remanejado</span><span class="val">de ${escapeHtml(rmTextoOrigem(a.remanejadoDe))}${a.remanejadoEm?" em "+escapeHtml(new Date(a.remanejadoEm).toLocaleString("pt-BR")):""}</span></div>`:""}
     <div class="d-row"><span class="lbl">Status</span><span class="val"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span></span></div>
     <div class="d-row"><span class="lbl">Observações</span><span class="val">${a.notes ? escapeHtml(a.notes) : "—"}</span></div>
     <div class="d-row"><span class="lbl">Criado em</span><span class="val">${new Date(a.createdAt).toLocaleString("pt-BR")}</span></div>
@@ -5881,9 +7387,18 @@ function openDetail(id){
       <button class="btn-solid btn-success" id="detail-confirm" ${a.status!=="pendente"?"disabled style='opacity:.4'":""}>Confirmar</button>
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
     </div>
+    ${a.status!=="cancelado" ? `<button class="btn-outline" id="detail-editar" style="width:100%;justify-content:center;margin-top:10px;">Editar pedido (pacote e adicionais)</button>` : ""}
+    ${a.status!=="cancelado" ? `<button class="btn-outline" id="detail-remanejar" style="width:100%;justify-content:center;margin-top:10px;">Remanejar data/horário</button>` : ""}
     <button class="btn-outline" id="detail-whatsapp" style="width:100%;justify-content:center;margin-top:10px;">Chamar no WhatsApp</button>
     ${a.status==="confirmado" ? `<button class="btn-outline" id="detail-agenda" style="width:100%;justify-content:center;margin-top:10px;">${a.naAgenda?"Abrir de novo na Google Agenda":"Adicionar à Google Agenda"}</button>` : ""}
   `;
+  // Editar sai do detalhe e entra no editor, para a tela nao ficar com dois
+  // modais abertos um atras do outro.
+  ligar("detail-editar", "click", ()=>{
+    document.getElementById("detail-backdrop").classList.remove("open");
+    edAbrir(a.id);
+  });
+  ligar("detail-remanejar", "click", ()=> abrirRemanejar(a.id));
   ligar("detail-whatsapp", "click", ()=> openWhatsappTo(a.phone));
   // Abre o Google Agenda em outra aba com o evento pronto — só falta salvar.
   // Mesma marcação do botão da tabela, pra as duas telas contarem a mesma história.
@@ -5902,51 +7417,762 @@ ligar("detail-close", "click", ()=> document.getElementById("detail-backdrop").c
 ligar("detail-backdrop", "click",(e)=>{ if(e.target.id==="detail-backdrop") e.currentTarget.classList.remove("open"); });
 ligar("cancel-backdrop", "click",(e)=>{ if(e.target.id==="cancel-backdrop") e.currentTarget.classList.remove("open"); });
 
-/* ---- AGENDA ---- */
-document.querySelectorAll("#agenda-tabs .tab-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll("#agenda-tabs .tab-btn").forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
-    agendaRange = btn.dataset.range;
-    renderAgenda();
+/* =========================================================
+   EDITAR PEDIDO
+   Troca o pacote e os adicionais de um pedido ja fechado, refazendo a conta.
+   Lote, data e horario nao mudam aqui: remarcar e outra conversa, e mexer no
+   horario tem que passar pela checagem de vaga livre.
+========================================================= */
+let edPedidoId = null;
+let edEscolha = { packageId:null, addons:[], qtd:{}, totalManual:null };
+
+function edFechar(){
+  document.getElementById("edit-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+  edPedidoId = null;
+}
+// Pacote do pedido pelo nome gravado; sem achar, cai no primeiro da lista
+// para a tela ter sempre algo selecionado.
+function edPacoteInicial(a){
+  const p = CONFIG.packages.find(x => x.name === String(a && a.package || "").trim());
+  return p ? p.id : (CONFIG.packages[0] || {}).id;
+}
+// Lote do pedido dentro do pacote escolhido agora. VIP nao usa lote.
+function edLoteDe(pkg, pedido){
+  if(ehAgendamentoVip(pedido)) return null;
+  return (pkg.lots || []).find(l => l.label === pedido.lot) || null;
+}
+function edConta(pedido, pkgId, ids, qtd){
+  const pkg = pkgById(pkgId);
+  const isVip = ehAgendamentoVip(pedido);
+  const lote = edLoteDe(pkg, pedido);
+  return {
+    pkg, isVip, lote,
+    base: precoBasePacote(pkg, lote, isVip, pedido.date),
+    extras: totalAddons(pkg, ids, qtd),
+    total: precoTotal(pkg, lote, isVip, ids, pedido.date, qtd)
+  };
+}
+
+function edRender(){
+  const pedido = appointmentsCache.find(x => x.id === edPedidoId);
+  if(!pedido) return;
+  const conta = edConta(pedido, edEscolha.packageId, edEscolha.addons, edEscolha.qtd);
+  const totalAtual = parseBRL(totalDoPedido(pedido));
+  const mostrado = edEscolha.totalManual != null ? edEscolha.totalManual : conta.total;
+  const mudouPacote = conta.pkg && conta.pkg.name !== pedido.package;
+
+  const pacotes = CONFIG.packages.map(p=>{
+    const lote = edLoteDe(p, pedido);
+    const preco = precoBasePacote(p, lote, conta.isVip, pedido.date);
+    const sub = conta.isVip ? "Valor VIP" : (lote ? lote.label : "Valor de tabela");
+    return `<div class="ed-pacote ${p.id === edEscolha.packageId ? "selected" : ""}" data-edpkg="${p.id}">
+      <div><div class="ep-nome">${escapeHtml(p.name)}</div><div class="ep-sub">${escapeHtml(sub)}</div></div>
+      <div class="ep-preco">${fmtBRL(preco)}</div>
+    </div>`;
+  }).join("");
+
+  const adicionais = CONFIG.adicionais.map(ad=>{
+    const incluso = pacoteInclui(conta.pkg, ad.id);
+    const marcado = incluso || edEscolha.addons.indexOf(ad.id) !== -1;
+    const qtd = qtdAddon(ad, edEscolha.qtd);
+    const campoQtd = (ad.porPessoa && marcado && !incluso)
+      ? `<input class="ea-qtd" type="number" min="1" max="${ad.maxQtd||10}" value="${qtd}" data-edqtd="${ad.id}" aria-label="Quantidade de ${escapeHtml(ad.nome)}">`
+      : "";
+    const direita = incluso
+      ? '<span class="ea-tag">Incluso</span>'
+      : `<span class="ea-preco">${fmtBRL(ad.preco)}${ad.porPessoa ? " cada" : ""}</span>`;
+    return `<label class="ed-addon ${marcado ? "selected" : ""} ${incluso ? "incluso" : ""}">
+      <input type="checkbox" data-edaddon="${ad.id}" ${marcado ? "checked" : ""} ${incluso ? "disabled" : ""}>
+      <span class="ea-nome">${escapeHtml(ad.nome)}</span>
+      ${campoQtd}
+      ${direita}
+    </label>`;
+  }).join("");
+
+  document.getElementById("edit-body").innerHTML = `
+    <div class="ed-cliente">
+      <b>${escapeHtml(pedido.name || "Cliente")}</b>
+      <span>${fmtDateBR(pedido.date)} às ${pedido.time}${pedido.lot ? " · " + escapeHtml(pedido.lot) : ""}</span>
+    </div>
+
+    <p class="ed-titulo">PACOTE</p>
+    ${pacotes}
+
+    <p class="ed-titulo" style="margin-top:22px;">ITENS ADICIONAIS</p>
+    ${adicionais}
+
+    <div class="ed-conta">
+      <div class="ed-linha"><span>Pacote</span><span>${fmtBRL(conta.base)}</span></div>
+      <div class="ed-linha"><span>Adicionais</span><span>${conta.extras ? fmtBRL(conta.extras) : "—"}</span></div>
+      <div class="ed-linha total"><span>Novo total</span><span>${fmtBRL(conta.total)}</span></div>
+      <div class="ed-linha"><span>Valor de antes</span><span>${escapeHtml(totalDoPedido(pedido))}</span></div>
+
+      <div class="ed-total-campo">
+        <label for="ed-total">Cobrar</label>
+        <input type="text" id="ed-total" inputmode="decimal" value="${String(mostrado.toFixed(2)).replace(".", ",")}">
+        ${edEscolha.totalManual != null ? '<button type="button" class="ed-refazer" id="ed-refazer">voltar ao valor calculado</button>' : ""}
+      </div>
+      <p style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:8px;line-height:1.5;">
+        O valor vem calculado pelo pacote e pelos adicionais. Se vocês combinaram outro preço, é só digitar por cima.
+      </p>
+
+      ${mudouPacote ? `<div class="ed-aviso">O pacote muda de <b>${escapeHtml(pedido.package)}</b> para <b>${escapeHtml(conta.pkg.name)}</b>. Isso conta nas vagas do lote e aparece na agenda e no financeiro. Avise a cliente do novo valor.</div>` : ""}
+      ${!isNaN(totalAtual) && Math.abs(mostrado - totalAtual) > 0.009 ? `<div class="ed-aviso">O pagamento já registrado para este pedido não é recalculado sozinho — confira na guia Pagamentos depois de salvar.</div>` : ""}
+    </div>
+
+    <div class="c-actions" style="display:flex;gap:10px;margin-top:22px;">
+      <button class="btn-outline" id="ed-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+      <button class="btn-solid" id="ed-salvar" style="flex:1;justify-content:center;">Salvar alterações</button>
+    </div>`;
+
+  const body = document.getElementById("edit-body");
+  body.querySelectorAll("[data-edpkg]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      edEscolha.packageId = el.dataset.edpkg;
+      // O que o novo pacote ja inclui sai da lista de cobrados.
+      const novo = pkgById(edEscolha.packageId);
+      edEscolha.addons = edEscolha.addons.filter(id => !pacoteInclui(novo, id));
+      edEscolha.totalManual = null;   // trocou de pacote: a conta recomeça
+      edRender();
+    });
   });
-});
+  body.querySelectorAll("[data-edaddon]").forEach(el=>{
+    el.addEventListener("change", ()=>{
+      const id = el.dataset.edaddon;
+      if(el.checked){ if(edEscolha.addons.indexOf(id) === -1) edEscolha.addons.push(id); }
+      else edEscolha.addons = edEscolha.addons.filter(x => x !== id);
+      edEscolha.totalManual = null;
+      edRender();
+    });
+  });
+  body.querySelectorAll("[data-edqtd]").forEach(el=>{
+    el.addEventListener("click", e=> e.preventDefault());   // nao marca/desmarca o item
+    el.addEventListener("change", ()=>{
+      edEscolha.qtd[el.dataset.edqtd] = parseInt(el.value, 10) || 1;
+      edEscolha.totalManual = null;
+      edRender();
+    });
+  });
+  ligar("ed-total", "change", (e)=>{
+    const n = parseFloat(String(e.target.value).replace(/\./g, "").replace(",", "."));
+    edEscolha.totalManual = isNaN(n) || n < 0 ? null : n;
+    edRender();
+  });
+  ligar("ed-refazer", "click", ()=>{ edEscolha.totalManual = null; edRender(); });
+  ligar("ed-cancelar", "click", edFechar);
+  ligar("ed-salvar", "click", edSalvar);
+}
 
-function renderAgenda(){
-  const wrap = document.getElementById("agenda-list");
-  const today = new Date(); today.setHours(0,0,0,0);
-  let limit = null;
-  if(agendaRange==="week"){ limit = new Date(today); limit.setDate(limit.getDate()+7); }
-  if(agendaRange==="month"){ limit = new Date(today); limit.setMonth(limit.getMonth()+1); }
+function edAbrir(id){
+  const pedido = appointmentsCache.find(x => x.id === id);
+  if(!pedido) return;
+  if(pedido.status === "cancelado"){
+    showToast("Esse pedido está cancelado. Reative antes de editar.", "error");
+    return;
+  }
+  edPedidoId = id;
+  const escolhidos = addonsDoPedido(pedido);
+  edEscolha = {
+    packageId: edPacoteInicial(pedido),
+    addons: escolhidos.ids,
+    qtd: escolhidos.qtd,
+    totalManual: null
+  };
+  edRender();
+  document.getElementById("edit-backdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
 
-  const list = appointmentsCache.filter(a=>{
-    const d = new Date(a.date+"T12:00:00");
-    if(d < today) return false;
-    if(limit && d > limit) return false;
+async function edSalvar(){
+  const btn = document.getElementById("ed-salvar");
+  btn.disabled = true;
+  const data = await apiPost({
+    action: "updatePedido",
+    id: edPedidoId,
+    packageId: edEscolha.packageId,
+    addonIds: edEscolha.addons,
+    addonQtd: edEscolha.qtd,
+    totalManual: edEscolha.totalManual
+  }, true);
+  btn.disabled = false;
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(data && data.reason === "meia_hora_presa"){
+    showToast("Tem um Pacote Família marcado às " + data.meia + ", que só existe por causa deste pedido. Cancele aquele antes de trocar o pacote.", "error");
+    return;
+  }
+  if(!data || !data.ok){ showToast("Não foi possível salvar as alterações.", "error"); return; }
+  edFechar();
+  showToast("Pedido atualizado.", "success");
+  await refreshAdminData();
+}
+
+ligar("edit-close", "click", edFechar);
+ligar("edit-backdrop", "click", (e)=>{ if(e.target.id === "edit-backdrop") edFechar(); });
+
+/* =========================================================
+   GUIA PAGAMENTOS
+   Dois marcos por pedido: o sinal e a quitacao. Cada um guarda o valor que
+   entrou de verdade, porque o sinal pedido (30% ou 50%) nem sempre e o que a
+   cliente manda. A guia nao busca nada no servidor: le o appointmentsCache.
+========================================================= */
+let pgEscopo = "confirmado";   // confirmado | pendente | ativos
+let pgSituacao = "";           // "" | aberto | sinal | quitado
+let pgBusca = "";
+let pgAlvo = null;             // { id, marco } enquanto o modal esta aberto
+
+function pgValor(n){
+  const v = isNaN(n) ? 0 : n;
+  return "R$ " + v.toLocaleString("pt-BR", { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function pgTotalDe(a){
+  const n = parseBRL(totalDoPedido(a));
+  return isNaN(n) ? 0 : n;
+}
+// % de sinal do pacote do pedido; sem pacote reconhecido, 30% (regra dos demais).
+function pgEntradaPct(a){
+  const p = CONFIG.packages.find(x => x.name === String(a && a.package || "").trim());
+  return p && p.entrada ? p.entrada : 30;
+}
+function pgSinalEsperado(a){ return pgTotalDe(a) * pgEntradaPct(a) / 100; }
+// Quanto ja entrou. Quitado vale pelo total do pedido: o campo de valor do
+// marco guarda quanto foi pago naquele momento, mas o pedido esta fechado.
+function pgRecebido(a){
+  if(a && a.pagoTotal) return pgTotalDe(a);
+  if(a && a.pagoSinal){
+    const n = parseFloat(a.pagoSinalValor);
+    return isNaN(n) ? pgSinalEsperado(a) : n;
+  }
+  return 0;
+}
+// Frase curta do estado do pagamento, para o modal de detalhe.
+function pgResumoDoPedido(a){
+  const sit = pgSituacaoDe(a);
+  if(sit === "quitado") return '<span class="status-pill confirmado"><span class="dot"></span>quitado</span>';
+  if(sit === "sinal"){
+    return '<span class="status-pill pendente"><span class="dot"></span>sinal pago</span> '
+         + pgValor(pgRecebido(a)) + " de " + pgValor(pgTotalDe(a));
+  }
+  return '<span class="status-pill cancelado"><span class="dot"></span>sem pagamento</span>';
+}
+function pgSituacaoDe(a){
+  if(a && a.pagoTotal) return "quitado";
+  if(a && a.pagoSinal) return "sinal";
+  return "aberto";
+}
+function pgTexto(id, valor){
+  const el = document.getElementById(id);
+  if(el) el.textContent = valor;
+}
+function pgPlural(n, um, muitos){ return n + " " + (n === 1 ? um : muitos); }
+
+function pgPedidos(){
+  return (appointmentsCache || []).filter(a=>{
+    if(a.status === "cancelado") return false;
+    if(pgEscopo !== "ativos" && a.status !== pgEscopo) return false;
+    if(pgSituacao && pgSituacaoDe(a) !== pgSituacao) return false;
+    if(pgBusca){
+      const alvo = (String(a.name||"") + " " + String(a.phone||"") + " " + String(a.email||"")).toLowerCase();
+      if(alvo.indexOf(pgBusca.toLowerCase()) === -1) return false;
+    }
     return true;
-  }).sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+  }).sort((a,b)=> (a.date + a.time).localeCompare(b.date + b.time));
+}
 
-  if(list.length===0){
-    wrap.innerHTML = `<div class="empty-state"><div class="e-ico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.3"/></svg></div><h4>Nenhum agendamento neste período</h4></div>`;
+function renderPagamentos(){
+  const wrap = document.getElementById("pg-lista");
+  if(!wrap) return;
+
+  // Os numeros de cima seguem o escopo (confirmados/pendentes), mas ignoram
+  // o filtro de situacao e a busca — senao "Quitados" mostraria 100% recebido.
+  const doEscopo = (appointmentsCache || []).filter(a=>{
+    if(a.status === "cancelado") return false;
+    return pgEscopo === "ativos" || a.status === pgEscopo;
+  });
+  const recebido = doEscopo.reduce((soma,a)=> soma + pgRecebido(a), 0);
+  const totalGeral = doEscopo.reduce((soma,a)=> soma + pgTotalDe(a), 0);
+  const quitados = doEscopo.filter(a => pgSituacaoDe(a) === "quitado").length;
+  const abertos = doEscopo.filter(a => pgSituacaoDe(a) === "aberto").length;
+
+  pgTexto("pg-recebido", pgValor(recebido));
+  pgTexto("pg-recebido-hint", totalGeral
+    ? Math.round(recebido / totalGeral * 100) + "% de " + pgValor(totalGeral)
+    : "Nenhum pedido no filtro");
+  pgTexto("pg-falta", pgValor(Math.max(0, totalGeral - recebido)));
+  pgTexto("pg-falta-hint", pgPlural(doEscopo.length - quitados, "pedido em aberto", "pedidos em aberto"));
+  pgTexto("pg-quitados", String(quitados));
+  pgTexto("pg-quitados-hint", "de " + pgPlural(doEscopo.length, "pedido", "pedidos"));
+  pgTexto("pg-abertos", String(abertos));
+
+  const lista = pgPedidos();
+  pgTexto("pg-resumo", lista.length ? pgPlural(lista.length, "pedido", "pedidos") : "");
+
+  if(!lista.length){
+    wrap.innerHTML = `<div class="empty-state">
+      <div class="e-ico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="13" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M2 10h20" stroke="currentColor" stroke-width="1.3"/></svg></div>
+      <h4>Nenhum pedido neste filtro</h4>
+    </div>`;
     return;
   }
 
-  const byDate = {};
-  list.forEach(a=>{ (byDate[a.date] = byDate[a.date]||[]).push(a); });
+  const icoCheck = '<svg class="pb-ico" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const icoVazio = '<svg class="pb-ico" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6"/></svg>';
 
-  wrap.innerHTML = Object.keys(byDate).map(date=>`
-    <div class="agenda-day">
-      <h4>${fmtDateLong(date)}</h4>
-      ${byDate[date].map(a=>`
-        <div class="agenda-slot ${a.status}">
-          <div class="a-time">${a.time}</div>
-          <div class="a-info"><b>${escapeHtml(a.name)}</b><span>${escapeHtml(a.package)}</span></div>
-          <span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span>
-        </div>
-      `).join("")}
-    </div>
-  `).join("");
+  wrap.innerHTML = lista.map(a=>{
+    const total = pgTotalDe(a);
+    const recebidoDele = pgRecebido(a);
+    const situacao = pgSituacaoDe(a);
+    const esperado = pgSinalEsperado(a);
+    const selo = situacao === "quitado" ? '<span class="pg-selo quitado">Quitado</span>'
+               : situacao === "sinal"   ? '<span class="pg-selo sinal">Sinal pago</span>'
+               : '<span class="pg-selo aberto">Sem pagamento</span>';
+    return `<div class="pg-item">
+      <div class="pg-quem">
+        <b>${ehAgendamentoVip(a) ? '<span class="vip-star">&#9733;</span> ' : ""}${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}${a.status === "pendente" ? " · pendente" : ""}</span>
+        ${selo}
+      </div>
+      <div class="pg-valores">
+        <div class="pg-val"><div class="pv-lbl">Total</div><div class="pv-num">${pgValor(total)}</div></div>
+        <div class="pg-val"><div class="pv-lbl">Sinal ${pgEntradaPct(a)}%</div><div class="pv-num">${pgValor(esperado)}</div></div>
+        <div class="pg-val recebido"><div class="pv-lbl">Recebido</div><div class="pv-num">${pgValor(recebidoDele)}</div></div>
+        <div class="pg-val falta"><div class="pv-lbl">Falta</div><div class="pv-num">${pgValor(Math.max(0, total - recebidoDele))}</div></div>
+      </div>
+      <div class="pg-acoes">
+        <button class="pg-btn ${a.pagoSinal ? "pago" : ""}" data-marco="sinal" data-id="${a.id}">
+          ${a.pagoSinal ? icoCheck : icoVazio}${a.pagoSinal ? "Sinal pago" : "Marcar sinal"}
+        </button>
+        <button class="pg-btn ${a.pagoTotal ? "pago" : ""}" data-marco="total" data-id="${a.id}">
+          ${a.pagoTotal ? icoCheck : icoVazio}${a.pagoTotal ? "Quitado" : "Marcar quitado"}
+        </button>
+        <button class="pg-btn" data-ver="${a.id}" title="Ver o pedido">Ver</button>
+      </div>
+    </div>`;
+  }).join("");
 }
+
+ligar("pg-lista", "click", (e)=>{
+  const ver = e.target.closest("[data-ver]");
+  if(ver){ openDetail(ver.dataset.ver); return; }
+  const btn = e.target.closest("[data-marco]");
+  if(btn) pgAbrirModal(btn.dataset.id, btn.dataset.marco);
+});
+document.querySelectorAll("#pg-escopo .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#pg-escopo .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    pgEscopo = btn.dataset.escopo;
+    renderPagamentos();
+  });
+});
+document.querySelectorAll("#pg-situacao .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#pg-situacao .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    pgSituacao = btn.dataset.situacao;
+    renderPagamentos();
+  });
+});
+ligar("pg-busca", "input", (e)=>{ pgBusca = e.target.value.trim(); renderPagamentos(); });
+
+/* ---- modal de registrar/desfazer pagamento ---- */
+function pgFecharModal(){
+  document.getElementById("pay-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+  pgAlvo = null;
+}
+function pgAbrirModal(id, marco){
+  const a = appointmentsCache.find(x => x.id === id);
+  if(!a) return;
+  pgAlvo = { id, marco };
+  const ehSinal = marco === "sinal";
+  const jaPago = ehSinal ? !!a.pagoSinal : !!a.pagoTotal;
+  const total = pgTotalDe(a);
+  const esperado = pgSinalEsperado(a);
+  const recebidoAntes = pgRecebido(a);
+  const sugerido = ehSinal ? esperado : Math.max(0, total - (a.pagoSinal ? recebidoAntes : 0));
+  const quando = ehSinal ? a.pagoSinalEm : a.pagoTotalEm;
+
+  document.getElementById("pay-titulo").textContent = ehSinal ? "Sinal da reserva" : "Pagamento final";
+
+  if(jaPago){
+    document.getElementById("pay-body").innerHTML = `
+      <div class="ed-cliente">
+        <b>${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}</span>
+      </div>
+      <p class="ag-modal-nota">
+        ${ehSinal ? "Sinal" : "Pagamento final"} marcado como recebido${quando ? " em " + new Date(quando).toLocaleString("pt-BR") : ""}.
+        ${ehSinal && a.pagoSinalValor != null ? "Valor registrado: <b>" + pgValor(parseFloat(a.pagoSinalValor)) + "</b>." : ""}
+      </p>
+      <div class="c-actions" style="display:flex;gap:10px;">
+        <button class="btn-outline" id="pay-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid btn-danger" id="pay-desfazer" style="flex:1;justify-content:center;">Desmarcar</button>
+      </div>`;
+    ligar("pay-cancelar", "click", pgFecharModal);
+    ligar("pay-desfazer", "click", ()=> pgGravar(false));
+  }else{
+    const atalhos = ehSinal
+      ? [["30%", total*0.3], ["50%", total*0.5], ["Valor cheio", total]]
+      : [["Saldo", sugerido], ["Valor cheio", total]];
+    document.getElementById("pay-body").innerHTML = `
+      <div class="ed-cliente">
+        <b>${escapeHtml(a.name || "Cliente")}</b>
+        <span>${fmtDateBR(a.date)} às ${a.time} · ${escapeHtml(a.package || "—")}</span>
+      </div>
+      <p class="ag-modal-nota">
+        Total do pedido: <b>${pgValor(total)}</b>. O sinal combinado para este pacote é de
+        <b>${pgEntradaPct(a)}%</b> (${pgValor(esperado)}).
+        ${ehSinal ? "Se a cliente mandou outro valor, é só digitar o que entrou de verdade." : ""}
+      </p>
+      <div class="pg-modal-atalhos">
+        ${atalhos.map(([rotulo, v])=>`<button type="button" class="pg-atalho" data-atalho="${v.toFixed(2)}">${rotulo} — ${pgValor(v)}</button>`).join("")}
+      </div>
+      <div class="field">
+        <label for="pay-valor">Valor recebido</label>
+        <input type="text" id="pay-valor" inputmode="decimal" value="${sugerido.toFixed(2).replace(".", ",")}">
+      </div>
+      <div class="c-actions" style="display:flex;gap:10px;">
+        <button class="btn-outline" id="pay-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid" id="pay-salvar" style="flex:1;justify-content:center;">Marcar como pago</button>
+      </div>`;
+    document.querySelectorAll("#pay-body [data-atalho]").forEach(b=>{
+      b.addEventListener("click", ()=>{
+        document.getElementById("pay-valor").value = parseFloat(b.dataset.atalho).toFixed(2).replace(".", ",");
+      });
+    });
+    ligar("pay-cancelar", "click", pgFecharModal);
+    ligar("pay-salvar", "click", ()=> pgGravar(true));
+  }
+
+  document.getElementById("pay-backdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+async function pgGravar(pago){
+  if(!pgAlvo) return;
+  let valor = null;
+  if(pago){
+    const campo = document.getElementById("pay-valor");
+    const n = parseFloat(String(campo.value).replace(/\./g, "").replace(",", "."));
+    if(isNaN(n) || n < 0){
+      campo.focus();
+      showToast("Digite o valor recebido.", "error");
+      return;
+    }
+    valor = n;
+  }
+  const data = await apiPost({
+    action: "updatePagamento", id: pgAlvo.id, marco: pgAlvo.marco, pago, valor
+  }, true);
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(!data || !data.ok){ showToast("Não foi possível registrar o pagamento.", "error"); return; }
+
+  const idx = appointmentsCache.findIndex(x => x.id === pgAlvo.id);
+  if(idx > -1) Object.assign(appointmentsCache[idx], data.campos);
+  const marco = pgAlvo.marco;
+  pgFecharModal();
+  showToast(pago
+    ? (marco === "sinal" ? "Sinal registrado." : "Pedido marcado como quitado.")
+    : "Marcação desfeita.", "success");
+  renderPagamentos();
+}
+
+ligar("pay-close", "click", pgFecharModal);
+ligar("pay-backdrop", "click", (e)=>{ if(e.target.id === "pay-backdrop") pgFecharModal(); });
+
+/* =========================================================
+   GUIA AGENDA
+   Nao tem fonte de dados propria: para cada dia da temporada ela pega os
+   horarios que o site oferece (timesForDate, que ja soma os criados aqui) e
+   cruza com os pedidos que o painel carregou. O unico ponto que grava algo e
+   o botao "Criar horario" — e o que ele grava e so data e hora.
+========================================================= */
+function agPrimeiroDiaDoMes(d){ return new Date(d.getFullYear(), d.getMonth(), 1); }
+function agMesIdx(d){ return d.getFullYear()*12 + d.getMonth(); }
+function agMesDaData(iso){ return new Date(Number(iso.slice(0,4)), Number(iso.slice(5,7))-1, 1); }
+// Mes que a guia abre: o de hoje, preso dentro da temporada.
+function agMesInicial(){
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  const ini = new Date(CONFIG.seasonStart+"T12:00:00");
+  const fim = new Date(CONFIG.seasonEnd+"T12:00:00");
+  const base = hoje < ini ? ini : (hoje > fim ? fim : hoje);
+  return agPrimeiroDiaDoMes(base);
+}
+function agPlural(n, um, muitos){ return n + " " + (n === 1 ? um : muitos); }
+function agTexto(id, valor){
+  const el = document.getElementById(id);
+  if(el) el.textContent = valor;
+}
+
+/* ---- horarios de um dia, com ou sem cliente em cima ----
+   Alem da grade do dia entram: os pedidos que estao num horario que saiu da
+   grade (ex.: uma meia hora do Familia ja vendida) e as meias horas que o
+   Familia abriu e ninguem ocupou — e o que o cliente ve no site. */
+function agSlotsDoDia(iso, pedidos){
+  const ocupados = pedidos.filter(a => a.date === iso && a.status !== "cancelado");
+  const horas = timesForDate(iso).slice();
+  ocupados.forEach(a=>{ if(horas.indexOf(a.time) === -1) horas.push(String(a.time||"")); });
+  meiasHorasAbertas(pedidos, iso).forEach(t=>{ if(horas.indexOf(t) === -1) horas.push(t); });
+  horas.sort();
+  return horas.filter(Boolean).map(hora=>({
+    hora,
+    pedido: ocupados.find(a => a.time === hora) || null,
+    extra: ehHorarioExtra(iso, hora),
+    meia: ehMeiaHora(hora) && !ehHorarioExtra(iso, hora)
+  }));
+}
+
+function agSlotHtml(iso, s){
+  if(s.pedido){
+    const a = s.pedido;
+    const nome = a.name ? escapeHtml(a.name) : "Horário marcado";
+    const sub = [escapeHtml(a.package || ""), s.extra ? "horário criado por você" : ""]
+      .filter(Boolean).join(" · ");
+    return `<div class="ag-slot ${a.status}" data-pedido="${a.id}" role="button" tabindex="0" title="Ver este pedido">
+      <div class="s-hora">${s.hora}</div>
+      <div class="s-quem"><b>${nome}</b><span>${sub}</span></div>
+      <span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span>
+    </div>`;
+  }
+  const marcas = [];
+  if(s.extra) marcas.push('<span class="ag-mini extra">criado por você</span>');
+  if(s.meia)  marcas.push('<span class="ag-mini meia">só Família</span>');
+  const apagar = s.extra
+    ? `<button class="s-remove" data-apagar="${iso}|${s.hora}" title="Apagar este horário" aria-label="Apagar o horário ${s.hora}">&times;</button>`
+    : "";
+  return `<div class="ag-slot livre">
+    <div class="s-hora">${s.hora}</div>
+    <div class="s-quem"><b>Livre</b><span>${marcas.join("") || "aberto no site"}</span></div>
+    ${apagar}
+  </div>`;
+}
+
+function renderAgendaGuia(){
+  const wrap = document.getElementById("ag-lista");
+  if(!wrap) return;
+  if(!agMesCursor) agMesCursor = agMesInicial();
+
+  const ano = agMesCursor.getFullYear(), mes = agMesCursor.getMonth();
+  agTexto("ag-mes-lbl", agMesCursor.toLocaleDateString("pt-BR", { month:"long", year:"numeric" }));
+
+  // Navegacao presa aos meses da temporada — fora dela o site nao vende nada.
+  const prev = document.getElementById("ag-prev");
+  const next = document.getElementById("ag-next");
+  if(prev) prev.disabled = agMesIdx(agMesCursor) <= agMesIdx(agMesDaData(CONFIG.seasonStart));
+  if(next) next.disabled = agMesIdx(agMesCursor) >= agMesIdx(agMesDaData(CONFIG.seasonEnd));
+
+  const pedidos = appointmentsCache || [];
+  const diasDoMes = new Date(ano, mes+1, 0).getDate();
+  const dias = [];
+  for(let d = 1; d <= diasDoMes; d++){
+    const iso = toISODate(new Date(ano, mes, d));
+    const slots = agSlotsDoDia(iso, pedidos);
+    if(slots.length) dias.push({ iso, slots });
+  }
+
+  // Contadores do mes inteiro: nao mudam quando o filtro muda, senao o resumo
+  // de cima contaria uma coisa e a lista de baixo outra.
+  let nConf = 0, nPend = 0, nLivre = 0, nExtras = 0;
+  dias.forEach(dia => dia.slots.forEach(s=>{
+    if(s.extra) nExtras++;
+    if(!s.pedido) nLivre++;
+    else if(s.pedido.status === "confirmado") nConf++;
+    else nPend++;
+  }));
+  const ocupados = nConf + nPend;
+  agTexto("ag-conf", String(nConf));
+  agTexto("ag-conf-hint", agPlural(ocupados, "horário ocupado", "horários ocupados") + " no mês");
+  agTexto("ag-pend", String(nPend));
+  agTexto("ag-livres", String(nLivre));
+  agTexto("ag-livres-hint", nExtras
+    ? agPlural(nExtras, "horário criado por você", "horários criados por você")
+    : "Vagas que o site ainda oferece");
+  agTexto("ag-dias", String(dias.length));
+  agTexto("ag-dias-hint", agPlural(nLivre + ocupados, "horário no total", "horários no total"));
+
+  const visiveis = dias.map(dia=>{
+    if(agFiltro === "ocupados") return { iso:dia.iso, slots:dia.slots.filter(s=>s.pedido), todos:dia.slots };
+    if(agFiltro === "livres")   return { iso:dia.iso, slots:dia.slots.filter(s=>!s.pedido), todos:dia.slots };
+    return { iso:dia.iso, slots:dia.slots, todos:dia.slots };
+  }).filter(dia => dia.slots.length);
+
+  agTexto("ag-resumo", visiveis.length
+    ? agPlural(visiveis.length, "dia", "dias") + " · " +
+      agPlural(visiveis.reduce((n,d)=>n+d.slots.length, 0), "horário", "horários")
+    : "");
+
+  if(!visiveis.length){
+    const semNada = agFiltro === "livres" ? "Nenhum horário livre neste mês"
+                  : agFiltro === "ocupados" ? "Nenhum horário marcado neste mês"
+                  : "Nenhum horário aberto neste mês";
+    wrap.innerHTML = `<div class="empty-state">
+      <div class="e-ico"><svg width="44" height="44" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <h4>${semNada}</h4>
+      <p>Use o botão "Criar horário" para abrir uma vaga fora da grade.</p>
+    </div>`;
+    return;
+  }
+
+  const hojeIso = toISODate(new Date());
+  wrap.innerHTML = visiveis.map(dia=>{
+    const conf = dia.todos.filter(s=>s.pedido && s.pedido.status === "confirmado").length;
+    const pend = dia.todos.filter(s=>s.pedido && s.pedido.status !== "confirmado").length;
+    const livres = dia.todos.filter(s=>!s.pedido).length;
+    return `<div class="ag-dia${dia.iso === hojeIso ? " hoje" : ""}">
+      <div class="ag-dia-head">
+        <h4>${fmtDateLong(dia.iso)}${dia.iso === hojeIso ? ' <span class="ag-hoje">hoje</span>' : ""}</h4>
+        <div class="ag-dia-tags">
+          ${conf ? `<span class="ag-tag conf">${agPlural(conf, "confirmado", "confirmados")}</span>` : ""}
+          ${pend ? `<span class="ag-tag pend">${agPlural(pend, "pendente", "pendentes")}</span>` : ""}
+          <span class="ag-tag livre">${agPlural(livres, "livre", "livres")}</span>
+          <button class="ag-add-dia" data-novo="${dia.iso}">+ horário</button>
+        </div>
+      </div>
+      <div class="ag-slots">${dia.slots.map(s=>agSlotHtml(dia.iso, s)).join("")}</div>
+    </div>`;
+  }).join("");
+}
+
+/* ---- cliques da lista (delegados: a lista e refeita a cada render) ---- */
+ligar("ag-lista", "click", (e)=>{
+  const apagar = e.target.closest("[data-apagar]");
+  if(apagar){
+    const partes = apagar.dataset.apagar.split("|");
+    agApagarHorario(partes[0], partes[1]);
+    return;
+  }
+  const novo = e.target.closest("[data-novo]");
+  if(novo){ agAbrirModal(novo.dataset.novo); return; }
+  const pedido = e.target.closest("[data-pedido]");
+  if(pedido) openDetail(pedido.dataset.pedido);
+});
+ligar("ag-lista", "keydown", (e)=>{
+  if(e.key !== "Enter" && e.key !== " ") return;
+  const pedido = e.target.closest("[data-pedido]");
+  if(pedido){ e.preventDefault(); openDetail(pedido.dataset.pedido); }
+});
+ligar("ag-prev", "click", ()=>{
+  agMesCursor = new Date(agMesCursor.getFullYear(), agMesCursor.getMonth()-1, 1);
+  renderAgendaGuia();
+});
+ligar("ag-next", "click", ()=>{
+  agMesCursor = new Date(agMesCursor.getFullYear(), agMesCursor.getMonth()+1, 1);
+  renderAgendaGuia();
+});
+document.querySelectorAll("#ag-filtro .tab-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll("#ag-filtro .tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    agFiltro = btn.dataset.filtro;
+    renderAgendaGuia();
+  });
+});
+
+/* ---- modal "Criar horario" ---- */
+function agMostrarErro(msg){
+  const el = document.getElementById("slot-erro");
+  if(!el) return;
+  el.textContent = msg || "";
+  el.classList.toggle("visivel", !!msg);
+}
+function agFecharModal(){
+  document.getElementById("slot-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+}
+// Data que ja vem preenchida: o dia de onde o botao foi clicado, ou o primeiro
+// dia da temporada que ainda esta por vir.
+function agDataSugerida(){
+  const hoje = toISODate(new Date());
+  if(hoje <= CONFIG.seasonStart) return CONFIG.seasonStart;
+  return hoje <= CONFIG.seasonEnd ? hoje : CONFIG.seasonEnd;
+}
+function agAbrirModal(iso){
+  const fundo = document.getElementById("slot-backdrop");
+  if(!fundo) return;
+  const campoData = document.getElementById("slot-data");
+  const campoHora = document.getElementById("slot-hora");
+  campoData.min = CONFIG.seasonStart;
+  campoData.max = CONFIG.seasonEnd;
+  campoData.value = iso || agDataSugerida();
+  campoHora.value = "";
+  agMostrarErro("");
+  fundo.classList.add("open");
+  document.body.style.overflow = "hidden";
+  setTimeout(()=>campoHora.focus(), 120);
+}
+function agMotivoErro(data){
+  const r = data && data.reason;
+  if(r === "out_of_season") return "Essa data está fora da temporada.";
+  if(r === "duplicate")     return "Esse horário já existe nesse dia.";
+  if(r === "invalid_slot")  return "Data ou horário inválido.";
+  if(r === "network")       return "Não foi possível falar com o servidor. Tente de novo.";
+  return "Não foi possível criar o horário.";
+}
+
+async function agCriarHorario(){
+  const iso = document.getElementById("slot-data").value;
+  const hora = document.getElementById("slot-hora").value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return agMostrarErro("Escolha a data do ensaio.");
+  if(!ehHoraValida(hora)) return agMostrarErro("Escolha o horário (por exemplo 18:00).");
+  if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd){
+    return agMostrarErro("A temporada vai de " + fmtDateBR(CONFIG.seasonStart) + " a " +
+      fmtDateBR(CONFIG.seasonEnd) + ". Fora disso o site não mostra a data, nem com o horário criado.");
+  }
+  if(timesForDate(iso).indexOf(hora) !== -1){
+    return agMostrarErro("Esse horário já existe no dia " + fmtDateBR(iso) + ".");
+  }
+  if((appointmentsCache||[]).some(a => a.date === iso && a.time === hora && a.status !== "cancelado")){
+    return agMostrarErro("Já existe um agendamento nesse dia e horário.");
+  }
+
+  const btn = document.getElementById("slot-salvar");
+  btn.disabled = true;
+  agMostrarErro("");
+  const data = await apiPost({ action:"agendaAddSlot", date:iso, time:hora }, true);
+  btn.disabled = false;
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(!data || !data.ok) return agMostrarErro(agMotivoErro(data));
+
+  agendaExtras = normalizarExtras(data.extras);
+  agFecharModal();
+  showToast("Horário criado: " + fmtDateBR(iso) + " às " + hora, "success");
+  // Pula para o mes do horario criado, para a vaga aparecer na tela na hora.
+  agMesCursor = agMesDaData(iso);
+  renderAgendaGuia();
+}
+
+async function agApagarHorario(iso, hora){
+  const ok = await pedirConfirmacao({
+    titulo: "Apagar este horário?",
+    texto: "A vaga sai do site na hora. Só dá para apagar horários criados aqui no painel, e só enquanto estão livres.",
+    itens: [ fmtDateLong(iso), "Horário: " + hora ],
+    confirmar: "Apagar horário",
+    perigo: true
+  });
+  if(!ok) return;
+  const data = await apiPost({ action:"agendaRemoveSlot", date:iso, time:hora }, true);
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(data && data.reason === "slot_taken"){
+    showToast("Esse horário já tem cliente. Cancele o pedido antes de apagar a vaga.", "error");
+    return;
+  }
+  if(!data || !data.ok){ showToast("Não foi possível apagar o horário.", "error"); return; }
+  agendaExtras = normalizarExtras(data.extras);
+  showToast("Horário apagado.", "success");
+  renderAgendaGuia();
+}
+
+ligar("ag-novo", "click", ()=> agAbrirModal(null));
+ligar("slot-salvar", "click", agCriarHorario);
+ligar("slot-close", "click", agFecharModal);
+ligar("slot-cancelar", "click", agFecharModal);
+ligar("slot-backdrop", "click", (e)=>{ if(e.target.id === "slot-backdrop") agFecharModal(); });
+ligar("slot-hora", "keydown", (e)=>{ if(e.key === "Enter") agCriarHorario(); });
+document.addEventListener("keydown", (e)=>{
+  const fundo = document.getElementById("slot-backdrop");
+  if(e.key === "Escape" && fundo && fundo.classList.contains("open")) agFecharModal();
+});
 
 /* =========================================================
    INIT
