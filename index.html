@@ -347,7 +347,6 @@ section{position:relative;}
 .plb-parcela{display:block;font-size:12px;color:var(--dourado-claro);margin-top:3px;letter-spacing:.2px;}
 .plb-period{display:block;font-size:12px;color:rgba(246,241,231,.6);margin-top:2px;}
 .plb-vagas{display:block;font-size:12px;color:rgba(246,241,231,.75);margin-top:2px;}
-.plb-vagas.low{color:#e2896b;font-weight:600;}
 .pack-price{margin-top:16px;display:flex;align-items:baseline;gap:6px;font-family:var(--sans);}
 .pack-price .val{font-size:34px;color:var(--dourado-claro);font-weight:600;}
 .pack-price .unit{font-size:13px;color:rgba(246,241,231,.5);}
@@ -593,7 +592,6 @@ footer .wrap{position:relative;z-index:1;}
 .lot-choice .lprice{font-size:13px;color:var(--vinho);font-weight:600;}
 .lot-choice .lperiod{font-size:12px;color:rgba(27,23,18,.55);margin-top:2px;}
 .lot-choice .lvagas{font-size:12px;color:rgba(27,23,18,.6);white-space:nowrap;margin-left:12px;}
-.lot-choice .lvagas.low{color:#b8562f;font-weight:600;}
 
 /* VIP toggle inside booking step 1 */
 .vip-toggle-box{
@@ -4784,7 +4782,7 @@ function renderPackages(){
             <div class="plb-top"><span class="plb-label">${l.label}</span><span class="plb-price">${l.price}</span></div>
             <span class="plb-parcela">${parcela5x(l.price)}</span>
             <span class="plb-period">${fmtLotPeriod(l)}</span>
-            <span class="plb-vagas ${rem!=null && rem<=5 && rem>0 ?"low":""}">${soldOut ? "Esgotado" : (rem!=null ? rem+" vaga"+(rem===1?"":"s")+" restante"+(rem===1?"":"s") : "Vagas abertas")}</span>
+            ${soldOut ? `<span class="plb-vagas">Esgotado</span>` : ""}
             ${soldOut ? "" : `<span class="plb-cta">Toque para agendar neste lote →</span>`}
           </div>`;
         }).join("")}
@@ -5302,7 +5300,9 @@ function renderPkgChoices(){
 }
 
 // Escolha do lote — só disponível depois de escolher o pacote. Cada lote mostra
-// preço, período e vagas restantes; lote esgotado fica desabilitado.
+// preço e período. A contagem de vagas restantes não vai para o cliente: só o
+// lote esgotado se anuncia, porque aí ele fica desabilitado e sem isso a pessoa
+// não entenderia por que não consegue clicar.
 function renderLotChoices(){
   const wrap = document.getElementById("lot-choices");
   const p = pkgById(booking.packageId);
@@ -5315,7 +5315,7 @@ function renderLotChoices(){
     <div class="lot-choice ${booking.lotLabel===l.label ? "selected":""} ${soldOut?"disabled":""}" data-lot="${l.label}">
       <div><div class="lname">${l.label} <span class="lprice">${l.price}</span></div>
       <div class="lperiod">${fmtLotPeriod(l)}</div></div>
-      <div class="lvagas ${rem!=null && rem<=5 && rem>0 ?"low":""}">${soldOut ? "Esgotado" : (rem!=null ? rem+" vaga"+(rem===1?"":"s") : "Vagas abertas")}</div>
+      ${soldOut ? `<div class="lvagas">Esgotado</div>` : ""}
     </div>`;
   }).join("");
   wrap.querySelectorAll(".lot-choice:not(.disabled)").forEach(el=>{
