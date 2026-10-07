@@ -833,6 +833,22 @@ footer .wrap{position:relative;z-index:1;}
 .admin-brand em{color:var(--dourado);font-style:italic;}
 .admin-actions{display:flex;align-items:center;gap:18px;}
 .admin-actions .user-chip{font-size:13px;color:rgba(246,241,231,.7);}
+.btn-atualizar{
+  display:inline-flex;align-items:center;gap:7px;background:rgba(246,241,231,.1);
+  border:1px solid rgba(246,241,231,.25);color:var(--marfim);
+  padding:9px 16px;border-radius:999px;font-size:13px;font-family:var(--sans);
+}
+.btn-atualizar:hover{border-color:var(--dourado);color:var(--dourado-claro);background:rgba(246,241,231,.16);}
+.btn-atualizar:disabled{opacity:.6;cursor:default;}
+.btn-atualizar.girando .ico-giro{animation:giro 1s linear infinite;}
+@keyframes giro{to{transform:rotate(360deg);}}
+/* "Restaurando sessão…" entre o reload e a resposta do Firebase, para a tela
+   não piscar o site no meio do caminho. */
+.restaurando{
+  position:fixed;inset:0;z-index:4000;background:var(--marfim-escuro);
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  font-family:var(--sans);font-size:14px;color:rgba(27,23,18,.6);
+}
 .btn-logout{background:none;border:1px solid rgba(246,241,231,.25);color:var(--marfim);padding:9px 18px;border-radius:999px;font-size:13px;}
 .btn-logout:hover{border-color:var(--dourado);color:var(--dourado-claro);}
 .btn-back-site{color:rgba(246,241,231,.65);font-size:13px;}
@@ -2920,6 +2936,11 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     <div class="wrap">
       <div class="admin-brand">Taise<em>Foto</em> · Administração</div>
       <div class="admin-actions">
+        <button class="btn-atualizar" id="admin-refresh" title="Buscar pedidos novos sem recarregar a página">
+          <svg class="ico-giro" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M20 11a8 8 0 1 0-.6 3M20 5v6h-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="admin-refresh-txt">Atualizar</span>
+        </button>
+        <span class="user-chip" id="admin-ultima"></span>
         <a href="#" class="btn-back-site" id="admin-back-site">Ver site</a>
         <span class="user-chip">Taisefoto</span>
         <button class="btn-logout" id="admin-logout">Sair</button>
@@ -3367,7 +3388,7 @@ const CONFIG = {
       benefits: ["20 fotos digitais", "35 minutos de sessão", "Sem troca de look", "Criança, pais e irmãos", "1 cenário"],
       featured: false,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 20 },
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 80 },
         { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 420,00", vagas: 40 },
         { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 490,00", vagas: null }
       ]
@@ -3557,6 +3578,14 @@ let isAdmin = false;
 // Token de sessão do admin. Com o Firebase quem controla a sessão é o próprio
 // Auth; isto aqui só marca "tem alguém logado" para o resto da tela.
 const ADMIN_TOKEN_KEY = "taise-admin-token";
+// Guia aberta no momento, para o reload devolver a admin para a mesma tela.
+const ADMIN_GUIA_KEY = "taise-admin-guia";
+function guiaSalva(){
+  try{ return sessionStorage.getItem(ADMIN_GUIA_KEY) || "operacao"; }catch(e){ return "operacao"; }
+}
+function salvarGuia(nome){
+  try{ sessionStorage.setItem(ADMIN_GUIA_KEY, nome || "operacao"); }catch(e){}
+}
 function adminToken(){ try{ return sessionStorage.getItem(ADMIN_TOKEN_KEY) || ""; }catch(e){ return ""; } }
 function setAdminToken(t){
   try{ t ? sessionStorage.setItem(ADMIN_TOKEN_KEY, t) : sessionStorage.removeItem(ADMIN_TOKEN_KEY); }catch(e){}
@@ -5890,7 +5919,52 @@ ligar("login-submit", "click", async ()=>{
 /* =========================================================
    PAINEL ADMINISTRATIVO
 ========================================================= */
-async function enterAdmin(){
+/* Recarregar a página não derruba mais o painel. Duas coisas se somam: o
+   Firebase guarda a sessão de login do navegador, e esta aba guarda a marca de
+   que estava no painel (sessionStorage). Com as duas, o painel volta sozinho,
+   na mesma guia. Fechar a aba apaga a marca, então a senha é pedida de novo —
+   e "Sair" continua encerrando tudo. */
+function telaRestaurando(mostrar){
+  let el = document.getElementById("restaurando-sessao");
+  if(mostrar){
+    if(el) return;
+    el = document.createElement("div");
+    el.id = "restaurando-sessao";
+    el.className = "restaurando";
+    el.innerHTML = '<span class="spinner"></span> Restaurando sessão…';
+    document.body.appendChild(el);
+  }else if(el){
+    el.remove();
+  }
+}
+
+function restaurarSessaoAdmin(){
+  if(!adminToken()) return false;
+  telaRestaurando(true);
+  // onAuthStateChanged é como o Firebase devolve a sessão guardada: ele chama
+  // de volta assim que souber quem está logado. Ouvimos só a primeira resposta.
+  const parar = auth.onAuthStateChanged(async (user)=>{
+    parar();
+    let ok = false;
+    try{ ok = !!user && await ehAdminLogado(); }catch(e){ ok = false; }
+    telaRestaurando(false);
+    if(ok){
+      isAdmin = true;
+      setAdminToken(user.uid);
+      await enterAdmin(guiaSalva());
+      return;
+    }
+    // A sessão caiu de verdade: devolve o site e pede login.
+    setAdminToken("");
+    document.getElementById("site-view").style.display = "";
+    navbar.style.display = "";
+    aplicarBloqueioSite();
+    openLogin();
+  });
+  return true;
+}
+
+async function enterAdmin(guia){
   document.getElementById("site-view").style.display = "none";
   navbar.style.display = "none";
   document.getElementById("admin-view").classList.add("open");
@@ -5899,13 +5973,16 @@ async function enterAdmin(){
   // admin-view está aberto.
   aplicarBloqueioSite();
   window.scrollTo(0,0);
-  trocarGuiaAdmin("operacao");
+  trocarGuiaAdmin(guia || "operacao");
+  ligarAtualizacaoAutomatica();
   await garantirDocumentosIniciais();
   await refreshAdminData();
 }
 function exitAdmin(){
   isAdmin = false;
   setAdminToken("");
+  salvarGuia("operacao");
+  desligarAtualizacaoAutomatica();
   auth.signOut().catch(()=>{});
   document.getElementById("admin-view").classList.remove("open");
   document.getElementById("site-view").style.display = "";
@@ -5920,10 +5997,78 @@ function refreshAdminDataIfOpen(){
   if(document.getElementById("admin-view").classList.contains("open")) refreshAdminData();
 }
 
-async function refreshAdminData(){
-  document.getElementById("table-skeleton").style.display = "block";
-  document.getElementById("appt-table").style.display = "none";
-  document.getElementById("empty-state").style.display = "none";
+/* =========================================================
+   ATUALIZAR SEM RECARREGAR
+   Pedido novo aparece sozinho: o painel busca os dados de novo de tempos em
+   tempos e ao voltar para a aba. O botão "Atualizar" faz a mesma coisa na
+   hora. Recarregar a página deixa de ser necessário — e, quando acontece, a
+   sessão volta sozinha (ver restaurarSessaoAdmin).
+========================================================= */
+const INTERVALO_ATUALIZACAO = 60000;   // 1 minuto
+let atualizandoPainel = false;
+let ultimaAtualizacao = 0;
+let timerAtualizacao = null;
+
+function marcarHoraDaAtualizacao(){
+  ultimaAtualizacao = Date.now();
+  const el = document.getElementById("admin-ultima");
+  if(el) el.textContent = "atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" });
+}
+
+function painelAberto(){
+  return document.getElementById("admin-view").classList.contains("open");
+}
+// Enquanto um modal está aberto, a admin está no meio de alguma coisa
+// (remanejando, editando, lendo um detalhe). Atualizar por baixo trocaria os
+// dados debaixo da mão dela, então a rodada automática espera a próxima volta.
+function modalAberto(){
+  return !!document.querySelector(".modal-backdrop.open");
+}
+
+async function atualizarPainel(silencioso){
+  if(atualizandoPainel || !painelAberto()) return;
+  atualizandoPainel = true;
+  const btn = document.getElementById("admin-refresh");
+  const txt = document.getElementById("admin-refresh-txt");
+  if(btn){ btn.disabled = true; btn.classList.add("girando"); }
+  if(txt && !silencioso) txt.textContent = "Atualizando…";
+  try{
+    await refreshAdminData(true);
+  }finally{
+    atualizandoPainel = false;
+    if(btn){ btn.disabled = false; btn.classList.remove("girando"); }
+    if(txt) txt.textContent = "Atualizar";
+  }
+}
+
+function ligarAtualizacaoAutomatica(){
+  if(timerAtualizacao) return;
+  timerAtualizacao = setInterval(()=>{
+    if(!painelAberto() || document.hidden || modalAberto()) return;
+    atualizarPainel(true);
+  }, INTERVALO_ATUALIZACAO);
+}
+function desligarAtualizacaoAutomatica(){
+  clearInterval(timerAtualizacao);
+  timerAtualizacao = null;
+}
+// Voltar para a aba depois de um tempo fora: busca na hora, em vez de esperar
+// o próximo minuto.
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden || !painelAberto() || modalAberto()) return;
+  if(Date.now() - ultimaAtualizacao > 20000) atualizarPainel(true);
+});
+ligar("admin-refresh", "click", ()=> atualizarPainel(false));
+
+// silencioso = atualização de fundo (automática ou pelo botão): mantém a
+// tabela na tela em vez de trocá-la pelo esqueleto, senão o painel piscaria a
+// cada minuto.
+async function refreshAdminData(silencioso){
+  if(!silencioso){
+    document.getElementById("table-skeleton").style.display = "block";
+    document.getElementById("appt-table").style.display = "none";
+    document.getElementById("empty-state").style.display = "none";
+  }
 
   // Dados completos (com dados pessoais) só vêm com token válido. As duas
   // chamadas saem juntas: em série, o painel demorava a soma das duas.
@@ -5957,6 +6102,7 @@ async function refreshAdminData(){
   renderFinanceiro();
   // O painel de mensagens so se liga uma vez; depois so refaz a lista.
   if(!msgIniciado){ msgIniciado = true; initMensagens(); } else { renderMensagens(); }
+  marcarHoraDaAtualizacao();
 }
 let msgIniciado = false;
 
@@ -6659,6 +6805,7 @@ function trocarGuiaAdmin(nome){
   if(nome === "agenda") renderAgendaGuia();
   if(nome === "pagamentos") renderPagamentos();
   if(nome === "financeiro") renderFinanceiro();
+  salvarGuia(nome);
   window.scrollTo(0,0);
 }
 document.querySelectorAll("#admin-tabsbar .atb-tab").forEach(btn=>{
@@ -8178,6 +8325,10 @@ document.addEventListener("keydown", (e)=>{
    INIT
 ========================================================= */
 document.addEventListener("DOMContentLoaded", async ()=>{
+  // Esta aba estava no painel antes do reload? Então o site nem chega a
+  // aparecer: a tela de espera entra na frente até o Firebase responder.
+  const voltandoAoPainel = !!adminToken();
+  if(voltandoAoPainel) telaRestaurando(true);
   await loadAppointments();
   aplicarBloqueioSite();
   renderPackages();
@@ -8189,7 +8340,8 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   initWhatsappLinks();
   // Com o site bloqueado a navbar some, e com ela o acesso ao painel. Este
   // atalho pela URL (…/index.html#admin) mantém a porta de entrada aberta.
-  if(location.hash === "#admin") openLogin();
+  if(voltandoAoPainel) restaurarSessaoAdmin();
+  else if(location.hash === "#admin") openLogin();
 
   // menu da tela "Em Breve": abre o login do painel sem depender da URL
   const breveMenu = document.getElementById("breve-menu");
