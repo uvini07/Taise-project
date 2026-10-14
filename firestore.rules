@@ -1,7 +1,7 @@
 rules_version = '2';
 
 // ============================================================================
-// REGRAS DE SEGURANÇA — Taise Foto
+// REGRAS DE SEGURANÇA — Taise Rufino Fotografia
 //
 // A ideia central: o navegador fala direto com o banco, então é AQUI que os
 // dados dos clientes ficam protegidos. Nome, telefone e e-mail vivem em
@@ -85,9 +85,7 @@ service cloud.firestore {
           && d.status == 'pendente';
     }
 
-    // Marca de "esse contato está na lista VIP". Responde a consulta pontual
-    // (get) para validar quem chega pelo site, mas nunca deixa listar tudo —
-    // é isso que impede alguém de baixar a lista de contatos.
+    // Marca de "esse contato está na lista VIP".
     // Este documento é consultado por qualquer visitante (get pontual) para
     // validar quem chega pela lista VIP. Por isso ele NÃO guarda nome nem
     // qualquer dado pessoal: só a marca de que o contato está na lista. Quem
