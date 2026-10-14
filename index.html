@@ -2694,8 +2694,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
       <div class="foot-col">
         <h5>Contato</h5>
-        <a href="#">(11) 96038-2670</a>
-        <a href="#">tarufino@gmail.com</a>
+        <a href="tel:+5511960382670">(11) 96038-2670</a>
+        <a href="mailto:tarufino@gmail.com">tarufino@gmail.com</a>
         <!-- <a href="#">Studio Taise Foto, São Paulo</a> -->
       </div>
       <div class="foot-col">
@@ -3606,7 +3606,7 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 ========================================================= */
 const CONFIG = {
   siteName: "Taise Foto",
-  contact: { phone: "(11) 96038-2670", email: "contato@taisefoto.com", whatsapp: "5511960382670" },
+  contact: { phone: "(11) 96038-2670", email: "tarufino@gmail.com", whatsapp: "5511960382670" },
   // Sem usuário/senha aqui: quem cuida do login é o Firebase Authentication.
   // Estas chaves não são segredo — elas apenas identificam o projeto. O que
   // protege os dados são as regras em firestore.rules.
@@ -5924,8 +5924,10 @@ function abrirPolitica(e){
   // Os contatos vêm do CONFIG, para não existirem dois lugares com o mesmo dado.
   const mail = document.getElementById("pol-email");
   const fone = document.getElementById("pol-fone");
-  if(mail) mail.textContent = CONFIG.contact.email;
-  if(fone) fone.textContent = CONFIG.contact.phone;
+  // Clicáveis: é por aqui que a cliente exerce os direitos do art. 18, então
+  // o canal tem de ser fácil de usar, não só estar escrito.
+  if(mail) mail.innerHTML = `<a href="mailto:${escapeHtml(CONFIG.contact.email)}">${escapeHtml(CONFIG.contact.email)}</a>`;
+  if(fone) fone.innerHTML = `<a href="https://wa.me/${escapeHtml(CONFIG.contact.whatsapp)}" target="_blank" rel="noopener">${escapeHtml(CONFIG.contact.phone)}</a>`;
   document.getElementById("politica-backdrop").classList.add("open");
 }
 function fecharPolitica(){ document.getElementById("politica-backdrop").classList.remove("open"); }
