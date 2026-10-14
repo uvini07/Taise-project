@@ -31,19 +31,58 @@ service cloud.firestore {
     }
 
     // Disponibilidade pública. Nunca guarde dado pessoal aqui: qualquer
-    // visitante do site lê esta coleção inteira.
+    // visitante do site lê esta coleção inteira. O hasOnly abaixo é o que
+    // garante isso na prática — nome, CPF, telefone e e-mail não têm como
+    // entrar, nem por engano no código nem de propósito por fora dele.
+    // É esta separação que deixa a agenda pública sem expor ninguém.
     match /horarios/{id} {
       allow read: if true;
       allow create: if request.resource.data.keys()
-                       .hasOnly(['date','time','package','lot','status']);
+                       .hasOnly(['date','time','package','lot','status'])
+                    && request.resource.data.date is string
+                    && request.resource.data.date.size() == 10
+                    && request.resource.data.time is string
+                    && request.resource.data.time.size() <= 5;
       allow update, delete: if ehAdmin();
     }
 
-    // Agendamento completo, com dados pessoais. Qualquer um cria (é o
-    // formulário do site), mas só o admin lê, altera ou apaga.
+    // Agendamento completo, com dados pessoais (nome, CPF, telefone, e-mail).
+    // Só o admin lê, altera ou apaga — nenhum visitante do site alcança isto.
+    // Criar continua aberto, porque é o formulário do site que grava, mas não
+    // é mais um cheque em branco: a criação passa por validação de formato e
+    // de tamanho, para ninguém despejar lixo (ou um texto gigante) na coleção.
     match /agendamentos/{id} {
       allow read, update, delete: if ehAdmin();
-      allow create: if true;
+      allow create: if agendamentoValido();
+    }
+
+    // LGPD, minimização e integridade: campo que não está previsto aqui não
+    // entra, e cada texto tem teto de tamanho. Só os cinco primeiros são
+    // obrigatórios; o resto é opcional para não quebrar pedidos antigos.
+    function agendamentoValido() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['name','phone','email','date','time'])
+          && d.keys().hasOnly([
+               'id','name','cpf','phone','email','package','lot','lotPrice',
+               'semanaNota','addons','addonsValor','addonIds','addonQtd',
+               'total','pagamento','lotVagas',
+               'date','time','status','notes','createdAt','updatedAt',
+               'petLeva','petRaca','petPorte','usoImagem','consentimento'
+             ])
+          && d.name is string && d.name.size() > 2 && d.name.size() <= 120
+          && d.email is string && d.email.size() <= 160
+          && d.phone is string && d.phone.size() <= 40
+          && d.date is string && d.date.size() == 10
+          && d.time is string && d.time.size() <= 5
+          // CPF chega só em dígitos; nunca mais de 11.
+          && (!('cpf' in d) || (d.cpf is string && d.cpf.size() <= 11))
+          && (!('notes' in d) || (d.notes is string && d.notes.size() <= 1000))
+          && (!('petRaca' in d) || (d.petRaca is string && d.petRaca.size() <= 60))
+          && (!('petPorte' in d) || (d.petPorte is string && d.petPorte.size() <= 20))
+          && (!('petLeva' in d) || d.petLeva in ['sim','nao'])
+          && (!('usoImagem' in d) || d.usoImagem in ['sim','nao'])
+          // Pedido nasce pendente: ninguém se autoconfirma pelo formulário.
+          && (!('status' in d) || d.status == 'pendente');
     }
 
     // Marca de "esse contato está na lista VIP". Responde a consulta pontual
@@ -56,10 +95,18 @@ service cloud.firestore {
       allow update, delete: if ehAdmin();
     }
 
-    // Cadastro VIP com dados pessoais: mesma lógica dos agendamentos.
+    // Cadastro VIP com dados pessoais: mesma lógica dos agendamentos, com a
+    // mesma validação de formato e tamanho na criação.
     match /vipCadastros/{id} {
       allow read, update, delete: if ehAdmin();
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasAll(['name','email'])
+                    && request.resource.data.keys().hasOnly(
+                         ['id','name','email','phone','createdAt','consentimento'])
+                    && request.resource.data.name is string
+                    && request.resource.data.name.size() > 1
+                    && request.resource.data.name.size() <= 120
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() <= 160;
     }
 
     // Estado do VIP (ligado, lançamento, cadastro aberto). O site precisa ler

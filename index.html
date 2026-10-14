@@ -769,6 +769,85 @@ footer .wrap{position:relative;z-index:1;}
 .field .err{color:var(--vermelho-status);font-size:12px;margin-top:5px;display:none;}
 .field.invalid input{border-color:var(--vermelho-status);}
 .field.invalid .err{display:block;}
+/* ---------- ESCOLHAS SIM/NÃO E CONSENTIMENTOS (agendamento) ---------- */
+.field .ajuda{display:block;font-size:12px;color:rgba(27,23,18,.5);line-height:1.55;margin:-2px 0 9px;}
+.opt-row{display:flex;gap:10px;flex-wrap:wrap;}
+.opt{
+  flex:1 1 120px;display:flex;align-items:center;gap:9px;cursor:pointer;
+  padding:12px 14px;border:1.5px solid rgba(27,23,18,.16);border-radius:5px;
+  font-size:14px;background:#fff;transition:border-color .2s ease,background .2s ease;
+}
+.opt:hover{border-color:var(--dourado);}
+.opt input{accent-color:var(--vinho);width:16px;height:16px;flex:0 0 auto;}
+.opt.marcada{border-color:var(--vinho);background:rgba(110,20,35,.04);}
+.field.invalid .opt{border-color:var(--vermelho-status);}
+.pet-extra{margin-top:12px;display:grid;grid-template-columns:1fr 150px;gap:10px;}
+.pet-extra[hidden]{display:none;}
+.pet-extra select{
+  padding:13px 12px;border:1.5px solid rgba(27,23,18,.16);border-radius:5px;
+  font-family:var(--sans);font-size:14.5px;background:#fff;color:inherit;
+}
+.pet-extra select:focus, .pet-extra input:focus{border-color:var(--vinho);}
+.check-lgpd{display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;line-height:1.6;color:rgba(27,23,18,.72);}
+.check-lgpd input{accent-color:var(--vinho);width:17px;height:17px;flex:0 0 auto;margin-top:2px;}
+.check-lgpd a{color:var(--vinho);text-decoration:underline;}
+.field.invalid .check-lgpd{color:var(--vermelho-status);}
+
+/* ---------- POLÍTICA DE PRIVACIDADE ---------- */
+.politica-corpo{font-size:13.5px;line-height:1.75;color:rgba(27,23,18,.78);}
+.politica-corpo h4{
+  font-family:var(--sans);font-size:14.5px;color:var(--carvao);
+  margin:24px 0 8px;padding-top:18px;border-top:1px solid rgba(27,23,18,.1);
+}
+.politica-corpo h4:first-of-type{margin-top:12px;border-top:none;padding-top:0;}
+.politica-corpo p{margin-bottom:10px;}
+.politica-corpo ul{margin:0 0 12px;padding-left:18px;}
+.politica-corpo li{margin-bottom:7px;}
+.politica-corpo b{color:var(--carvao);}
+.politica-corpo .pol-data{font-size:12px;color:rgba(27,23,18,.45);margin-bottom:4px;}
+.politica-corpo .pol-contato{
+  background:var(--marfim-escuro);border-radius:6px;padding:14px 16px;margin:14px 0 4px;font-size:13px;
+}
+
+/* ---------- AVISO DE DADOS NO NAVEGADOR ---------- */
+.aviso-dados{
+  position:fixed;left:18px;right:18px;bottom:18px;z-index:3500;max-width:560px;margin:0 auto;
+  background:var(--verde-noturno);color:var(--marfim);border:1px solid rgba(198,161,91,.3);
+  border-radius:10px;padding:18px 20px;box-shadow:0 20px 50px rgba(0,0,0,.35);
+  display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;
+  font-size:12.5px;line-height:1.65;
+}
+.aviso-dados[hidden]{display:none;}
+.aviso-dados p{margin:0;flex:1 1 280px;color:rgba(246,241,231,.82);}
+.aviso-dados a{color:var(--dourado-claro);text-decoration:underline;}
+.aviso-dados button{
+  flex:0 0 auto;background:var(--dourado);color:var(--carvao);border:none;
+  padding:10px 22px;border-radius:999px;font-family:var(--sans);font-size:12.5px;font-weight:600;
+}
+.aviso-dados button:hover{background:var(--dourado-claro);}
+@media (max-width:640px){
+  .aviso-dados{left:12px;right:12px;bottom:12px;padding:16px;}
+  .aviso-dados button{width:100%;}
+  .pet-extra{grid-template-columns:1fr;}
+}
+
+/* ---------- MARCAS NO PAINEL ---------- */
+/* Pedido que NÃO autorizou uso de imagem: a marca precisa saltar aos olhos
+   antes de qualquer publicação. */
+.sem-imagem{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;
+  background:rgba(162,58,58,.14);color:var(--vermelho-status);
+  font-size:10.5px;font-weight:700;letter-spacing:.3px;white-space:nowrap;
+}
+.aviso-imagem{
+  margin:16px 0 0;border-left:3px solid var(--vermelho-status);background:rgba(162,58,58,.08);
+  border-radius:0 6px 6px 0;padding:12px 14px;font-size:12.5px;line-height:1.6;color:rgba(27,23,18,.78);
+}
+.aviso-pet{
+  margin:16px 0 0;border-left:3px solid var(--dourado);background:rgba(198,161,91,.1);
+  border-radius:0 6px 6px 0;padding:12px 14px;font-size:12.5px;line-height:1.6;color:rgba(27,23,18,.78);
+}
+
 
 .summary-box{background:var(--marfim-escuro);border-radius:6px;padding:22px;margin-bottom:6px;}
 .summary-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(27,23,18,.08);font-size:14px;}
@@ -2625,7 +2704,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
     </div>
     <div class="foot-bottom">
-      <span>© 2026 Taise Foto. Todos os direitos reservados.</span>
+      <span>© 2026 Taise Foto. Todos os direitos reservados. ·
+        <a href="#" data-abre-politica style="color:inherit;text-decoration:underline;">Política de Privacidade</a></span>
       <span>Feito com carinho para transformar momentos em memórias.</span>
     </div>
   </div>
@@ -2708,8 +2788,14 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       <div class="step-panel" data-panel="4">
         <div class="field" id="f-name">
           <label for="in-name">Nome completo</label>
-          <input type="text" id="in-name" placeholder="Seu nome completo">
-          <span class="err">Informe seu nome completo.</span>
+          <input type="text" id="in-name" placeholder="Nome e sobrenome" autocomplete="name">
+          <span class="err">Informe seu nome completo (nome e sobrenome).</span>
+        </div>
+        <div class="field" id="f-cpf">
+          <label for="in-cpf">CPF</label>
+          <span class="ajuda">Usado para identificar você no contrato do ensaio e na emissão da nota. Não é compartilhado com ninguém.</span>
+          <input type="text" id="in-cpf" placeholder="000.000.000-00" inputmode="numeric" maxlength="14" autocomplete="off">
+          <span class="err">Informe um CPF válido.</span>
         </div>
         <div class="field" id="f-phone">
           <label for="in-phone">Telefone / WhatsApp</label>
@@ -2721,9 +2807,48 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
           <input type="email" id="in-email" placeholder="voce@email.com">
           <span class="err">Informe um e-mail válido.</span>
         </div>
+
+        <div class="field" id="f-pet">
+          <label>Vai levar pet?</label>
+          <span class="ajuda">Pets são bem-vindos. Saber com antecedência ajuda a preparar o cenário e o tempo da sessão.</span>
+          <div class="opt-row">
+            <label class="opt"><input type="radio" name="pet" value="nao"><span>Não</span></label>
+            <label class="opt"><input type="radio" name="pet" value="sim"><span>Sim</span></label>
+          </div>
+          <div class="pet-extra" id="pet-extra" hidden>
+            <input type="text" id="in-pet-raca" placeholder="Raça (ex.: golden retriever)" maxlength="60">
+            <select id="in-pet-porte">
+              <option value="">Porte…</option>
+              <option value="Pequeno">Pequeno</option>
+              <option value="Médio">Médio</option>
+              <option value="Grande">Grande</option>
+            </select>
+          </div>
+          <span class="err">Diga se vai levar pet — e, se sim, a raça e o porte.</span>
+        </div>
+
+        <div class="field" id="f-imagem">
+          <label>Autoriza o uso das imagens?</label>
+          <span class="ajuda">Se autorizar, as fotos do ensaio podem ser usadas no site, no portfólio e nas redes da Taise Foto.
+            Responder <b>não</b> não muda em nada o seu ensaio nem o preço — e você pode mudar de ideia depois, é só avisar.</span>
+          <div class="opt-row">
+            <label class="opt"><input type="radio" name="imagem" value="sim"><span>Sim, autorizo</span></label>
+            <label class="opt"><input type="radio" name="imagem" value="nao"><span>Não autorizo</span></label>
+          </div>
+          <span class="err">Escolha uma das opções.</span>
+        </div>
+
         <div class="field">
           <label for="in-notes">Observações (opcional)</label>
           <textarea id="in-notes" rows="3" placeholder="Alguma informação importante para sua sessão?"></textarea>
+        </div>
+
+        <div class="field" id="f-lgpd">
+          <label class="check-lgpd">
+            <input type="checkbox" id="in-lgpd">
+            <span>Li e concordo com a <a href="#" data-abre-politica>Política de Privacidade</a> e autorizo o uso dos meus dados para organizar e realizar o ensaio.</span>
+          </label>
+          <span class="err">É preciso concordar para seguir com o agendamento.</span>
         </div>
         <div class="book-footer">
           <button class="btn-outline" data-back="3">Voltar</button>
@@ -2832,6 +2957,130 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
     </div>
   </div>
+</div>
+
+
+<!-- ================= POLÍTICA DE PRIVACIDADE (LGPD) ================= -->
+<div class="modal-backdrop" id="politica-backdrop">
+  <div class="book-modal" style="max-width:640px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Política de Privacidade</h3>
+        <button class="book-close" id="politica-close">&times;</button>
+      </div>
+    </div>
+    <div class="book-body politica-corpo">
+      <p class="pol-data">Versão de 14 de outubro de 2026</p>
+      <p>Esta política explica quais dados a <b>Taise Foto</b> coleta de você, por que coleta,
+        com quem compartilha e o que você pode exigir a respeito deles. Ela segue a
+        <b>Lei nº 13.709/2018 (LGPD)</b>.</p>
+
+      <h4>1. Quem trata os seus dados</h4>
+      <p>A <b>Taise Foto</b> é a controladora dos dados — é ela quem decide o que é coletado e para quê.
+        Para qualquer assunto desta política, incluindo os pedidos do item 7, fale pelos canais abaixo.</p>
+      <div class="pol-contato">
+        <b>Encarregada pelos dados (DPO):</b> Taise Foto<br>
+        E-mail: <span id="pol-email"></span><br>
+        WhatsApp: <span id="pol-fone"></span>
+      </div>
+
+      <h4>2. Que dados coletamos</h4>
+      <p>Só o necessário para marcar e realizar o seu ensaio:</p>
+      <ul>
+        <li><b>Nome completo</b> — para identificar a reserva e te chamar pelo nome.</li>
+        <li><b>CPF</b> — para identificar você no contrato do ensaio e na emissão da nota fiscal.</li>
+        <li><b>Telefone e e-mail</b> — para confirmar a data, enviar lembretes e entregar as fotos.</li>
+        <li><b>Data, horário, pacote e itens escolhidos</b> — para montar a agenda e o orçamento.</li>
+        <li><b>Informações do pet</b> (se você for levar) — raça e porte, para preparar o cenário.</li>
+        <li><b>Sua resposta sobre o uso de imagem</b> — registrada com a data e a hora.</li>
+        <li><b>Observações</b> que você mesma escrever no campo livre.</li>
+      </ul>
+      <p>Não pedimos dados de cartão: o pagamento acontece fora do site, combinado diretamente com a Taise.
+        O site <b>não</b> coleta dados de navegação, não usa cookies e não tem rastreadores de publicidade.</p>
+
+      <h4>3. Por que podemos tratar esses dados (base legal)</h4>
+      <ul>
+        <li><b>Execução do contrato</b> (art. 7º, V) — nome, CPF, contato, data, horário e pacote existem
+          para que o ensaio aconteça. Sem eles não há como reservar.</li>
+        <li><b>Consentimento</b> (art. 7º, I) — o uso das suas imagens em portfólio e redes sociais.
+          É opcional, separado do resto, e recusar não afeta o seu ensaio nem o preço.</li>
+        <li><b>Obrigação legal</b> (art. 7º, II) — guarda de registros fiscais.</li>
+      </ul>
+
+      <h4>4. Uso das imagens</h4>
+      <p>As fotos do seu ensaio só vão para o site, o portfólio ou as redes da Taise Foto se você
+        marcar <b>“Sim, autorizo”</b> no agendamento. A resposta fica registrada com data e hora.</p>
+      <p>Você pode <b>mudar de ideia quando quiser</b>, sem precisar justificar: basta avisar pelos
+        canais do item 1. A partir do aviso, as imagens são retiradas dos canais sob nosso controle.
+        Materiais já impressos ou já compartilhados por terceiros podem não ser recuperáveis.</p>
+
+      <h4>5. Com quem compartilhamos</h4>
+      <p>Não vendemos e não cedemos seus dados para publicidade. Eles passam apenas por serviços
+        necessários para o site funcionar:</p>
+      <ul>
+        <li><b>Google Firebase / Firestore</b> — onde os agendamentos ficam guardados.</li>
+        <li><b>Google Agenda</b> — para onde a Taise lança o compromisso do seu ensaio.</li>
+        <li><b>WhatsApp (Meta)</b> — quando o contato com você acontece por lá.</li>
+      </ul>
+      <p><b>Transferência internacional:</b> esses serviços são operados por empresas com servidores
+        fora do Brasil, o que caracteriza transferência internacional nos termos do art. 33 da LGPD.
+        Eles mantêm cláusulas contratuais e certificações de proteção de dados.</p>
+
+      <h4>6. Segurança e por quanto tempo guardamos</h4>
+      <ul>
+        <li>Nome, CPF, telefone e e-mail ficam em uma área do banco que <b>só a administradora
+          autenticada consegue ler</b>. Nenhum visitante do site alcança esses dados.</li>
+        <li>O que o site mostra publicamente da agenda é apenas <b>data, horário, pacote e situação</b> —
+          sem nome e sem contato.</li>
+        <li>O acesso ao painel exige login com senha, e a sessão é encerrada ao sair.</li>
+        <li><b>Prazo:</b> guardamos os dados do ensaio por <b>5 anos</b> após a sua realização,
+          prazo ligado às obrigações fiscais e de defesa em eventual discussão sobre o serviço.
+          Depois disso são apagados. Se você pedir a exclusão antes, apagamos o que não estivermos
+          obrigados por lei a manter.</li>
+      </ul>
+
+      <h4>7. Os seus direitos</h4>
+      <p>A LGPD (art. 18) garante que você peça, a qualquer momento e sem custo:</p>
+      <ul>
+        <li>confirmação de que tratamos seus dados, e <b>acesso</b> a eles;</li>
+        <li><b>correção</b> do que estiver incompleto ou errado;</li>
+        <li><b>anonimização, bloqueio ou eliminação</b> de dados desnecessários ou excessivos;</li>
+        <li><b>portabilidade</b> para outro fornecedor;</li>
+        <li><b>eliminação</b> dos dados tratados com base no seu consentimento;</li>
+        <li><b>informação</b> sobre com quem compartilhamos;</li>
+        <li><b>revogação do consentimento</b> — em especial o de uso de imagem.</li>
+      </ul>
+      <p>É só pedir pelos canais do item 1. Respondemos em até <b>15 dias</b>.</p>
+
+      <h4>8. Dados guardados no seu navegador</h4>
+      <p>Este site <b>não usa cookies</b> e não tem nenhum rastreador de terceiros — nada de pixel de
+        anúncio, nada de analytics. O que existe é um pequeno armazenamento local no seu próprio
+        aparelho, usado só para o site funcionar: lembrar a preferência de som da tela de abertura
+        e, no caso da administradora, manter a sessão do painel enquanto ela trabalha.
+        Essas informações <b>não saem do seu aparelho</b>, não identificam você e podem ser apagadas
+        a qualquer momento pela opção de limpar dados de navegação.</p>
+
+      <h4>9. Crianças e adolescentes</h4>
+      <p>Os ensaios envolvem crianças. Os dados e as imagens de menores só são tratados com o
+        consentimento de pelo menos um dos pais ou do responsável legal (art. 14 da LGPD) — que é
+        justamente quem preenche o agendamento. Ao autorizar o uso de imagem, você declara ser
+        responsável pelos menores que participarão da sessão.</p>
+
+      <h4>10. Mudanças nesta política</h4>
+      <p>Se esta política mudar, a data da versão no topo muda junto. A versão que vale para o seu
+        agendamento é a que estava no ar quando você aceitou — e ela fica registrada junto ao pedido.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Aviso de dados no navegador. Não é um banner de cookies porque não há
+     cookies: é transparência sobre o armazenamento local, que é só o
+     estritamente necessário e por isso não depende de consentimento prévio. -->
+<div class="aviso-dados" id="aviso-dados" hidden>
+  <p>Este site <b>não usa cookies</b> nem rastreadores. Guardamos no seu aparelho apenas o mínimo para
+    o site funcionar, e seus dados de agendamento são tratados conforme a
+    <a href="#" data-abre-politica>Política de Privacidade</a>.</p>
+  <button id="aviso-dados-ok">Entendi</button>
 </div>
 
 <!-- ================= CONFIRM CANCEL MODAL ================= -->
@@ -3783,7 +4032,14 @@ async function firebaseApi(payload){
     const id = uid();
     const lote = db.batch();
     lote.set(db.collection(COL_VIP_CADASTROS).doc(id), {
-      id, name:nome, email, phone:fone, createdAt:new Date().toISOString()
+      id, name:nome, email, phone:fone, createdAt:new Date().toISOString(),
+      // Consentimento da lista VIP: comunicacao por e-mail so acontece porque
+      // ela marcou a caixa, e fica registrado qual politica valia na hora.
+      consentimento: {
+        politicaVersao: POLITICA_VERSAO,
+        aceitoEm: new Date().toISOString(),
+        finalidade: "aviso de lancamento e beneficios da Lista VIP por e-mail"
+      }
     });
     lote.set(db.collection(COL_VIP_MEMBROS).doc(chaveEmail), { name:nome });
     const chaveFone = vipChaveContato(fone);
@@ -4944,6 +5200,11 @@ function renderVipCardInner(){
         <form class="vip-form" id="vip-signup-form">
           <input type="text" id="vip-name" placeholder="Seu nome" required>
           <input type="email" id="vip-email" placeholder="Seu melhor e-mail" required>
+          <label class="check-lgpd" style="color:rgba(246,241,231,.75);margin:4px 0 10px;text-align:left;">
+            <input type="checkbox" id="vip-lgpd">
+            <span>Concordo com a <a href="#" data-abre-politica style="color:var(--dourado-claro);">Política de Privacidade</a>
+              e aceito receber o aviso do lançamento por e-mail.</span>
+          </label>
           <button type="submit" class="vip-btn">Quero ser VIP</button>
         </form>
         <p class="vip-count">${vagas} de ${CONFIG.vip.maxSignups} vagas restantes</p>
@@ -4955,6 +5216,11 @@ function renderVipCardInner(){
       const name = document.getElementById("vip-name").value.trim();
       const email = document.getElementById("vip-email").value.trim();
       if(!name || !email){ showToast("Preencha nome e e-mail.", "error"); return; }
+      // Lista VIP é comunicação por e-mail: sem consentimento, não cadastra.
+      if(!document.getElementById("vip-lgpd").checked){
+        showToast("É preciso concordar com a Política de Privacidade para entrar na lista.", "error");
+        return;
+      }
       btn.disabled = true; btn.textContent = "Enviando…";
       const res = await vipSignupSubmit(name, email);
       btn.disabled = false; btn.textContent = "Quero ser VIP";
@@ -5220,6 +5486,7 @@ function openBooking(pkgId, lotLabel){
   booking = { packageId: pkgId||null, lotLabel: lot, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[], addonQtd:{} };
   currentStep = 1;
   calCursor = new Date();
+  limparCamposPessoais();
   document.getElementById("vip-step1-note").innerHTML = "";
   renderPkgChoices();
   renderLotChoices();
@@ -5253,6 +5520,7 @@ async function openVipBooking(pkgId){
   booking = { packageId: pkgId, lotLabel:null, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:true, addons:[], addonQtd:{} };
   currentStep = 1;
   calCursor = new Date();
+  limparCamposPessoais();
   document.getElementById("pkg-choices").innerHTML = "";
   document.getElementById("lot-choices").innerHTML = "";
   document.getElementById("vip-step1-note").innerHTML = `
@@ -5636,6 +5904,138 @@ async function renderTimeSlots(){
   });
 }
 
+
+/* =========================================================
+   LGPD — POLÍTICA, CONSENTIMENTOS E DADOS DO AGENDAMENTO
+   A versão da política fica gravada junto de cada pedido: assim dá para
+   provar qual texto a cliente viu no dia em que aceitou. Mudou a política?
+   Troque a data aqui e no topo do modal — pedidos antigos continuam
+   apontando para a versão que valia para eles.
+========================================================= */
+const POLITICA_VERSAO = "2026-10-14";
+// Texto exato da autorização de imagem, guardado com o pedido. Consentimento
+// sem o texto que foi mostrado não prova nada.
+const TEXTO_USO_IMAGEM = "Autorizo o uso das imagens do meu ensaio no site, no portfólio e nas redes sociais da Taise Foto.";
+const AVISO_DADOS_KEY = "taise-aviso-dados";
+
+function abrirPolitica(e){
+  if(e) e.preventDefault();
+  // Os contatos vêm do CONFIG, para não existirem dois lugares com o mesmo dado.
+  const mail = document.getElementById("pol-email");
+  const fone = document.getElementById("pol-fone");
+  if(mail) mail.textContent = CONFIG.contact.email;
+  if(fone) fone.textContent = CONFIG.contact.phone;
+  document.getElementById("politica-backdrop").classList.add("open");
+}
+function fecharPolitica(){ document.getElementById("politica-backdrop").classList.remove("open"); }
+ligar("politica-close", "click", fecharPolitica);
+ligar("politica-backdrop", "click", (e)=>{ if(e.target.id === "politica-backdrop") fecharPolitica(); });
+// Vale para qualquer link com data-abre-politica, inclusive os que nascem depois.
+document.addEventListener("click", (e)=>{
+  const link = e.target.closest("[data-abre-politica]");
+  if(link) abrirPolitica(e);
+});
+
+// Aviso de armazenamento local: aparece uma vez por aparelho. Não pede
+// consentimento porque não há o que consentir — só o estritamente necessário.
+function mostrarAvisoDados(){
+  let visto = false;
+  try{ visto = localStorage.getItem(AVISO_DADOS_KEY) === "1"; }catch(e){ visto = true; }
+  const el = document.getElementById("aviso-dados");
+  if(!el || visto) return;
+  el.hidden = false;
+}
+ligar("aviso-dados-ok", "click", ()=>{
+  document.getElementById("aviso-dados").hidden = true;
+  try{ localStorage.setItem(AVISO_DADOS_KEY, "1"); }catch(e){}
+});
+
+/* ---- CPF ---- */
+// Máscara 000.000.000-00 enquanto digita.
+function mascaraCPF(valor){
+  const d = String(valor||"").replace(/\D/g,"").slice(0,11);
+  if(d.length <= 3) return d;
+  if(d.length <= 6) return d.slice(0,3)+"."+d.slice(3);
+  if(d.length <= 9) return d.slice(0,3)+"."+d.slice(3,6)+"."+d.slice(6);
+  return d.slice(0,3)+"."+d.slice(3,6)+"."+d.slice(6,9)+"-"+d.slice(9);
+}
+// Validação pelos dois dígitos verificadores — pega erro de digitação, que é
+// o caso real aqui. Não confere se o CPF existe de verdade na Receita.
+function cpfValido(valor){
+  const d = String(valor||"").replace(/\D/g,"");
+  if(d.length !== 11) return false;
+  if(/^(\d)\1{10}$/.test(d)) return false;   // 111.111.111-11 e afins
+  for(let rodada = 0; rodada < 2; rodada++){
+    const ate = 9 + rodada;
+    let soma = 0;
+    for(let i = 0; i < ate; i++) soma += parseInt(d[i],10) * (ate + 1 - i);
+    let dig = (soma * 10) % 11;
+    if(dig === 10) dig = 0;
+    if(dig !== parseInt(d[ate],10)) return false;
+  }
+  return true;
+}
+function fmtCPF(valor){ return mascaraCPF(valor); }
+
+const cpfInput = document.getElementById("in-cpf");
+if(cpfInput){
+  cpfInput.addEventListener("input", ()=>{ cpfInput.value = mascaraCPF(cpfInput.value); });
+}
+
+/* ---- escolhas sim/não ---- */
+function escolhaDe(grupo){
+  const marcado = document.querySelector(`input[name="${grupo}"]:checked`);
+  return marcado ? marcado.value : "";
+}
+// Pinta a opção escolhida e abre os campos do pet quando for "sim".
+document.querySelectorAll('input[name="pet"], input[name="imagem"]').forEach(radio=>{
+  radio.addEventListener("change", ()=>{
+    const grupo = radio.name;
+    document.querySelectorAll(`input[name="${grupo}"]`).forEach(r=>{
+      r.closest(".opt").classList.toggle("marcada", r.checked);
+    });
+    if(grupo === "pet"){
+      const extra = document.getElementById("pet-extra");
+      extra.hidden = radio.value !== "sim";
+      if(extra.hidden){
+        document.getElementById("in-pet-raca").value = "";
+        document.getElementById("in-pet-porte").value = "";
+      }
+    }
+  });
+});
+
+// Zera os campos novos a cada agendamento, para não vazar a resposta de uma
+// cliente para a próxima que abrir o formulário no mesmo aparelho.
+function limparCamposPessoais(){
+  ["in-name","in-cpf","in-phone","in-email","in-notes","in-pet-raca"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+  const porte = document.getElementById("in-pet-porte");
+  if(porte) porte.value = "";
+  document.querySelectorAll('input[name="pet"], input[name="imagem"]').forEach(r=>{
+    r.checked = false;
+    r.closest(".opt").classList.remove("marcada");
+  });
+  const lgpd = document.getElementById("in-lgpd");
+  if(lgpd) lgpd.checked = false;
+  const extra = document.getElementById("pet-extra");
+  if(extra) extra.hidden = true;
+  ["f-name","f-cpf","f-phone","f-email","f-pet","f-imagem","f-lgpd"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.classList.remove("invalid");
+  });
+}
+
+/* ---- texto para o painel ---- */
+function textoPet(a){
+  if(!a || a.petLeva !== "sim") return "Não vai levar pet";
+  const partes = [a.petRaca, a.petPorte].filter(Boolean);
+  return "Sim" + (partes.length ? " — " + partes.join(", porte ").replace(", porte ", " · porte ") : "");
+}
+function autorizaImagem(a){ return a && a.usoImagem === "sim"; }
+
 /* ---- STEP 4: DADOS ---- */
 function validateField(id, valid){
   const el = document.getElementById(id);
@@ -5661,23 +6061,54 @@ phoneInput.addEventListener("focus", ()=>{ if(!phoneInput.value) phoneInput.valu
 
 ligar("s4-next", "click", ()=>{
   const name = document.getElementById("in-name").value.trim();
+  const cpf = document.getElementById("in-cpf").value.trim();
   const phone = document.getElementById("in-phone").value.trim();
   const email = document.getElementById("in-email").value.trim();
   const notes = document.getElementById("in-notes").value.trim();
+  const pet = escolhaDe("pet");
+  const petRaca = document.getElementById("in-pet-raca").value.trim();
+  const petPorte = document.getElementById("in-pet-porte").value;
+  const imagem = escolhaDe("imagem");
+  const lgpd = document.getElementById("in-lgpd").checked;
 
-  const nameOk = name.length >= 3;
+  // Nome completo de verdade: nome e sobrenome, não só "Ana".
+  const nameOk = name.split(/\s+/).filter(p=>p.length >= 2).length >= 2;
   const phoneDigits = phone.replace(/\D/g,"");
   const phoneOk = phoneDigits.startsWith("55") && phoneDigits.length>=12 && phoneDigits.length<=13;
   const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  // Levando pet, raça e porte deixam de ser opcionais.
+  const petOk = pet === "nao" || (pet === "sim" && petRaca.length >= 2 && !!petPorte);
+  // Consentimento de imagem é escolha ativa: nenhuma opção vem pré-marcada,
+  // e "não" segue o agendamento normalmente.
+  const imagemOk = imagem === "sim" || imagem === "nao";
 
   const ok = [
     validateField("f-name", nameOk),
+    validateField("f-cpf", cpfValido(cpf)),
     validateField("f-phone", phoneOk),
-    validateField("f-email", emailOk)
+    validateField("f-email", emailOk),
+    validateField("f-pet", petOk),
+    validateField("f-imagem", imagemOk),
+    validateField("f-lgpd", lgpd)
   ].every(Boolean);
   if(!ok) return;
 
+  const agora = new Date().toISOString();
   booking.name = name; booking.phone = phone; booking.email = email; booking.notes = notes;
+  booking.cpf = cpf.replace(/\D/g,"");      // guardado só em dígitos; a tela formata
+  booking.petLeva = pet;
+  booking.petRaca = pet === "sim" ? petRaca : "";
+  booking.petPorte = pet === "sim" ? petPorte : "";
+  booking.usoImagem = imagem;
+  // Registro do consentimento: qual texto ela viu, qual versão da política e
+  // quando. É isso que sustenta o consentimento se algum dia for questionado.
+  booking.consentimento = {
+    politicaVersao: POLITICA_VERSAO,
+    aceitoEm: agora,
+    usoImagem: imagem,
+    usoImagemTexto: TEXTO_USO_IMAGEM,
+    usoImagemEm: agora
+  };
   renderSummary();
   goToStep(5);
 });
@@ -5700,6 +6131,9 @@ function renderSummary(){
     <div class="summary-row"><span class="lbl">Nome</span><span class="val">${escapeHtml(booking.name)}</span></div>
     <div class="summary-row"><span class="lbl">Telefone</span><span class="val">${escapeHtml(booking.phone)}</span></div>
     <div class="summary-row"><span class="lbl">E-mail</span><span class="val">${escapeHtml(booking.email)}</span></div>
+    <div class="summary-row"><span class="lbl">CPF</span><span class="val">${escapeHtml(fmtCPF(booking.cpf))}</span></div>
+    <div class="summary-row"><span class="lbl">Pet</span><span class="val">${escapeHtml(textoPet(booking))}</span></div>
+    <div class="summary-row"><span class="lbl">Uso de imagem</span><span class="val">${booking.usoImagem === "sim" ? "Autorizado" : "Não autorizado"}</span></div>
     ${semana ? `<div class="nota-semana ativa"><span class="ns-ic">&#9733;</span><span><b>Valor do 1º lote aplicado.</b> O ensaio cai de segunda a sexta, então o pacote vale ${lotEf.price} no lugar de ${lot.price}.</span></div>` : ""}
   `;
 }
@@ -5730,6 +6164,14 @@ ligar("confirm-booking", "click", async (e)=>{
   const appt = {
     id: uid(),
     name: booking.name, phone: booking.phone, email: booking.email,
+    // Dado pessoal sensível fica só aqui, na coleção privada "agendamentos".
+    // A coleção pública "horarios" recebe apenas data/hora/pacote/lote/status.
+    cpf: booking.cpf || "",
+    petLeva: booking.petLeva || "nao",
+    petRaca: booking.petRaca || "",
+    petPorte: booking.petPorte || "",
+    usoImagem: booking.usoImagem || "",
+    consentimento: booking.consentimento || null,
     package: p ? p.name : "—",
     lot: isVip ? "VIP" : (lot ? lot.label : null),
     lotPrice: isVip ? (p ? vipDiscountedPrice(p) : null) : (loteDoPreco ? loteDoPreco.price : (p ? p.price : null)),
@@ -6538,7 +6980,7 @@ function renderTable(){
 
   tbody.innerHTML = list.map(a=>`
     <tr>
-      <td data-label="Cliente">${ehAgendamentoVip(a)?'<span class="vip-star" title="Cliente VIP — comprou pelo pré-lançamento">&#9733;</span>':''}<b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div></td>
+      <td data-label="Cliente">${ehAgendamentoVip(a)?'<span class="vip-star" title="Cliente VIP — comprou pelo pré-lançamento">&#9733;</span>':''}<b>${escapeHtml(a.name)}</b><div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.phone)}</div>${a.usoImagem && !autorizaImagem(a) ? '<div style="margin-top:5px;"><span class="sem-imagem" title="A cliente não autorizou o uso de imagem">SEM IMAGEM</span></div>' : ""}</td>
       <td data-label="Pacote">${escapeHtml(a.package)}${a.lot?`<div style="font-size:11.5px;color:rgba(27,23,18,.45);margin-top:2px;">${escapeHtml(a.lot)}</div>`:""}</td>
       <td data-label="Data">${fmtDateBR(a.date)}</td>
       <td data-label="Horário">${a.time}</td>
@@ -7123,13 +7565,20 @@ function renderFinPrimeiras(lista){
 
 function exportAppointmentsCSV(){
   const list = getFilteredAppointments();
-  const headers = ["Nome","Telefone","E-mail","Pacote","Lote","Data","Horário","Status",
-                   "Total","Pagamento","Recebido","Falta","Observações","Criado em"];
+  const headers = ["Nome","CPF","Telefone","E-mail","Pacote","Lote","Data","Horário","Status",
+                   "Total","Pagamento","Recebido","Falta",
+                   "Pet","Raça do pet","Porte do pet","Uso de imagem","Política aceita","Consentimento em",
+                   "Observações","Criado em"];
   const rows = list.map(a => [
-    a.name, a.phone, a.email, a.package, a.lot||"", fmtDateBR(a.date), a.time, a.status,
+    a.name, a.cpf ? fmtCPF(a.cpf) : "", a.phone, a.email, a.package, a.lot||"",
+    fmtDateBR(a.date), a.time, a.status,
     totalDoPedido(a),
     pgSituacaoDe(a) === "quitado" ? "Quitado" : (pgSituacaoDe(a) === "sinal" ? "Sinal pago" : "Sem pagamento"),
     pgValor(pgRecebido(a)), pgValor(Math.max(0, pgTotalDe(a) - pgRecebido(a))),
+    a.petLeva === "sim" ? "Sim" : "Não", a.petRaca||"", a.petPorte||"",
+    a.usoImagem ? (autorizaImagem(a) ? "Autorizado" : "NAO AUTORIZA") : "",
+    (a.consentimento && a.consentimento.politicaVersao) || "",
+    (a.consentimento && a.consentimento.aceitoEm) ? new Date(a.consentimento.aceitoEm).toLocaleString("pt-BR") : "",
     (a.notes||"").replace(/[\r\n]+/g," "), new Date(a.createdAt).toLocaleString("pt-BR")
   ]);
   const escapeCsv = (v) => `"${String(v).replace(/"/g,'""')}"`;
@@ -7517,6 +7966,9 @@ function openDetail(id){
     <div class="d-row"><span class="lbl">Nome completo</span><span class="val">${ehAgendamentoVip(a)?'<span class="vip-star">&#9733;</span> ':''}${escapeHtml(a.name)}</span></div>
     <div class="d-row"><span class="lbl">Telefone</span><span class="val">${escapeHtml(a.phone)}</span></div>
     <div class="d-row"><span class="lbl">E-mail</span><span class="val">${escapeHtml(a.email)}</span></div>
+    ${a.cpf?`<div class="d-row"><span class="lbl">CPF</span><span class="val">${escapeHtml(fmtCPF(a.cpf))}</span></div>`:""}
+    <div class="d-row"><span class="lbl">Pet</span><span class="val">${escapeHtml(textoPet(a))}</span></div>
+    <div class="d-row"><span class="lbl">Uso de imagem</span><span class="val">${a.usoImagem ? (autorizaImagem(a) ? "Autorizado" : '<span class="sem-imagem">NÃO AUTORIZA</span>') : "—"}</span></div>
     <div class="d-row"><span class="lbl">Pacote</span><span class="val">${escapeHtml(a.package)}</span></div>
     ${a.lot?`<div class="d-row"><span class="lbl">Lote</span><span class="val">${escapeHtml(a.lot)}${a.lotPrice?" ("+escapeHtml(a.lotPrice)+")":""}</span></div>`:""}
     ${a.semanaNota?`<div class="d-row"><span class="lbl">Valor de semana</span><span class="val">${escapeHtml(a.semanaNota)}</span></div>`:""}
@@ -7530,6 +7982,9 @@ function openDetail(id){
     <div class="d-row"><span class="lbl">Status</span><span class="val"><span class="status-pill ${a.status}"><span class="dot"></span>${a.status}</span></span></div>
     <div class="d-row"><span class="lbl">Observações</span><span class="val">${a.notes ? escapeHtml(a.notes) : "—"}</span></div>
     <div class="d-row"><span class="lbl">Criado em</span><span class="val">${new Date(a.createdAt).toLocaleString("pt-BR")}</span></div>
+    ${a.consentimento?`<div class="d-row"><span class="lbl">Consentimento</span><span class="val">Política ${escapeHtml(a.consentimento.politicaVersao||"—")}<br><span style="font-weight:400;font-size:12px;color:rgba(27,23,18,.5);">aceito em ${escapeHtml(a.consentimento.aceitoEm?new Date(a.consentimento.aceitoEm).toLocaleString("pt-BR"):"—")}</span></span></div>`:""}
+    ${a.usoImagem && !autorizaImagem(a) ? `<div class="aviso-imagem"><b>Não publicar as fotos deste ensaio.</b> A cliente não autorizou o uso de imagem — nada de site, portfólio ou redes. Ela pode mudar de ideia, mas só por aviso dela.</div>` : ""}
+    ${a.petLeva === "sim" ? `<div class="aviso-pet"><b>Vem com pet.</b> ${escapeHtml(textoPet(a).replace(/^Sim — /,""))} — prepare o cenário e considere o tempo extra.</div>` : ""}
     <div class="detail-actions">
       <button class="btn-solid btn-success" id="detail-confirm" ${a.status!=="pendente"?"disabled style='opacity:.4'":""}>Confirmar</button>
       <button class="btn-solid btn-danger" id="detail-cancel" ${a.status==="cancelado"?"disabled style='opacity:.4'":""}>Cancelar</button>
@@ -8338,6 +8793,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   initReveal();
   initRetroIcons();
   initWhatsappLinks();
+  mostrarAvisoDados();
   // Com o site bloqueado a navbar some, e com ela o acesso ao painel. Este
   // atalho pela URL (…/index.html#admin) mantém a porta de entrada aberta.
   if(voltandoAoPainel) restaurarSessaoAdmin();
