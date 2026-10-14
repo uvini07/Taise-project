@@ -61,7 +61,7 @@ service cloud.firestore {
     // obrigatórios; o resto é opcional para não quebrar pedidos antigos.
     function agendamentoValido() {
       let d = request.resource.data;
-      return d.keys().hasAll(['name','phone','email','date','time'])
+      return d.keys().hasAll(['name','phone','email','date','time','status'])
           && d.keys().hasOnly([
                'id','name','cpf','phone','email','package','lot','lotPrice',
                'semanaNota','addons','addonsValor','addonIds','addonQtd',
@@ -70,28 +70,34 @@ service cloud.firestore {
                'petLeva','petRaca','petPorte','usoImagem','consentimento'
              ])
           && d.name is string && d.name.size() > 2 && d.name.size() <= 120
-          && d.email is string && d.email.size() <= 160
+          && d.email is string && d.email.size() <= 160 && d.email.matches('.+@.+')
           && d.phone is string && d.phone.size() <= 40
           && d.date is string && d.date.size() == 10
           && d.time is string && d.time.size() <= 5
-          // CPF chega só em dígitos; nunca mais de 11.
-          && (!('cpf' in d) || (d.cpf is string && d.cpf.size() <= 11))
+          // CPF chega só em dígitos; nunca mais de 11, nada além de número.
+          && (!('cpf' in d) || (d.cpf is string && d.cpf.size() <= 11 && d.cpf.matches('^[0-9]*$')))
           && (!('notes' in d) || (d.notes is string && d.notes.size() <= 1000))
           && (!('petRaca' in d) || (d.petRaca is string && d.petRaca.size() <= 60))
           && (!('petPorte' in d) || (d.petPorte is string && d.petPorte.size() <= 20))
           && (!('petLeva' in d) || d.petLeva in ['sim','nao'])
           && (!('usoImagem' in d) || d.usoImagem in ['sim','nao'])
           // Pedido nasce pendente: ninguém se autoconfirma pelo formulário.
-          && (!('status' in d) || d.status == 'pendente');
+          && d.status == 'pendente';
     }
 
     // Marca de "esse contato está na lista VIP". Responde a consulta pontual
     // (get) para validar quem chega pelo site, mas nunca deixa listar tudo —
     // é isso que impede alguém de baixar a lista de contatos.
+    // Este documento é consultado por qualquer visitante (get pontual) para
+    // validar quem chega pela lista VIP. Por isso ele NÃO guarda nome nem
+    // qualquer dado pessoal: só a marca de que o contato está na lista. Quem
+    // souber o e-mail de alguém descobre apenas que ela é VIP, nada além.
+    // O nome fica em "vipCadastros", que só o admin lê. O "list" segue
+    // bloqueado para o público: é isso que impede baixar a lista inteira.
     match /vipMembros/{chave} {
       allow get: if true;
       allow list: if ehAdmin();
-      allow create: if true;
+      allow create: if request.resource.data.keys().hasOnly(['vip']);
       allow update, delete: if ehAdmin();
     }
 
