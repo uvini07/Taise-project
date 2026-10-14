@@ -6033,7 +6033,8 @@ function limparCamposPessoais(){
 
 /* ---- texto para o painel ---- */
 function textoPet(a){
-  if(!a || a.petLeva !== "sim") return "Não vai levar pet";
+  if(!a || !a.petLeva) return "— pedido anterior a esta pergunta";
+  if(a.petLeva !== "sim") return "Não vai levar pet";
   const partes = [a.petRaca, a.petPorte].filter(Boolean);
   return "Sim" + (partes.length ? " — " + partes.join(", porte ").replace(", porte ", " · porte ") : "");
 }
@@ -7578,7 +7579,7 @@ function exportAppointmentsCSV(){
     totalDoPedido(a),
     pgSituacaoDe(a) === "quitado" ? "Quitado" : (pgSituacaoDe(a) === "sinal" ? "Sinal pago" : "Sem pagamento"),
     pgValor(pgRecebido(a)), pgValor(Math.max(0, pgTotalDe(a) - pgRecebido(a))),
-    a.petLeva === "sim" ? "Sim" : "Não", a.petRaca||"", a.petPorte||"",
+    a.petLeva ? (a.petLeva === "sim" ? "Sim" : "Não") : "", a.petRaca||"", a.petPorte||"",
     a.usoImagem ? (autorizaImagem(a) ? "Autorizado" : "NAO AUTORIZA") : "",
     (a.consentimento && a.consentimento.politicaVersao) || "",
     (a.consentimento && a.consentimento.aceitoEm) ? new Date(a.consentimento.aceitoEm).toLocaleString("pt-BR") : "",
