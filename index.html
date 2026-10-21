@@ -1177,6 +1177,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
   border:1px dashed rgba(27,23,18,.3);background:none;border-radius:999px;padding:4px 11px;
   font-family:var(--sans);font-size:11.5px;font-weight:600;color:rgba(27,23,18,.55);white-space:nowrap;
 }
+.ag-toolbar #ag-remover,.ag-toolbar #ag-novo{min-width:170px;justify-content:center;}
 .ag-add-dia:hover{border-color:var(--vinho);color:var(--vinho);border-style:solid;}
 .ag-rem-dia:hover{background:rgba(110,20,35,.08);}
 .ag-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px;}
@@ -1447,6 +1448,34 @@ table.appt-table{width:100%;border-collapse:collapse;}
   /* o SVG encolhe junto com a tela: os rótulos sobem de tamanho para
      continuarem legíveis depois da redução */
   .fin-chart .gx-lbl{font-size:13px;}
+
+  /* ---- painel no celular: nada passa da largura da tela ---- */
+  #admin-view{overflow-x:hidden;}
+  .admin-brand{font-size:19px;}
+  .admin-actions{flex-wrap:wrap;gap:8px;justify-content:flex-start;}
+  .admin-actions .user-chip:not(#admin-ultima){display:none;}
+  .admin-actions #admin-ultima{order:5;flex:1 1 100%;font-size:11.5px;opacity:.7;}
+  .admin-actions .btn-logout{margin-left:auto;}
+  /* as 4 guias cabem inteiras, sem precisar arrastar */
+  .atb-row{gap:3px;}
+  .atb-tab{flex:1 1 0;min-width:0;justify-content:center;gap:5px;padding:10px 4px;font-size:11px;}
+  .atb-tab svg{display:none;}
+  /* cartões de números em duas colunas, mais baixos */
+  .stat-grid,.fin-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .stat-card,.fin-card{padding:14px 14px;}
+  .stat-card .s-val{font-size:26px;margin-top:8px;}
+  .stat-card .s-ico{width:30px;height:30px;}
+  .fin-card .fc-val{font-size:19px;margin-top:8px;}
+  .fin-card .fc-hint{font-size:11px;}
+  /* Agenda: "Remover data" e "Criar horário" lado a lado, mesmo tamanho */
+  .ag-toolbar{gap:10px;}
+  .ag-toolbar #ag-remover,.ag-toolbar #ag-novo{flex:1 1 0;width:auto;margin-left:0 !important;justify-content:center;padding:12px 8px !important;}
+  /* filtros em pílulas: quebram de linha sem esmagar o texto */
+  .tabs{flex-wrap:wrap;justify-content:center;border-radius:18px;}
+  .tab-btn{white-space:nowrap;}
+  .filter-row{padding:14px 16px;}
+  .ap-head #filter-package,.ap-head #filter-date{flex:1 1 40%;min-width:0;}
+  .ap-head #export-csv{flex:1 1 100%;justify-content:center;}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001s !important;transition-duration:.001s !important;}
@@ -7535,7 +7564,7 @@ function finChartSVG(pontos){
   // ficariam ilegíveis. Por isso o celular usa uma caixa mais quadrada.
   const estreito = window.innerWidth < 760;
   const W = estreito ? 440 : 820, H = estreito ? 300 : 280;
-  const L = estreito ? 54 : 70, R = estreito ? 12 : 18, T = 20, B = 40;
+  const L = estreito ? 72 : 70, R = estreito ? 24 : 18, T = 20, B = 40;
   const iw = W - L - R, ih = H - T - B;
   const maxVal = Math.max(1, ...pontos.map(p=>p.valor));
   const linhas = 4;
