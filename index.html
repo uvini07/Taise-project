@@ -3166,8 +3166,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
     </div>
     <div class="book-body">
       <p class="ag-modal-nota">
-        Escolha o horário para tirar só ele, ou deixe o horário vazio para tirar
-        <b>o dia inteiro</b>. Sai do site na hora. Horários com cliente marcado não podem ser removidos.
+        Escolha o dia e toque nos horários que quer tirar do site. Horários com
+        cliente marcado não aparecem aqui.
       </p>
       <div class="ag-modal-erro" id="rmdata-erro"></div>
       <div class="field">
@@ -3175,9 +3175,10 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <input type="date" id="rmdata-data">
       </div>
       <div class="field">
-        <label for="rmdata-hora">Horário (deixe vazio para o dia inteiro)</label>
-        <input type="time" id="rmdata-hora" step="900">
+        <label>Horários livres</label>
+        <div class="time-grid" id="rmdata-horas"></div>
       </div>
+      <button class="btn-outline" id="rmdata-dia" style="width:100%;justify-content:center;margin-bottom:12px;">Remover o dia inteiro</button>
       <div class="c-actions" style="display:flex;gap:10px;margin-top:4px;">
         <button class="btn-outline" id="rmdata-cancelar" style="flex:1;justify-content:center;">Voltar</button>
         <button class="btn-solid btn-danger" id="rmdata-salvar" style="flex:1;justify-content:center;">Remover</button>
@@ -8929,31 +8930,76 @@ function agRmAbrir(){
   campo.min = CONFIG.seasonStart;
   campo.max = CONFIG.seasonEnd;
   campo.value = agDataSugerida();
-  document.getElementById("rmdata-hora").value = "";
   agRmErro("");
+  agRmListar();
   document.getElementById("rmdata-backdrop").classList.add("open");
   document.body.style.overflow = "hidden";
 }
-function agRmConfirmar(){
+let agRmSelecionados = [];
+function agRmLivres(iso){
+  return agSlotsDoDia(iso, appointmentsCache || []).filter(x => !x.pedido && !x.meia).map(x => x.hora);
+}
+// Mostra os horários livres do dia escolhido como botões para tocar.
+function agRmListar(){
   const iso = document.getElementById("rmdata-data").value;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return agRmErro("Escolha a data.");
-  const hora = document.getElementById("rmdata-hora").value;
-  if(hora){
-    if(timesForDate(iso).indexOf(hora) === -1) return agRmErro("Esse horário não está aberto no dia " + fmtDateBR(iso) + ".");
-    if((appointmentsCache||[]).some(a => a.date === iso && a.time === hora && a.status !== "cancelado")){
-      return agRmErro("Esse horário já tem cliente. Cancele ou remaneje o pedido antes.");
-    }
-    agRmFechar();
-    agApagarHorario(iso, hora);
-    return;
+  const box = document.getElementById("rmdata-horas");
+  agRmSelecionados = [];
+  agRmErro("");
+  const livres = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? agRmLivres(iso) : [];
+  box.innerHTML = livres.length
+    ? livres.map(h => `<button type="button" class="time-slot" data-rmhora="${h}">${h}</button>`).join("")
+    : '<p class="ag-modal-nota" style="grid-column:1/-1;margin:0;">Nenhum horário livre neste dia.</p>';
+  document.getElementById("rmdata-dia").style.display = livres.length ? "" : "none";
+  agRmBotao();
+}
+function agRmBotao(){
+  const btn = document.getElementById("rmdata-salvar");
+  btn.disabled = !agRmSelecionados.length;
+  btn.textContent = agRmSelecionados.length
+    ? "Remover (" + agRmSelecionados.length + ")"
+    : "Remover";
+}
+async function agRmConfirmar(){
+  const iso = document.getElementById("rmdata-data").value;
+  const horas = agRmSelecionados.slice().sort();
+  if(!horas.length) return agRmErro("Toque em pelo menos um horário.");
+  agRmFechar();
+  const ok = await pedirConfirmacao({
+    titulo: horas.length === 1 ? "Remover este horário?" : "Remover estes horários?",
+    texto: "Saem do site na hora. Para abrir de novo, use \"Criar horário\".",
+    itens: [ fmtDateLong(iso), "Horários: " + horas.join(", ") ],
+    confirmar: "Remover",
+    perigo: true
+  });
+  if(!ok) return;
+  let falhou = 0;
+  for(const hora of horas){
+    const data = await apiPost({ action:"agendaRemoveSlot", date:iso, time:hora }, true);
+    if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+    if(!data || !data.ok){ falhou++; continue; }
+    agendaExtras = normalizarExtras(data.extras);
+    if(data.removidos) agendaRemovidos = normalizarExtras(data.removidos);
   }
-  if((appointmentsCache||[]).some(a => a.date === iso && a.status !== "cancelado")){
-    return agRmErro("Esse dia já tem cliente marcado. Cancele ou remaneje o pedido antes.");
-  }
-  if(!timesForDate(iso).length) return agRmErro("Esse dia já não tem horários abertos no site.");
+  if(falhou) showToast("Não foi possível remover " + agPlural(falhou, "horário", "horários") + ".", "error");
+  else showToast(agPlural(horas.length, "horário removido", "horários removidos") + ".", "success");
+  agMesCursor = agMesDaData(iso);
+  renderAgendaGuia();
+}
+ligar("rmdata-data", "change", agRmListar);
+ligar("rmdata-horas", "click", (e)=>{
+  const b = e.target.closest("[data-rmhora]");
+  if(!b) return;
+  const h = b.dataset.rmhora;
+  const i = agRmSelecionados.indexOf(h);
+  if(i === -1) agRmSelecionados.push(h); else agRmSelecionados.splice(i, 1);
+  b.classList.toggle("selected", i === -1);
+  agRmBotao();
+});
+ligar("rmdata-dia", "click", ()=>{
+  const iso = document.getElementById("rmdata-data").value;
   agRmFechar();
   agRemoverData(iso);
-}
+});
 ligar("ag-remover", "click", agRmAbrir);
 ligar("rmdata-salvar", "click", agRmConfirmar);
 ligar("rmdata-close", "click", agRmFechar);
