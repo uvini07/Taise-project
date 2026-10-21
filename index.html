@@ -1178,6 +1178,7 @@ table.appt-table{width:100%;border-collapse:collapse;}
   font-family:var(--sans);font-size:11.5px;font-weight:600;color:rgba(27,23,18,.55);white-space:nowrap;
 }
 .ag-add-dia:hover{border-color:var(--vinho);color:var(--vinho);border-style:solid;}
+.ag-rem-dia:hover{background:rgba(110,20,35,.08);}
 .ag-slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:10px;}
 .ag-slot{
   display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:7px;
@@ -2694,7 +2695,7 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
       </div>
       <div class="foot-col">
         <h5>Contato</h5>
-        <a href="tel:+5511960382670">(11) 96038-2670</a>
+        <a href="tel:+5511914564549">(11) 91456-4549</a>
         <a href="mailto:tarufino@gmail.com">tarufino@gmail.com</a>
         <!-- <a href="#">Studio Taise Foto, São Paulo</a> -->
       </div>
@@ -3606,7 +3607,9 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 ========================================================= */
 const CONFIG = {
   siteName: "Taise Foto",
-  contact: { phone: "(11) 96038-2670", email: "tarufino@gmail.com", whatsapp: "5511960382670" },
+  contact: { phone: "(11) 96038-2670", email: "tarufino@gmail.com", whatsapp: "5511960382670",
+    // Dúvidas, orçamentos e contato em geral. O número acima fica só para as reservas.
+    duvidasPhone: "(11) 91456-4549", duvidasWhatsapp: "5511914564549" },
   // Sem usuário/senha aqui: quem cuida do login é o Firebase Authentication.
   // Estas chaves não são segredo — elas apenas identificam o projeto. O que
   // protege os dados são as regras em firestore.rules.
@@ -3863,6 +3866,13 @@ const DOC_CONFIG_AGENDA = db.collection("config").doc("agenda");
    vaga aparecer no agendamento de quem está comprando. Só data e hora: nada
    de dado pessoal, igual à coleção "horarios". */
 let agendaExtras = {};
+// Datas removidas na guia "Agenda": a grade padrão desses dias some do site.
+let agendaBloqueadas = [];
+function normalizarBloqueadas(bruto){
+  return Array.from(new Set((Array.isArray(bruto) ? bruto : [])
+    .map(String).filter(iso => /^\d{4}-\d{2}-\d{2}$/.test(iso)))).sort();
+}
+function ehDataBloqueada(iso){ return agendaBloqueadas.indexOf(iso) !== -1; }
 const AGENDA_EXTRAS_KEY = "christmas-agenda-extras";
 function ehHoraValida(t){ return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(t||"")); }
 // Joga fora qualquer coisa fora do formato esperado: o painel grava o mapa
@@ -3884,6 +3894,7 @@ function extrasDaData(iso){ return agendaExtras[iso] || []; }
 function ehHorarioExtra(iso, hora){ return extrasDaData(iso).indexOf(String(hora||"")) !== -1; }
 async function lerAgendaExtras(){
   const doc = await DOC_CONFIG_AGENDA.get();
+  agendaBloqueadas = normalizarBloqueadas(doc.exists ? doc.data().bloqueadas : null);
   return normalizarExtras(doc.exists ? doc.data().extras : null);
 }
 
@@ -4194,7 +4205,7 @@ async function firebaseApi(payload){
     const jaExiste = (atual[iso]||[]).indexOf(hora) !== -1 || timesForDate(iso).indexOf(hora) !== -1;
     if(jaExiste) return { ok:false, reason:"duplicate" };
     atual[iso] = (atual[iso]||[]).concat([hora]).sort();
-    await DOC_CONFIG_AGENDA.set({ extras: atual });
+    await DOC_CONFIG_AGENDA.set({ extras: atual }, { merge:true });
     agendaExtras = atual;
     return { ok:true, extras: atual };
   }
@@ -4212,9 +4223,25 @@ async function firebaseApi(payload){
     if((atual[iso]||[]).indexOf(hora) === -1) return { ok:false, reason:"not_extra" };
     const restantes = atual[iso].filter(t => t !== hora);
     if(restantes.length) atual[iso] = restantes; else delete atual[iso];
-    await DOC_CONFIG_AGENDA.set({ extras: atual });
+    await DOC_CONFIG_AGENDA.set({ extras: atual }, { merge:true });
     agendaExtras = atual;
     return { ok:true, extras: atual };
+  }
+
+  // Remover data: tira a grade padrão do dia e os horários criados nele.
+  // Dia com cliente marcado não sai — o pedido precisa ser cancelado antes.
+  if(acao === "agendaRemoveDate"){
+    const iso = String(payload.date||"");
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return { ok:false, reason:"invalid_slot" };
+    const snapDia = await db.collection(COL_HORARIOS).where("date", "==", iso).get();
+    if(snapDia.docs.some(d => (d.data()||{}).status !== "cancelado")) return { ok:false, reason:"slot_taken" };
+    const atual = await lerAgendaExtras();
+    delete atual[iso];
+    const bloqueadas = normalizarBloqueadas(agendaBloqueadas.concat([iso]));
+    await DOC_CONFIG_AGENDA.set({ extras: atual, bloqueadas });
+    agendaExtras = atual;
+    agendaBloqueadas = bloqueadas;
+    return { ok:true, extras: atual, bloqueadas };
   }
 
   // Remanejar: muda data/hora do pedido nas duas colecoes de uma vez. As
@@ -5790,7 +5817,9 @@ function timesForDate(iso){
   if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd) return [];
   const map = CONFIG.dateTimes || {};
   let base;
-  if(Object.prototype.hasOwnProperty.call(map, iso)){
+  if(ehDataBloqueada(iso)){
+    base = [];
+  }else if(Object.prototype.hasOwnProperty.call(map, iso)){
     base = map[iso];
   }else{
     const dow = new Date(iso+"T12:00:00").getDay();
@@ -5927,7 +5956,7 @@ function abrirPolitica(e){
   // Clicáveis: é por aqui que a cliente exerce os direitos do art. 18, então
   // o canal tem de ser fácil de usar, não só estar escrito.
   if(mail) mail.innerHTML = `<a href="mailto:${escapeHtml(CONFIG.contact.email)}">${escapeHtml(CONFIG.contact.email)}</a>`;
-  if(fone) fone.innerHTML = `<a href="https://wa.me/${escapeHtml(CONFIG.contact.whatsapp)}" target="_blank" rel="noopener">${escapeHtml(CONFIG.contact.phone)}</a>`;
+  if(fone) fone.innerHTML = `<a href="https://wa.me/${escapeHtml(CONFIG.contact.duvidasWhatsapp)}" target="_blank" rel="noopener">${escapeHtml(CONFIG.contact.duvidasPhone)}</a>`;
   document.getElementById("politica-backdrop").classList.add("open");
 }
 function fecharPolitica(){ document.getElementById("politica-backdrop").classList.remove("open"); }
@@ -8641,6 +8670,7 @@ function renderAgendaGuia(){
           ${pend ? `<span class="ag-tag pend">${agPlural(pend, "pendente", "pendentes")}</span>` : ""}
           <span class="ag-tag livre">${agPlural(livres, "livre", "livres")}</span>
           <button class="ag-add-dia" data-novo="${dia.iso}">+ horário</button>
+          ${(conf || pend) ? "" : `<button class="ag-add-dia ag-rem-dia" data-remover-dia="${dia.iso}" title="Tirar este dia do site">Remover data</button>`}
         </div>
       </div>
       <div class="ag-slots">${dia.slots.map(s=>agSlotHtml(dia.iso, s)).join("")}</div>
@@ -8656,6 +8686,8 @@ ligar("ag-lista", "click", (e)=>{
     agApagarHorario(partes[0], partes[1]);
     return;
   }
+  const remDia = e.target.closest("[data-remover-dia]");
+  if(remDia){ agRemoverData(remDia.dataset.removerDia); return; }
   const novo = e.target.closest("[data-novo]");
   if(novo){ agAbrirModal(novo.dataset.novo); return; }
   const pedido = e.target.closest("[data-pedido]");
@@ -8777,6 +8809,28 @@ async function agApagarHorario(iso, hora){
   renderAgendaGuia();
 }
 
+async function agRemoverData(iso){
+  const ok = await pedirConfirmacao({
+    titulo: "Remover esta data?",
+    texto: "Todos os horários livres deste dia saem do site na hora. Se quiser abrir o dia de novo depois, use \"Criar horário\".",
+    itens: [ fmtDateLong(iso) ],
+    confirmar: "Remover data",
+    perigo: true
+  });
+  if(!ok) return;
+  const data = await apiPost({ action:"agendaRemoveDate", date:iso }, true);
+  if(data && data.reason === "unauthorized"){ handleUnauthorized(); return; }
+  if(data && data.reason === "slot_taken"){
+    showToast("Esse dia já tem cliente. Cancele ou remaneje o pedido antes de remover a data.", "error");
+    return;
+  }
+  if(!data || !data.ok){ showToast("Não foi possível remover a data.", "error"); return; }
+  agendaExtras = normalizarExtras(data.extras);
+  agendaBloqueadas = normalizarBloqueadas(data.bloqueadas);
+  showToast("Data removida: " + fmtDateBR(iso), "success");
+  renderAgendaGuia();
+}
+
 ligar("ag-novo", "click", ()=> agAbrirModal(null));
 ligar("slot-salvar", "click", agCriarHorario);
 ligar("slot-close", "click", agFecharModal);
@@ -8849,9 +8903,9 @@ window.addEventListener("hashchange", ()=>{
   if(location.hash === "#admin" && !isAdmin) openLogin();
 });
 
-// Aponta a bolinha flutuante e o ícone do rodapé para o WhatsApp definido em CONFIG.contact.whatsapp.
+// Aponta a bolinha flutuante e o ícone do rodapé para o WhatsApp de dúvidas (CONFIG.contact.duvidasWhatsapp).
 function initWhatsappLinks(){
-  const link = "https://wa.me/"+CONFIG.contact.whatsapp;
+  const link = "https://wa.me/"+CONFIG.contact.duvidasWhatsapp;
   document.querySelectorAll('#whatsapp-fab, a[aria-label="WhatsApp"]').forEach(a=>{
     a.href = link;
     a.target = "_blank";
