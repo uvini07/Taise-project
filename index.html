@@ -3160,23 +3160,27 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   <div class="book-modal" style="max-width:430px;">
     <div class="book-head">
       <div class="book-head-top">
-        <h3>Remover data</h3>
+        <h3>Remover horário ou data</h3>
         <button class="book-close" id="rmdata-close" aria-label="Fechar">&times;</button>
       </div>
     </div>
     <div class="book-body">
       <p class="ag-modal-nota">
-        Todos os horários livres do dia saem do site <b>na hora</b>. Dias com cliente
-        marcado não podem ser removidos.
+        Escolha o horário para tirar só ele, ou deixe o horário vazio para tirar
+        <b>o dia inteiro</b>. Sai do site na hora. Horários com cliente marcado não podem ser removidos.
       </p>
       <div class="ag-modal-erro" id="rmdata-erro"></div>
       <div class="field">
         <label for="rmdata-data">Data</label>
         <input type="date" id="rmdata-data">
       </div>
+      <div class="field">
+        <label for="rmdata-hora">Horário (deixe vazio para o dia inteiro)</label>
+        <input type="time" id="rmdata-hora" step="900">
+      </div>
       <div class="c-actions" style="display:flex;gap:10px;margin-top:4px;">
         <button class="btn-outline" id="rmdata-cancelar" style="flex:1;justify-content:center;">Voltar</button>
-        <button class="btn-solid btn-danger" id="rmdata-salvar" style="flex:1;justify-content:center;">Remover data</button>
+        <button class="btn-solid btn-danger" id="rmdata-salvar" style="flex:1;justify-content:center;">Remover</button>
       </div>
     </div>
   </div>
@@ -3474,7 +3478,7 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <button class="tab-btn" data-filtro="ocupados">Só marcados</button>
         <button class="tab-btn" data-filtro="livres">Só livres</button>
       </div>
-      <button class="btn-solid btn-danger" id="ag-remover" style="padding:11px 20px;font-size:13px;margin-left:auto;">Remover data</button>
+      <button class="btn-solid btn-danger" id="ag-remover" style="padding:11px 20px;font-size:13px;margin-left:auto;">− Remover horário</button>
       <button class="btn-solid" id="ag-novo" style="padding:11px 20px;font-size:13px;">+ Criar horário</button>
     </div>
 
@@ -3929,6 +3933,9 @@ function normalizarBloqueadas(bruto){
     .map(String).filter(iso => /^\d{4}-\d{2}-\d{2}$/.test(iso)))).sort();
 }
 function ehDataBloqueada(iso){ return agendaBloqueadas.indexOf(iso) !== -1; }
+// Horários da grade padrão tirados um a um na guia "Agenda": { "2026-11-05": ["10:00"] }.
+let agendaRemovidos = {};
+function ehHorarioRemovido(iso, hora){ return (agendaRemovidos[iso]||[]).indexOf(hora) !== -1; }
 const AGENDA_EXTRAS_KEY = "christmas-agenda-extras";
 function ehHoraValida(t){ return /^([01]\d|2[0-3]):([0-5]\d)$/.test(String(t||"")); }
 // Joga fora qualquer coisa fora do formato esperado: o painel grava o mapa
@@ -3951,6 +3958,7 @@ function ehHorarioExtra(iso, hora){ return extrasDaData(iso).indexOf(String(hora
 async function lerAgendaExtras(){
   const doc = await DOC_CONFIG_AGENDA.get();
   agendaBloqueadas = normalizarBloqueadas(doc.exists ? doc.data().bloqueadas : null);
+  agendaRemovidos = normalizarExtras(doc.exists ? doc.data().removidos : null);
   return normalizarExtras(doc.exists ? doc.data().extras : null);
 }
 
@@ -4258,6 +4266,14 @@ async function firebaseApi(payload){
     if(!/^\d{4}-\d{2}-\d{2}$/.test(iso) || !ehHoraValida(hora)) return { ok:false, reason:"invalid_slot" };
     if(iso < CONFIG.seasonStart || iso > CONFIG.seasonEnd) return { ok:false, reason:"out_of_season" };
     const atual = await lerAgendaExtras();
+    if(ehHorarioRemovido(iso, hora)){
+      const rem = Object.assign({}, agendaRemovidos);
+      rem[iso] = rem[iso].filter(t => t !== hora);
+      if(!rem[iso].length) delete rem[iso];
+      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { merge:true });
+      agendaRemovidos = rem;
+      return { ok:true, extras: atual, removidos: rem };
+    }
     const jaExiste = (atual[iso]||[]).indexOf(hora) !== -1 || timesForDate(iso).indexOf(hora) !== -1;
     if(jaExiste) return { ok:false, reason:"duplicate" };
     atual[iso] = (atual[iso]||[]).concat([hora]).sort();
@@ -4276,7 +4292,15 @@ async function firebaseApi(payload){
     const ocupado = snapSlot.docs.some(d => (d.data()||{}).status !== "cancelado");
     if(ocupado) return { ok:false, reason:"slot_taken" };
     const atual = await lerAgendaExtras();
-    if((atual[iso]||[]).indexOf(hora) === -1) return { ok:false, reason:"not_extra" };
+    if((atual[iso]||[]).indexOf(hora) === -1){
+      // Horário da grade padrão: fica guardado como removido daquele dia.
+      if(timesForDate(iso).indexOf(hora) === -1) return { ok:false, reason:"not_found" };
+      const rem = Object.assign({}, agendaRemovidos);
+      rem[iso] = Array.from(new Set((rem[iso]||[]).concat([hora]))).sort();
+      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { merge:true });
+      agendaRemovidos = rem;
+      return { ok:true, extras: atual, removidos: rem };
+    }
     const restantes = atual[iso].filter(t => t !== hora);
     if(restantes.length) atual[iso] = restantes; else delete atual[iso];
     await DOC_CONFIG_AGENDA.set({ extras: atual }, { merge:true });
@@ -4294,7 +4318,7 @@ async function firebaseApi(payload){
     const atual = await lerAgendaExtras();
     delete atual[iso];
     const bloqueadas = normalizarBloqueadas(agendaBloqueadas.concat([iso]));
-    await DOC_CONFIG_AGENDA.set({ extras: atual, bloqueadas });
+    await DOC_CONFIG_AGENDA.set({ extras: atual, bloqueadas }, { merge:true });
     agendaExtras = atual;
     agendaBloqueadas = bloqueadas;
     return { ok:true, extras: atual, bloqueadas };
@@ -5885,6 +5909,7 @@ function timesForDate(iso){
   // Os horários criados na guia "Agenda" valem como qualquer outro. Por isso
   // um dia fechado (ou um fim de semana sem grade) volta a abrir quando o
   // painel cria um horário nele.
+  base = base.filter(t => !ehHorarioRemovido(iso, t));
   const extras = extrasDaData(iso).filter(t => base.indexOf(t) === -1);
   return extras.length ? base.concat(extras).sort() : base;
 }
@@ -8637,7 +8662,7 @@ function agSlotHtml(iso, s){
   const marcas = [];
   if(s.extra) marcas.push('<span class="ag-mini extra">criado por você</span>');
   if(s.meia)  marcas.push('<span class="ag-mini meia">só Família</span>');
-  const apagar = s.extra
+  const apagar = !s.meia
     ? `<button class="s-remove" data-apagar="${iso}|${s.hora}" title="Apagar este horário" aria-label="Apagar o horário ${s.hora}">&times;</button>`
     : "";
   return `<div class="ag-slot livre">
@@ -8837,6 +8862,7 @@ async function agCriarHorario(){
   if(!data || !data.ok) return agMostrarErro(agMotivoErro(data));
 
   agendaExtras = normalizarExtras(data.extras);
+  if(data.removidos) agendaRemovidos = normalizarExtras(data.removidos);
   agFecharModal();
   showToast("Horário criado: " + fmtDateBR(iso) + " às " + hora, "success");
   // Pula para o mes do horario criado, para a vaga aparecer na tela na hora.
@@ -8847,7 +8873,7 @@ async function agCriarHorario(){
 async function agApagarHorario(iso, hora){
   const ok = await pedirConfirmacao({
     titulo: "Apagar este horário?",
-    texto: "A vaga sai do site na hora. Só dá para apagar horários criados aqui no painel, e só enquanto estão livres.",
+    texto: "A vaga sai do site na hora. Só dá para apagar horários livres. Para abrir de novo, use \"Criar horário\".",
     itens: [ fmtDateLong(iso), "Horário: " + hora ],
     confirmar: "Apagar horário",
     perigo: true
@@ -8861,6 +8887,7 @@ async function agApagarHorario(iso, hora){
   }
   if(!data || !data.ok){ showToast("Não foi possível apagar o horário.", "error"); return; }
   agendaExtras = normalizarExtras(data.extras);
+  if(data.removidos) agendaRemovidos = normalizarExtras(data.removidos);
   showToast("Horário apagado.", "success");
   renderAgendaGuia();
 }
@@ -8902,6 +8929,7 @@ function agRmAbrir(){
   campo.min = CONFIG.seasonStart;
   campo.max = CONFIG.seasonEnd;
   campo.value = agDataSugerida();
+  document.getElementById("rmdata-hora").value = "";
   agRmErro("");
   document.getElementById("rmdata-backdrop").classList.add("open");
   document.body.style.overflow = "hidden";
@@ -8909,6 +8937,16 @@ function agRmAbrir(){
 function agRmConfirmar(){
   const iso = document.getElementById("rmdata-data").value;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return agRmErro("Escolha a data.");
+  const hora = document.getElementById("rmdata-hora").value;
+  if(hora){
+    if(timesForDate(iso).indexOf(hora) === -1) return agRmErro("Esse horário não está aberto no dia " + fmtDateBR(iso) + ".");
+    if((appointmentsCache||[]).some(a => a.date === iso && a.time === hora && a.status !== "cancelado")){
+      return agRmErro("Esse horário já tem cliente. Cancele ou remaneje o pedido antes.");
+    }
+    agRmFechar();
+    agApagarHorario(iso, hora);
+    return;
+  }
   if((appointmentsCache||[]).some(a => a.date === iso && a.status !== "cancelado")){
     return agRmErro("Esse dia já tem cliente marcado. Cancele ou remaneje o pedido antes.");
   }
