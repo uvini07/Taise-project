@@ -14,7 +14,7 @@
       - Executar como: Eu (sua conta)
       - Quem pode acessar: Qualquer pessoa
    7. Copie a URL gerada (termina em /exec) e cole em CONFIG.sheetsApiUrl
-      no arquivo do site (taisefotonatal2.html).
+      no arquivo do site (index.html).
    8. Sempre que editar este script, é preciso implantar de novo
       (Implantar > Gerenciar implantações > editar o ícone de lápis >
       Versão: Nova versão > Implantar). Só editar o código no editor NÃO
