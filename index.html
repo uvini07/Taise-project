@@ -3127,6 +3127,32 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
 </div>
 
 <!-- ================= CRIAR HORÁRIO (GUIA AGENDA) ================= -->
+<div class="modal-backdrop" id="rmdata-backdrop">
+  <div class="book-modal" style="max-width:430px;">
+    <div class="book-head">
+      <div class="book-head-top">
+        <h3>Remover data</h3>
+        <button class="book-close" id="rmdata-close" aria-label="Fechar">&times;</button>
+      </div>
+    </div>
+    <div class="book-body">
+      <p class="ag-modal-nota">
+        Todos os horários livres do dia saem do site <b>na hora</b>. Dias com cliente
+        marcado não podem ser removidos.
+      </p>
+      <div class="ag-modal-erro" id="rmdata-erro"></div>
+      <div class="field">
+        <label for="rmdata-data">Data</label>
+        <input type="date" id="rmdata-data">
+      </div>
+      <div class="c-actions" style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-outline" id="rmdata-cancelar" style="flex:1;justify-content:center;">Voltar</button>
+        <button class="btn-solid btn-danger" id="rmdata-salvar" style="flex:1;justify-content:center;">Remover data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="slot-backdrop">
   <div class="book-modal" style="max-width:430px;">
     <div class="book-head">
@@ -3419,7 +3445,8 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
         <button class="tab-btn" data-filtro="ocupados">Só marcados</button>
         <button class="tab-btn" data-filtro="livres">Só livres</button>
       </div>
-      <button class="btn-solid" id="ag-novo" style="padding:11px 20px;font-size:13px;margin-left:auto;">+ Criar horário</button>
+      <button class="btn-solid btn-danger" id="ag-remover" style="padding:11px 20px;font-size:13px;margin-left:auto;">Remover data</button>
+      <button class="btn-solid" id="ag-novo" style="padding:11px 20px;font-size:13px;">+ Criar horário</button>
     </div>
 
     <div class="fin-grid">
@@ -8830,6 +8857,41 @@ async function agRemoverData(iso){
   showToast("Data removida: " + fmtDateBR(iso), "success");
   renderAgendaGuia();
 }
+
+/* ---- modal "Remover data" (botão vermelho do topo) ---- */
+function agRmErro(msg){
+  const el = document.getElementById("rmdata-erro");
+  el.textContent = msg || "";
+  el.classList.toggle("visivel", !!msg);
+}
+function agRmFechar(){
+  document.getElementById("rmdata-backdrop").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function agRmAbrir(){
+  const campo = document.getElementById("rmdata-data");
+  campo.min = CONFIG.seasonStart;
+  campo.max = CONFIG.seasonEnd;
+  campo.value = agDataSugerida();
+  agRmErro("");
+  document.getElementById("rmdata-backdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+function agRmConfirmar(){
+  const iso = document.getElementById("rmdata-data").value;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return agRmErro("Escolha a data.");
+  if((appointmentsCache||[]).some(a => a.date === iso && a.status !== "cancelado")){
+    return agRmErro("Esse dia já tem cliente marcado. Cancele ou remaneje o pedido antes.");
+  }
+  if(!timesForDate(iso).length) return agRmErro("Esse dia já não tem horários abertos no site.");
+  agRmFechar();
+  agRemoverData(iso);
+}
+ligar("ag-remover", "click", agRmAbrir);
+ligar("rmdata-salvar", "click", agRmConfirmar);
+ligar("rmdata-close", "click", agRmFechar);
+ligar("rmdata-cancelar", "click", agRmFechar);
+ligar("rmdata-backdrop", "click", (e)=>{ if(e.target.id === "rmdata-backdrop") agRmFechar(); });
 
 ligar("ag-novo", "click", ()=> agAbrirModal(null));
 ligar("slot-salvar", "click", agCriarHorario);
