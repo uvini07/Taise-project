@@ -4271,14 +4271,14 @@ async function firebaseApi(payload){
       const rem = Object.assign({}, agendaRemovidos);
       rem[iso] = rem[iso].filter(t => t !== hora);
       if(!rem[iso].length) delete rem[iso];
-      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { merge:true });
+      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { mergeFields:['removidos'] });
       agendaRemovidos = rem;
       return { ok:true, extras: atual, removidos: rem };
     }
     const jaExiste = (atual[iso]||[]).indexOf(hora) !== -1 || timesForDate(iso).indexOf(hora) !== -1;
     if(jaExiste) return { ok:false, reason:"duplicate" };
     atual[iso] = (atual[iso]||[]).concat([hora]).sort();
-    await DOC_CONFIG_AGENDA.set({ extras: atual }, { merge:true });
+    await DOC_CONFIG_AGENDA.set({ extras: atual }, { mergeFields:['extras'] });
     agendaExtras = atual;
     return { ok:true, extras: atual };
   }
@@ -4298,13 +4298,13 @@ async function firebaseApi(payload){
       if(timesForDate(iso).indexOf(hora) === -1) return { ok:false, reason:"not_found" };
       const rem = Object.assign({}, agendaRemovidos);
       rem[iso] = Array.from(new Set((rem[iso]||[]).concat([hora]))).sort();
-      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { merge:true });
+      await DOC_CONFIG_AGENDA.set({ removidos: rem }, { mergeFields:['removidos'] });
       agendaRemovidos = rem;
       return { ok:true, extras: atual, removidos: rem };
     }
     const restantes = atual[iso].filter(t => t !== hora);
     if(restantes.length) atual[iso] = restantes; else delete atual[iso];
-    await DOC_CONFIG_AGENDA.set({ extras: atual }, { merge:true });
+    await DOC_CONFIG_AGENDA.set({ extras: atual }, { mergeFields:['extras'] });
     agendaExtras = atual;
     return { ok:true, extras: atual };
   }
@@ -4319,7 +4319,7 @@ async function firebaseApi(payload){
     const atual = await lerAgendaExtras();
     delete atual[iso];
     const bloqueadas = normalizarBloqueadas(agendaBloqueadas.concat([iso]));
-    await DOC_CONFIG_AGENDA.set({ extras: atual, bloqueadas }, { merge:true });
+    await DOC_CONFIG_AGENDA.set({ extras: atual, bloqueadas }, { mergeFields:['extras','bloqueadas'] });
     agendaExtras = atual;
     agendaBloqueadas = bloqueadas;
     return { ok:true, extras: atual, bloqueadas };
@@ -8867,6 +8867,9 @@ async function agCriarHorario(){
   agFecharModal();
   showToast("Horário criado: " + fmtDateBR(iso) + " às " + hora, "success");
   // Pula para o mes do horario criado, para a vaga aparecer na tela na hora.
+  // O filtro "Ocupados" esconderia a vaga livre recem-criada, entao volta a "Tudo".
+  agFiltro = "tudo";
+  document.querySelectorAll("#ag-filtro .tab-btn").forEach(b=>b.classList.toggle("active", b.dataset.filtro === "tudo"));
   agMesCursor = agMesDaData(iso);
   renderAgendaGuia();
 }
