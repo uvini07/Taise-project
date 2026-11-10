@@ -3700,8 +3700,8 @@ const CONFIG = {
       benefits: ["20 fotos digitais", "35 minutos de sessão", "Sem troca de look", "Criança, pais e irmãos", "1 cenário"],
       featured: false,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 80 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 420,00", vagas: 40 },
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 380,00", vagas: 80, esgotado: true },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 420,00", vagas: 40, esgotado: true },
         { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 490,00", vagas: null }
       ]
     },
@@ -3716,8 +3716,8 @@ const CONFIG = {
       benefits: ["Todas as melhores fotos", "45 minutos de sessão", "1 troca de look", "1 cenário", "1 clipe emocionante da sessão", "Avós inclusos"],
       featured: true,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 650,00", vagas: 20 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 700,00", vagas: 40 },
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 650,00", vagas: 20, esgotado: true },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 700,00", vagas: 40, esgotado: true },
         { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 750,00", vagas: null }
       ]
     },
@@ -3732,8 +3732,8 @@ const CONFIG = {
       benefits: ["Experiência de Natal completa", "Todas as melhores fotos", "1h de sessão", "1 troca de look", "2 cenários (Natal e Ano Novo)", "1 vídeo emocionante da sessão", "1 box acrílico com 50 fotos reveladas 10x15"],
       featured: false,
       lots: [
-        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 800,00", vagas: 20 },
-        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 850,00", vagas: 40 },
+        { label: "1º Lote", start: "2026-11-01", end: "2026-11-14", price: "R$ 800,00", vagas: 20, esgotado: true },
+        { label: "2º Lote", start: "2026-11-15", end: "2026-11-30", price: "R$ 850,00", vagas: 40, esgotado: true },
         { label: "3º Lote", start: "2026-12-01", end: "2026-12-20", price: "R$ 900,00", vagas: null }
       ]
     }
@@ -5140,7 +5140,11 @@ function renderPackages(){
       <div class="pack-lots">
         ${p.lots.map(l=>{
           const rem = getLotRemaining(p, l);
-          const soldOut = rem===0;
+          const soldOut = l.esgotado || rem===0;
+          if(l.esgotado) return `
+          <div class="pack-lot-box sold-out">
+            <div class="plb-top"><span class="plb-label">${l.label}</span><span class="plb-price">Esgotado</span></div>
+          </div>`;
           return `
           <div class="pack-lot-box ${activeLot && activeLot.label===l.label ? "active":""} ${soldOut?"sold-out":"clickable"}"
                ${soldOut ? "" : `data-pkg="${p.id}" data-lot="${l.label}" role="button" tabindex="0" aria-label="Agendar ${p.name} no ${l.label} por ${l.price}"`}>
@@ -5151,6 +5155,12 @@ function renderPackages(){
             ${soldOut ? "" : `<span class="plb-cta">Toque para agendar neste lote →</span>`}
           </div>`;
         }).join("")}
+        ${(()=>{ const ult = p.lots[p.lots.length-1]; const fixo = p.lots[0].price; return `
+          <div class="pack-lot-box clickable" data-pkg="${p.id}" data-lot="${ult.label}" role="button" tabindex="0" aria-label="Agendar ${p.name} na semana por ${fixo}">
+            <div class="plb-top"><span class="plb-label">Agenda na semana</span><span class="plb-price">${fixo}</span></div>
+            <span class="plb-period">Valor fixo · segunda a sexta</span>
+            <span class="plb-cta">Toque para agendar →</span>
+          </div>`; })()}
       </div>` : `<div class="pack-price"><span class="val">${p.price}</span></div><span class="pack-parcela">${parcela5x(p.price)}</span>`}
       <ul class="pack-benefits">
         ${p.benefits.map(b=>`<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>${b}</li>`).join("")}
@@ -5687,7 +5697,7 @@ function renderLotChoices(){
   if(!p.lots){ wrap.innerHTML = ""; document.getElementById("s1-next").disabled = false; renderTotalResumo(); return; }
   wrap.innerHTML = `<p class="lot-choices-title">Escolha o lote</p>` + p.lots.map(l=>{
     const rem = getLotRemaining(p, l);
-    const soldOut = rem===0;
+    const soldOut = l.esgotado || rem===0;
     return `
     <div class="lot-choice ${booking.lotLabel===l.label ? "selected":""} ${soldOut?"disabled":""}" data-lot="${l.label}">
       <div><div class="lname">${l.label} <span class="lprice">${l.price}</span></div>
