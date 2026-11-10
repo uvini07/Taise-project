@@ -5155,8 +5155,8 @@ function renderPackages(){
             ${soldOut ? "" : `<span class="plb-cta">Toque para agendar neste lote →</span>`}
           </div>`;
         }).join("")}
-        ${(()=>{ const ult = p.lots[p.lots.length-1]; const fixo = p.lots[0].price; return `
-          <div class="pack-lot-box clickable" data-pkg="${p.id}" data-lot="${ult.label}" role="button" tabindex="0" aria-label="Agendar ${p.name} na semana por ${fixo}">
+        ${(()=>{ const fixo = p.lots[0].price; return `
+          <div class="pack-lot-box clickable" data-pkg="${p.id}" data-lot="semana" role="button" tabindex="0" aria-label="Agendar ${p.name} na semana por ${fixo}">
             <div class="plb-top"><span class="plb-label">Agenda na semana</span><span class="plb-price">${fixo}</span></div>
             <span class="plb-period">Valor fixo · segunda a sexta</span>
             <span class="plb-cta">Toque para agendar →</span>
@@ -5597,12 +5597,14 @@ const bookBackdrop = document.getElementById("book-backdrop");
 function openBooking(pkgId, lotLabel){
   const pkg = pkgById(pkgId);
   let lot = null;
-  if(pkg && pkg.lots && lotLabel){
+  const semana = lotLabel === "semana";
+  if(semana && pkg && pkg.lots) lot = loteDaSemana(pkg);
+  else if(pkg && pkg.lots && lotLabel){
     const alvo = pkg.lots.find(l=>l.label===lotLabel);
     // so pre-seleciona se o lote ainda tiver vaga
     if(alvo && getLotRemaining(pkg, alvo)!==0) lot = alvo.label;
   }
-  booking = { packageId: pkgId||null, lotLabel: lot, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[], addonQtd:{} };
+  booking = { packageId: pkgId||null, lotLabel: lot, semana, date:null, time:null, name:"", phone:"", email:"", notes:"", vip:false, addons:[], addonQtd:{} };
   currentStep = 1;
   calCursor = new Date();
   limparCamposPessoais();
@@ -5677,7 +5679,7 @@ function renderPkgChoices(){
   wrap.querySelectorAll(".pkg-choice").forEach(el=>{
     el.addEventListener("click", ()=>{
       booking.packageId = el.dataset.pkg;
-      booking.lotLabel = null;
+      booking.lotLabel = null; booking.semana = false;
       wrap.querySelectorAll(".pkg-choice").forEach(o=>o.classList.remove("selected"));
       el.classList.add("selected");
       renderLotChoices();
@@ -5699,15 +5701,21 @@ function renderLotChoices(){
     const rem = getLotRemaining(p, l);
     const soldOut = l.esgotado || rem===0;
     return `
-    <div class="lot-choice ${booking.lotLabel===l.label ? "selected":""} ${soldOut?"disabled":""}" data-lot="${l.label}">
+    <div class="lot-choice ${!booking.semana && booking.lotLabel===l.label ? "selected":""} ${soldOut?"disabled":""}" data-lot="${l.label}">
       <div><div class="lname">${l.label} <span class="lprice">${l.price}</span></div>
       <div class="lperiod">${fmtLotPeriod(l)}</div></div>
       ${soldOut ? `<div class="lvagas">Esgotado</div>` : ""}
     </div>`;
-  }).join("");
+  }).join("") + `
+    <div class="lot-choice ${booking.semana ? "selected":""}" data-lot="semana">
+      <div><div class="lname">Agenda na semana <span class="lprice">${p.lots[0].price}</span></div>
+      <div class="lperiod">Valor fixo · segunda a sexta · a partir de ${fmtDateBR(semanaPrimeiraData())}</div></div>
+    </div>`;
   wrap.querySelectorAll(".lot-choice:not(.disabled)").forEach(el=>{
     el.addEventListener("click", ()=>{
-      booking.lotLabel = el.dataset.lot;
+      booking.semana = el.dataset.lot === "semana";
+      booking.lotLabel = booking.semana ? loteDaSemana(p) : el.dataset.lot;
+      booking.date = null; booking.time = null;
       wrap.querySelectorAll(".lot-choice").forEach(o=>o.classList.remove("selected"));
       el.classList.add("selected");
       document.getElementById("s1-next").disabled = false;
@@ -5858,8 +5866,27 @@ function renderTotalResumo(){
 }
 
 /* ---- AGENDA: horarios disponiveis por data ---- */
+/* "Agenda na semana": qualquer data de segunda a sexta da temporada, no valor
+   fixo (1o lote), sempre com pelo menos 2 dias de antecedencia.
+   Ex.: hoje segunda -> a partir de quarta; terca dia 20 -> a partir de quinta 22. */
+function loteDaSemana(pkg){
+  const abertos = (pkg.lots||[]).filter(l => !l.esgotado && getLotRemaining(pkg, l)!==0);
+  return (abertos[abertos.length-1] || pkg.lots[pkg.lots.length-1]).label;
+}
+function semanaPrimeiraData(){
+  const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()+2);
+  return toISODate(d);
+}
+function semanaDataOk(iso){
+  const dow = new Date(iso+"T12:00:00").getDay();
+  return dow>=1 && dow<=5 && iso >= semanaPrimeiraData();
+}
 function seasonRange(lot, isVip){
   let start = CONFIG.seasonStart, end = CONFIG.seasonEnd;
+  if(booking.semana && !isVip){
+    const min = semanaPrimeiraData();
+    return { start: min > start ? min : start, end };
+  }
   if(lot && !isVip){
     if(lot.start > start) start = lot.start;
     if(lot.end   < end)   end   = lot.end;
@@ -5953,7 +5980,7 @@ function renderCalendar(){
     const iso = toISODate(dateObj);
     const isPast = dateObj < today;
     const isOutOfRange = iso < range.start || iso > range.end;
-    const isDisabled = isPast || isOutOfRange || timesForDate(iso).length === 0;
+    const isDisabled = isPast || isOutOfRange || (booking.semana && !booking.vip && !semanaDataOk(iso)) || timesForDate(iso).length === 0;
     const isToday = toISODate(today) === iso;
     const isSelected = booking.date === iso;
     html += `<div class="cal-day ${isDisabled?"disabled":""} ${isToday?"today":""} ${isSelected?"selected":""}" data-iso="${isDisabled?"":iso}">${d}</div>`;
