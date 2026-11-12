@@ -1,0 +1,9 @@
+{
+  "name": "taise-site-natal",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "jose": "^6.2.17"
+  }
+}

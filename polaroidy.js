@@ -6,8 +6,8 @@
 
    Como funciona:
    - O botão só aparece dentro do painel (#admin-view), com a Taíse logada.
-   - As perguntas vão para a função da Vercel do projeto novo
-     (CONFIG.polaroidyApi → /api/polaroid-natal), que só conversa com a IA.
+   - As perguntas vão para a função da Vercel deste projeto
+     (CONFIG.polaroidyApi → api/polaroid-natal.js, neste projeto), que só conversa com a IA.
    - Os dados (agendamentos, pagamentos, VIP) NÃO saem do painel por conta
      própria: a IA pede uma "ferramenta", este arquivo responde lendo o
      appointmentsCache já carregado com o login da Taíse.

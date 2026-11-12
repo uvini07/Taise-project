@@ -3740,9 +3740,9 @@ const CONFIG = {
   ],
   // TEMPORADA: nenhuma reserva e aceita antes de seasonStart nem depois de
   // seasonEnd, valendo tambem para VIP e para qualquer lote.
-  // POLAROIDY (assistente com IA do painel): endereço da função na Vercel do
-  // projeto novo. Troque pelo domínio real, ex.: "https://SEU-DOMINIO/api/polaroid-natal".
-  polaroidyApi: "https://SEU-DOMINIO-DA-VERCEL/api/polaroid-natal",
+  // POLAROIDY (assistente com IA do painel): função da Vercel deste projeto
+  // (api/polaroid-natal.js), que usa a chave API_CLAUDE_KEY.
+  polaroidyApi: "/api/polaroid-natal",
   seasonStart: "2026-11-01",
   seasonEnd: "2026-12-20",
   // MEIA HORA DO PACOTE FAMILIA: a partir de "inicio", todo Pacote Familia
