@@ -45,6 +45,14 @@
     });
     return out;
   };
+  // Itens adicionais do pedido em texto ("Box acrílico × 2, Cenário extra"), ou "".
+  const adicionaisDe = (a) => {
+    if (a && a.addons) return String(a.addons).trim();
+    try {
+      const { ids, qtd } = addonsDoPedido(a);
+      return ids.map(id => { const it = addonPorId(id); if (!it) return ""; return it.nome + (qtd[id] > 1 ? " × " + qtd[id] : ""); }).filter(Boolean).join(", ");
+    } catch (e) { return ""; }
+  };
   const ativos = () => (appointmentsCache || []).filter(a => a.status !== "cancelado");
   const ordem = (a, b) => (a.date + a.time).localeCompare(b.date + b.time);
   const SITUACAO = { pendente: "Aguardando confirmação", confirmado: "Confirmado", cancelado: "Cancelado" };
@@ -53,6 +61,7 @@
     data: a.date, hora: a.time, cliente: a.name || "", pacote: a.package || "", lote: a.lot || "",
     situacao: SITUACAO[a.status] || a.status, pagamento: PAG[pgSituacaoDe(a)],
     total: brl(pgTotalDe(a)), recebido: brl(pgRecebido(a)), whatsapp: a.phone || "",
+    adicionais: adicionaisDe(a) ? adicionaisDe(a) + (a.addonsValor ? " (" + a.addonsValor + ")" : "") : "Nenhum",
     uso_de_imagem: a.usoImagem === "sim" ? "Autorizou" : a.usoImagem === "nao" ? "Não autorizou" : "Não informado (pedido antigo, antes da pergunta)",
     pet: !a.petLeva ? "Não informado (pedido antigo)" : a.petLeva === "sim" ? "Vai levar" + ([a.petRaca, a.petPorte].filter(Boolean).length ? " (" + [a.petRaca, a.petPorte].filter(Boolean).join(", porte ") + ")" : "") : "Não vai levar",
   });
@@ -113,7 +122,7 @@
     cliente({ nome }) {
       const l = (appointmentsCache || []).filter(a => mesmoNome(a.name, nome)).sort(ordem);
       if (!l.length) return { forModel: { encontrado: false } };
-      return { forModel: { encontrado: true, pedidos: l.slice(0, 10).map(a => Object.assign(resumo(a), { email: a.email || "", adicionais: a.addonsValor || "", observacoes: a.notes || "" })) }, ui: { links: botoesConversa(l, 3) } };
+      return { forModel: { encontrado: true, pedidos: l.slice(0, 10).map(a => Object.assign(resumo(a), { email: a.email || "", observacoes: a.notes || "" })) }, ui: { links: botoesConversa(l, 3) } };
     },
     horarios_livres({ data }) {
       const dia = okDia(data) ? data : hojeISO();
@@ -336,7 +345,10 @@
     const deHoje = ativos().filter(a => a.date === hoje).sort(ordem);
     const pend = (appointmentsCache || []).filter(a => a.status === "pendente").length;
     let txt = "Oi, Taíse! Sou a **Polaroidy**, sua assistente. 📸\n";
-    txt += deHoje.length ? "- Hoje: **" + deHoje.map(a => a.time + " " + primeiro(a.name)).join(", ") + "**\n" : "- Nenhum ensaio hoje.\n";
+    if (deHoje.length) {
+      txt += "Hoje:\n";
+      deHoje.forEach(a => { const ad = adicionaisDe(a); txt += "- **" + a.time + " " + primeiro(a.name) + "** · " + (ad ? "adicionais: " + ad : "sem adicionais") + "\n"; });
+    } else txt += "- Nenhum ensaio hoje.\n";
     if (pend) txt += "- **" + pend + "** pedido" + (pend > 1 ? "s" : "") + " aguardando confirmação\n";
     txt += "Pergunte sobre agenda, pagamentos, vendas ou peça um texto.";
     bolha("ela", formatar(txt));
