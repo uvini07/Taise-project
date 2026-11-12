@@ -2410,6 +2410,10 @@ body:has(#login-backdrop.open) #aviso-dados{display:none !important;}
   .atb-tab svg{display:block;width:22px;height:22px;}
   #admin-view .admin-body{padding-bottom:110px;} /* espaço para o botão da Polaroidy */
 }
+.vip-expandir{padding:8px 16px;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;}
+.vip-expandir::after{content:"";width:7px;height:7px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s;}
+.vip-expandir[aria-expanded="true"]::after{transform:rotate(-135deg) translate(-2px,0);}
+#vip-corpo[hidden]{display:none !important;}
 </style>
 </head>
 <body>
@@ -3346,8 +3350,10 @@ body:has(#login-backdrop.open) #aviso-dados{display:none !important;}
           <span id="vip-switch-lbl">Card VIP desligado</span>
           <label class="vip-switch"><input type="checkbox" id="vip-enable-toggle"><span class="vip-switch-track"></span></label>
         </label>
+        <!-- O resto da Lista VIP fica recolhido por padrão; abre só no clique. -->
+        <button type="button" class="btn-outline vip-expandir" id="vip-expandir" aria-expanded="false" aria-controls="vip-corpo">Mostrar tudo</button>
       </div>
-      <div style="padding:22px 24px;">
+      <div id="vip-corpo" style="padding:22px 24px;" hidden>
         <p style="font-size:13px;color:rgba(27,23,18,.6);margin:0 0 6px;max-width:640px;">
           Ligue a chave acima para o card VIP aparecer no site (limite de 20 cadastros).
         </p>
@@ -9154,6 +9160,15 @@ function initWhatsappLinks(){
     a.rel = "noopener";
   });
 }
+// Lista VIP recolhida por padrão: o botão abre e fecha as opções.
+ligar("vip-expandir", "click", ()=>{
+  const b = document.getElementById("vip-expandir");
+  const corpo = document.getElementById("vip-corpo");
+  const abrir = corpo.hidden;
+  corpo.hidden = !abrir;
+  b.setAttribute("aria-expanded", String(abrir));
+  b.textContent = abrir ? "Recolher" : "Mostrar tudo";
+});
 </script>
 <script src="polaroidy.js"></script>
 </body>
