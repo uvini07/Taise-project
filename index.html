@@ -2383,6 +2383,32 @@ footer .foot-col a:hover{color:var(--dourado-claro);}
   #navbar::after{background-size:44px 14px;}
   #site-view .exp-media:hover .m-main{transform:none;}
 }
+
+/* ---------- CELULAR: painel administrativo ----------
+   1) iPhone dá zoom em campo com letra menor que 16px: no painel e nos
+      modais do admin todo campo fica com 16px no celular.
+   2) Aviso de cookies e neve são do site; dentro do painel só atrapalham.
+   3) As quatro guias cabem na tela sem cortar a primeira. */
+@media (max-width:900px){
+  #admin-view input:not([type=checkbox]):not([type=radio]),
+  #admin-view select, #admin-view textarea,
+  #login-backdrop input, #detail-backdrop input, #remanejar-backdrop input, #remanejar-backdrop select,
+  #cancel-backdrop input, #cancel-backdrop textarea, #edit-backdrop input, #edit-backdrop select, #edit-backdrop textarea,
+  #pay-backdrop input, #rmdata-backdrop input, #slot-backdrop input, #slot-backdrop select,
+  #confirm-backdrop input{font-size:16px !important;}
+}
+body:has(#admin-view.open) #aviso-dados,
+body:has(#admin-view.open) #snow-layer,
+body:has(#admin-view.open) #whatsapp-fab,
+body:has(#login-backdrop.open) #aviso-dados{display:none !important;}
+@media (max-width:600px){
+  .admin-tabsbar .wrap{padding-left:8px;padding-right:8px;}
+  .atb-row{gap:3px;}
+  .atb-tab{padding:10px 4px;gap:5px;font-size:11.5px;letter-spacing:-.1px;flex:1 1 auto;justify-content:center;min-width:0;}
+  #admin-view .admin-body{padding-top:24px;}
+  .atb-tab svg{display:none;}
+  #admin-view .admin-body{padding-bottom:110px;} /* espaço para o botão da Polaroidy */
+}
 </style>
 </head>
 <body>

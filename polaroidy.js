@@ -226,11 +226,11 @@
   .pldy-sug{display:flex;flex-wrap:wrap;gap:6px}
   .pldy-sug button{font-size:12.5px;padding:6px 10px;border-radius:999px;border:1px solid rgba(27,23,18,.15);background:#fff;cursor:pointer}
   .pldy-form{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(27,23,18,.08);background:#fff}
-  .pldy-form textarea{flex:1;resize:none;border:1px solid rgba(27,23,18,.15);border-radius:10px;padding:9px 10px;font:14px/1.35 var(--sans,system-ui);max-height:110px}
+  .pldy-form textarea{flex:1;resize:none;border:1px solid rgba(27,23,18,.15);border-radius:10px;padding:9px 10px;font:16px/1.35 var(--sans,system-ui);max-height:110px;font-size:16px}
   .pldy-form button{border:none;border-radius:10px;padding:0 14px;background:var(--vinho,#6b1e2a);color:#fff;font-weight:600;cursor:pointer}
   .pldy-form button:disabled{opacity:.5}
   .pldy-novo{font-size:11.5px;background:none;border:none;color:rgba(27,23,18,.5);cursor:pointer;align-self:center;text-decoration:underline}
-  @media (max-width:600px){#pldy-panel{right:0;bottom:0;width:100vw;height:100dvh;border-radius:0}#pldy-fab{right:14px;bottom:14px}}`;
+  @media (max-width:600px){#pldy-panel{right:0;bottom:0;width:100vw;height:100dvh;border-radius:0}#pldy-fab{right:14px;bottom:14px;padding:6px;font-size:0;gap:0}#pldy-fab img{width:44px;height:44px}}`;
 
   const SUGESTOES = ["O que tenho hoje?", "Pedidos aguardando confirmação", "Quem ainda não pagou?", "Quanto já vendi na temporada?", "Tenho horário livre amanhã?"];
 
