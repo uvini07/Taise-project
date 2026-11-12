@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120"><defs>
+  <linearGradient id="bfelizfront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E9E5F1"/></linearGradient>
+  <radialGradient id="bfelizwin" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#433B61"/><stop offset="1" stop-color="#2B2540"/></radialGradient>
+  <linearGradient id="bfelizwshade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+  <radialGradient id="bfelizglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#C95D63" stop-opacity=".55"/><stop offset="1" stop-color="#C95D63" stop-opacity="0"/></radialGradient>
+  <filter id="bfelizsoft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.6"/></filter>
+  <filter id="bfelizground" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+  <circle cx="60" cy="60" r="60" fill="url(#bfelizwin)"/>
+  <circle cx="60" cy="60" r="60" fill="url(#bfelizwshade)" opacity=".7"/>
+  <ellipse cx="34" cy="30" rx="20" ry="9" fill="#fff" opacity=".07" transform="rotate(-30 34 30)"/>
+  <g transform="translate(60 62) scale(0.92)"><ellipse cx="-36" cy="22" rx="9" ry="6" fill="#C95D63" opacity=".55" filter="url(#bfelizsoft)"/><ellipse cx="36" cy="22" rx="9" ry="6" fill="#C95D63" opacity=".55" filter="url(#bfelizsoft)"/><path d="M-34 -28 q10 -6 20 0" fill="none" stroke="#E6E1F0" stroke-width="4" stroke-linecap="round"/><path d="M14 -28 q10 -6 20 0" fill="none" stroke="#E6E1F0" stroke-width="4" stroke-linecap="round"/><g class="pl-eyes">
+    <ellipse cx="-24" cy="0" rx="14.5" ry="17.5" fill="#fff"/>
+    <circle cx="-24" cy="2" r="9.5" fill="#2B2540"/>
+    <circle cx="-27.5" cy="-3" r="3.6" fill="#fff"/>
+    <circle cx="-20.5" cy="5" r="1.6" fill="#fff" opacity=".9"/>
+    <ellipse cx="24" cy="0" rx="14.5" ry="17.5" fill="#fff"/>
+    <circle cx="24" cy="2" r="9.5" fill="#2B2540"/>
+    <circle cx="20.5" cy="-3" r="3.6" fill="#fff"/>
+    <circle cx="27.5" cy="5" r="1.6" fill="#fff" opacity=".9"/></g><path d="M-14 18 Q0 36 14 18 Z" fill="#7E2F38" stroke="#7E2F38" stroke-width="2" stroke-linejoin="round"/><ellipse cx="0" cy="27" rx="6.5" ry="3.6" fill="#C95D63"/></g>
+  <circle cx="92" cy="30" r="12" fill="url(#bfelizglow)"/><circle cx="92" cy="30" r="6" fill="#C95D63"/><circle cx="90.2" cy="28.2" r="1.8" fill="#fff"/></svg>
