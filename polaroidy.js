@@ -53,6 +53,8 @@
     data: a.date, hora: a.time, cliente: a.name || "", pacote: a.package || "", lote: a.lot || "",
     situacao: SITUACAO[a.status] || a.status, pagamento: PAG[pgSituacaoDe(a)],
     total: brl(pgTotalDe(a)), recebido: brl(pgRecebido(a)), whatsapp: a.phone || "",
+    uso_de_imagem: a.usoImagem === "sim" ? "Autorizou" : a.usoImagem === "nao" ? "Não autorizou" : "Não informado (pedido antigo, antes da pergunta)",
+    pet: !a.petLeva ? "Não informado (pedido antigo)" : a.petLeva === "sim" ? "Vai levar" + ([a.petRaca, a.petPorte].filter(Boolean).length ? " (" + [a.petRaca, a.petPorte].filter(Boolean).join(", porte ") + ")" : "") : "Não vai levar",
   });
 
   const MENSAGENS = {
