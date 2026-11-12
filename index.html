@@ -2404,9 +2404,10 @@ body:has(#login-backdrop.open) #aviso-dados{display:none !important;}
 @media (max-width:600px){
   .admin-tabsbar .wrap{padding-left:8px;padding-right:8px;}
   .atb-row{gap:3px;}
-  .atb-tab{padding:10px 4px;gap:5px;font-size:11.5px;letter-spacing:-.1px;flex:1 1 auto;justify-content:center;min-width:0;}
+  /* No celular as guias mostram só o ícone (o nome segue para leitores de tela). */
+  .atb-tab{padding:12px 0;gap:0;font-size:0;flex:1 1 0;justify-content:center;min-width:0;}
   #admin-view .admin-body{padding-top:24px;}
-  .atb-tab svg{display:none;}
+  .atb-tab svg{display:block;width:22px;height:22px;}
   #admin-view .admin-body{padding-bottom:110px;} /* espaço para o botão da Polaroidy */
 }
 </style>
