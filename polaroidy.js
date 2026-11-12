@@ -33,6 +33,18 @@
   const mesmoNome = (cheio, q) => { const a = norm(cheio), b = norm(q); return !!b && (a === b || a.includes(b) || b.split(/\s+/).every(w => a.includes(w))); };
   const primeiro = (n) => String(n || "").split(" ")[0];
   const zap = (tel, txt) => { let d = String(tel || "").replace(/\D/g, ""); if (d && d.length <= 11) d = "55" + d; return "https://wa.me/" + d + "?text=" + encodeURIComponent(txt); };
+  // Botão "Mandar mensagem para Fulana": abre a conversa no WhatsApp, em branco.
+  const conversa = (tel) => { let d = String(tel || "").replace(/\D/g, ""); if (d && d.length <= 11) d = "55" + d; return "https://wa.me/" + d; };
+  const botoesConversa = (lista, max) => {
+    const vistos = new Set(), out = [];
+    lista.forEach(a => {
+      const tel = String(a.phone || "").replace(/\D/g, "");
+      if (!tel || vistos.has(tel) || out.length >= max) return;
+      vistos.add(tel);
+      out.push({ label: "Mandar mensagem para " + primeiro(a.name), href: conversa(a.phone) });
+    });
+    return out;
+  };
   const ativos = () => (appointmentsCache || []).filter(a => a.status !== "cancelado");
   const ordem = (a, b) => (a.date + a.time).localeCompare(b.date + b.time);
   const SITUACAO = { pendente: "Aguardando confirmação", confirmado: "Confirmado", cancelado: "Cancelado" };
@@ -56,7 +68,8 @@
       const ini = okDia(de) ? de : hojeISO();
       const fim = okDia(ate) && ate >= ini ? ate : ini;
       const l = ativos().filter(a => a.date >= ini && a.date <= fim).sort(ordem);
-      return { forModel: { de: diaBR(ini), ate: diaBR(fim), total: l.length, ensaios: l.slice(0, 60).map(resumo) } };
+      // Poucas clientes no período (ex.: "hoje"): já mostra o botão de WhatsApp de cada uma.
+      return { forModel: { de: diaBR(ini), ate: diaBR(fim), total: l.length, ensaios: l.slice(0, 60).map(resumo) }, ui: l.length <= 6 ? { links: botoesConversa(l, 6) } : null };
     },
     pedidos_pendentes() {
       const l = (appointmentsCache || []).filter(a => a.status === "pendente").sort(ordem);
@@ -98,7 +111,7 @@
     cliente({ nome }) {
       const l = (appointmentsCache || []).filter(a => mesmoNome(a.name, nome)).sort(ordem);
       if (!l.length) return { forModel: { encontrado: false } };
-      return { forModel: { encontrado: true, pedidos: l.slice(0, 10).map(a => Object.assign(resumo(a), { email: a.email || "", adicionais: a.addonsValor || "", observacoes: a.notes || "" })) } };
+      return { forModel: { encontrado: true, pedidos: l.slice(0, 10).map(a => Object.assign(resumo(a), { email: a.email || "", adicionais: a.addonsValor || "", observacoes: a.notes || "" })) }, ui: { links: botoesConversa(l, 3) } };
     },
     horarios_livres({ data }) {
       const dia = okDia(data) ? data : hojeISO();
@@ -174,7 +187,7 @@
           const fn = FERRAMENTAS[c.name];
           if (!fn) throw new Error("Ferramenta desconhecida.");
           const out = fn(c.input || {});
-          if (out.ui && out.ui.links) ui.links.push(...out.ui.links);
+          if (out.ui && out.ui.links) out.ui.links.forEach(l => { if (!ui.links.some(x => x.label === l.label)) ui.links.push(l); });
           if (out.ui && out.ui.actions) ui.actions.push(...out.ui.actions);
           return { type: "tool_result", tool_use_id: c.id, content: JSON.stringify(out.forModel) };
         } catch (e) {
