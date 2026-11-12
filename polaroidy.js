@@ -234,6 +234,8 @@
 
   const SUGESTOES = ["O que tenho hoje?", "Pedidos aguardando confirmação", "Quem ainda não pagou?", "Quanto já vendi na temporada?", "Tenho horário livre amanhã?"];
 
+  const celular = () => window.matchMedia("(hover: none), (max-width: 600px)").matches;
+
   let historico = [];
   let ocupada = false;
   let msgs, entrada, enviar;
@@ -308,7 +310,7 @@
       pensando.className = "pldy-b ela erro";
       pensando.textContent = e.message || "A Polaroidy não respondeu agora.";
     } finally {
-      ocupada = false; enviar.disabled = false; entrada.focus(); rolar();
+      ocupada = false; enviar.disabled = false; if (!celular()) entrada.focus(); rolar();
     }
   }
 
@@ -355,7 +357,8 @@
     fab.addEventListener("click", () => {
       p.classList.add("open"); fab.style.display = "none";
       if (!historico.length) boasVindas();
-      entrada.focus();
+      // No celular, focar abriria o teclado e empurraria a tela: só no computador.
+      if (!celular()) entrada.focus();
     });
     p.querySelector(".pldy-head button").addEventListener("click", () => { p.classList.remove("open"); fab.style.display = ""; });
     p.querySelector(".pldy-novo").addEventListener("click", () => { if (!ocupada) boasVindas(); });
