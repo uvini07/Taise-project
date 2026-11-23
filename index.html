@@ -3783,7 +3783,10 @@ const CONFIG = {
   // (09:30). Essa vaga so aparece para quem tambem escolheu o Familia; os
   // outros pacotes continuam vendo so as horas cheias. Para desligar a regra,
   // basta apagar o bloco "meiaHora" ou deixar "inicio" depois de seasonEnd.
-  meiaHora: { inicio: "2026-12-01", pacoteId: "familia" },
+  // DESLIGADO a pedido da Taise (23/11/2026): a meia hora nao abre mais
+  // sozinha. Para atender as :30, ela cria o horario na guia "Agenda" (Criar
+  // horario), e ele vale para qualquer pacote. Para religar, tire as barras:
+  // meiaHora: { inicio: "2026-12-01", pacoteId: "familia" },
   // AGENDA (sessoes de 1h em 1h). "weekTimes" = padrao de segunda a sexta.
   // "dateTimes" sobrepoe dias especificos: [] significa dia indisponivel.
   // Sabados e domingos SEM entrada em dateTimes ficam automaticamente fechados.
